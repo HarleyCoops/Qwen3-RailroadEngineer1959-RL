@@ -50,10 +50,13 @@
 - [x] README with dictionary downloader documentation
 - [x] dictionary downloader and update dependencies
 - [x] documentation workflow
+- [x] documentation workflow and dependency
 
 ## Current Development Focus
 
 ### Current Focus Areas
+
+- documentation workflow and dependency
 
 
 ## Hyperbolic Integration Roadmap
