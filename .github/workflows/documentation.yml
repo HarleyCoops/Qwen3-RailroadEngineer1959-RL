@@ -115,12 +115,12 @@ jobs:
         labels: documentation
 
     - name: Generate Documentation Site
-      if: github.event_name == 'push' || github.event_name == 'schedule'
+      if: (github.event_name == 'push' || github.event_name == 'schedule') && hashFiles('mkdocs.yml') != ''
       run: |
         mkdocs build || echo "Documentation site build skipped"
 
     - name: Deploy Documentation
-      if: (github.event_name == 'push' || github.event_name == 'schedule') && success()
+      if: (github.event_name == 'push' || github.event_name == 'schedule') && hashFiles('mkdocs.yml') != '' && success()
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -131,9 +131,20 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          github.rest.issues.create({
+          const title = 'Documentation Workflow Failed';
+          const { data: issues } = await github.rest.issues.listForRepo({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            title: 'Documentation Workflow Failed',
-            body: 'The documentation automation workflow has failed. Please check the logs for more details.'
-          })
+            state: 'open',
+            per_page: 100
+          });
+          if (!issues.find(issue => issue.title === title)) {
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body: 'The documentation automation workflow has failed. Please check the logs for more details.'
+            });
+          } else {
+            core.info('Failure issue already exists');
+          }
