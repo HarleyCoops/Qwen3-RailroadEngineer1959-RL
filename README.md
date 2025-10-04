@@ -1,126 +1,92 @@
-# Qwen2.5-VL 
+# Qwen3-VL Thinking 
 
 ## Overview
 
-An educational exploration of the Qwen2.5-VL model, focusing on understanding model cards, implementation details, and practical applications. This project combines academic research with hands-on implementation guides and integrates with multiple inference providers for comprehensive access to the model.
+This repo now centers on the Qwen/Qwen3-VL-235B-A22B-Thinking model, the reasoning-optimized release in the third-generation Qwen vision-language family. The project combines academic notes, implementation references, and provider integrations to help you run the 235B MoE model via hosted inference (preferred) or, if you have the hardware, locally through Hugging Face transformers.
 
-What shocks me about this model is the advanced capacity to process any data. I am going to use this to build and fine-tune a model on the Blackfeet Language as a use case using an old Dictionary from 1890. 
+The earlier iterations of this repo targeted Qwen2.5-VL. Historical documentation and paper analyses remain for comparison, but the live tooling, connectors, and examples have been updated to the latest "Thinking" model with support for OpenRouter's reasoning-token ("thinking budget") controls.
+
+What still excites me about this model class is the capacity to reason across any modality. The long-term goal remains building an agent that can learn the Blackfeet language from the 1890 dictionary shown below while surfacing detailed chains of thought.
 
 ![Dictionary Sample](Public/Dictionary.jpeg)
-
 ### Inference Providers Integration
 
-This project provides comprehensive access to Qwen2.5-VL through multiple inference providers, each offering unique capabilities and advantages:
+The live code paths now target providers that expose the Qwen/Qwen3-VL-235B-A22B-Thinking model. OpenRouter is the fastest way to experiment because it supports the reasoning-token ("thinking budget") API out of the box. Hugging Face and Hyperbolic remain viable but generally require you to host the weights yourself or coordinate with the provider for MoE deployments.
+
+#### OpenRouter (Thinking Budget Enabled)
+
+```python
+import base64\nimport os\nfrom pathlib import Path\nimport requests
+
+api_key = os.environ["OPENROUTER_API_KEY"]
+image_bytes = Path("sample.png").read_bytes()
+payload = {
+    "model": "qwen/qwen3-vl-235b-a22b-thinking",
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "input_image",
+                    "image": {
+                        "data": base64.b64encode(image_bytes).decode("utf-8"),
+                        "media_type": "image/png",
+                    },
+                },
+                {"type": "input_text", "text": "Describe the chart and list all numerical values."},
+            ],
+        }
+    ],
+    "reasoning": {"max_tokens": 2048},  # thinking budget
+    "include_reasoning": True,
+}
+response = requests.post(
+    "https://openrouter.ai/api/v1/chat/completions",
+    headers={
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    },
+    json=payload,
+    timeout=60,
+)
+message = response.json()["choices"][0]["message"]
+print(message["content"])      # assistant answer
+print(message.get("reasoning")) # raw thinking tokens (if returned)
+```
+
+> Tip: the helper in `implementation/examples/openrouter_integration.py` wraps this pattern and lets you pass `thinking_budget` as an int (token cap), string (`"low"`, `"medium"`, `"high"`), or rich dict.
 
 #### Hugging Face Inference Endpoints
 
-- **Description**: Direct access to Qwen2.5-VL through Hugging Face's infrastructure
+Running the 235B Thinking model locally requires serious GPU capacity. If you deploy a Hugging Face Inference Endpoint you can reuse the `InferenceConnector` helper and simply point `HF_INFERENCE_ENDPOINT` to your endpoint URL:
 
-- **Key Features**:
-  - Custom endpoint deployment
-  - Optimized for production workloads
-  - Scalable infrastructure
+```python\nimport os\nfrom huggingface_hub import InferenceClient
 
-- **Setup**:
-
-  ```python
-  from huggingface_hub import InferenceClient
-  client = InferenceClient(
-      model="qwen/qwen2.5-vl",
-      token="your_hf_token"
-  )
-  response = client.post(
-      json={"inputs": "Analyze this image", "image": "<image_data>"}
-  )
-  ```
+client = InferenceClient(
+    model="Qwen/Qwen3-VL-235B-A22B-Thinking",
+    token=os.environ["HF_API_KEY"],
+)
+response = client.chat.completions.create(
+    model="Qwen/Qwen3-VL-235B-A22B-Thinking",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "input_text", "text": "Summarize the attached report."},
+            ],
+        }
+    ],
+)
+print(response.choices[0].message.content)
+```
 
 #### Hyperbolic Labs Integration
 
-- **Description**: Specialized integration offering enhanced performance and additional features
+Hyperbolic can proxy Qwen3 deployments, but you currently need to bring your own container build. The existing helper keeps the call shape identical�set `HYPERBOLIC_ENDPOINT` to your deployment URL and `model="qwen/qwen3-vl-235b-a22b-thinking"` in your Hyperbolic control panel.
 
-- **Key Features**:
-  - Advanced caching mechanisms
-  - Custom optimization layers
-  - Extended context handling
-  - Real-time performance monitoring
+#### Other Providers (RunPod, Together, Anyscale, Replicate)
 
-- **Setup**:
-
-  ```python
-  from hyperbolic import HyperbolicClient
-  client = HyperbolicClient(
-      api_key="your_key",
-      endpoint="your_endpoint"
-  )
-  response = client.process_multimodal(
-      model="qwen2.5-vl",
-      prompt="Analyze this image",
-      image_data="<image_data>",
-      optimization_level="high"
-  )
-  ```
-
-#### Additional Provider Integrations
-
-##### RunPod
-
-- **Features**: 
-  - GPU-optimized infrastructure
-  - Pay-per-second pricing
-  - Custom container support
-
-- **Setup**:
-
-  ```python
-  import runpod
-  runpod.api_key = "your_key"
-  endpoint = runpod.Endpoint("qwen2.5-vl")
-  ```
-
-##### Together AI
-
-- **Features**:
-  - Low-latency inference
-  - Fine-tuning capabilities
-  - Extensive model selection
-
-- **Setup**:
-
-  ```python
-  import together
-  together.api_key = "your_key"
-  together.Models.start("qwen2.5-vl")
-  ```
-
-##### Anyscale
-
-- **Features**:
-  - Distributed computing support
-  - Auto-scaling capabilities
-  - Enterprise-grade security
-
-- **Setup**:
-
-  ```python
-  from anyscale import AnyscaleClient
-  client = AnyscaleClient(api_key="your_key")
-  ```
-
-##### Replicate
-
-- **Features**:
-  - Containerized deployment
-  - Version control for models
-  - Webhook support
-
-- **Setup**:
-
-  ```python
-  import replicate
-  client = replicate.Client(api_token="your_token")
-  ```
-
-### Provider Selection Guide
+These sections describe the historical Qwen2.5-VL setup and are retained for reference. When those services expose Qwen3-VL, update the requested model slug to `qwen/qwen3-vl-235b-a22b-thinking` (or the provider-specific alias) and follow the same reasoning-token guidance where applicable.\r\n\r\n### Provider Selection Guide
 
 Choose your provider based on your specific needs:
 
@@ -276,17 +242,43 @@ cp .env.template .env
 
 ```
 
-## Connecting to Qwen2.5B via Hugging Face Credentials
+## Connecting to Qwen3-VL Thinking via Hugging Face Credentials
 
-Use the existing Hugging Face credentials to connect to Qwen2.5B:
+Use your Hugging Face credentials to authenticate the `Qwen/Qwen3-VL-235B-A22B-Thinking` weights. Keep in mind that running the 235B MoE locally requires multiple GPUs with large memory footprints�most users should prefer a hosted Inference Endpoint.
 
 ```python
-from transformers import pipeline
-# use_auth_token flag leverages your existing Hugging Face credentials (set in your environment)
-pipe = pipeline("image-text-to-text", model="qwen/qwen2.5B", use_auth_token=True)
-messages = [{"role": "user", "content": "Who are you?"}]
-print(pipe(messages))
-```
+import os
+import torch
+from transformers import AutoProcessor, Qwen3VLMoeForConditionalGeneration
+
+model_id = "Qwen/Qwen3-VL-235B-A22B-Thinking"
+processor = AutoProcessor.from_pretrained(model_id, token=os.environ.get("HF_API_KEY"))
+model = Qwen3VLMoeForConditionalGeneration.from_pretrained(
+    model_id,
+    device_map="auto",
+    torch_dtype=torch.bfloat16,
+    token=os.environ.get("HF_API_KEY"),
+)
+
+messages = [
+    {
+        "role": "user",
+        "content": [{"type": "text", "text": "Give me three Blackfeet words with translations."}],
+    }
+]
+inputs = processor.apply_chat_template(
+    messages,
+    tokenize=True,
+    add_generation_prompt=True,
+    return_tensors="pt",
+    return_dict=True,
+)
+inputs = {k: v.to(model.device) for k, v in inputs.items()}
+outputs = model.generate(**inputs, max_new_tokens=512)
+prompt_length = inputs["input_ids"].shape[1]
+completion = outputs[:, prompt_length:]
+print(processor.batch_decode(completion, skip_special_tokens=True)[0])
+
 
 ## Multi-Provider Inference Connector
 
@@ -304,25 +296,74 @@ print(result)
 
 ### Providers
 
-- **Hugging Face**: Uses the `transformers` package to perform image-text-to-text inference. Ensure the `HF_API_KEY` environment variable is set and the `transformers` package is installed.
-- **OpenRouter**: For inference using OpenRouter. Set `OPENROUTER_API_KEY` and `OPENROUTER_ENDPOINT` in your environment.
-- **Hyperbolic**: For inference using Hyperbolic. Set `HYPERBOLIC_API_KEY` and `HYPERBOLIC_ENDPOINT` in your environment.
+- **Hugging Face**: Uses the `transformers` stack or a hosted Inference Endpoint. Set `HF_API_KEY` and, if you deploy remotely, `HF_INFERENCE_ENDPOINT`.
+- **OpenRouter**: Primary path for Thinking mode. Set `OPENROUTER_API_KEY` and optionally configure `OPENROUTER_REASONING_MAX_TOKENS`, `OPENROUTER_REASONING_EFFORT`, or `OPENROUTER_APP_NAME`/`OPENROUTER_SITE_URL`.
+- **Hyperbolic**: BYO deployment. Set `HYPERBOLIC_API_KEY` and `HYPERBOLIC_ENDPOINT` to target your hosted container.
 
 ### Environment Variables
 
 Make sure to configure the following environment variables:
 
+- QWEN_VL_MODEL_ID (defaults to `Qwen/Qwen3-VL-235B-A22B-Thinking`)
 - HF_API_KEY
+- HF_INFERENCE_ENDPOINT (optional)
 - OPENROUTER_API_KEY
-- OPENROUTER_ENDPOINT
+- OPENROUTER_REASONING_MAX_TOKENS (optional)
+- OPENROUTER_REASONING_EFFORT (optional)
+- OPENROUTER_REASONING_EXCLUDE (optional)
+- OPENROUTER_APP_NAME / OPENROUTER_SITE_URL (optional metadata headers)
 - HYPERBOLIC_API_KEY
 - HYPERBOLIC_ENDPOINT
+- RUNPOD_API_KEY / TOGETHER_API_KEY / ANYSCALE_API_KEY / REPLICATE_API_KEY (if used)
+
+
+## E2B Deployment (Self-Hosted Sandbox)
+
+As an alternative to using third-party inference providers, this project explores hosting the Qwen3-VL Thinking model in a secure, sandboxed environment using [E2B](https://e2b.dev/). This approach provides a dedicated, long-running environment where the model can be run in isolation, offering greater control and the ability to interact with a file system.
+
+This integration is kept separate from the primary multi-provider connector to maintain a clear distinction between the two deployment strategies.
+
+### Proposed File Structure
+
+To keep the E2B implementation self-contained, it will reside in its own `e2b/` directory:
+
+```
+e2b/
+├── e2b_connector.py      # Main class for managing the E2B sandbox lifecycle.
+├── main.py               # Example script to demonstrate starting and using the sandbox.
+└── sandbox_setup/
+    ├── requirements.txt  # Python dependencies to be installed inside the sandbox.
+    └── setup_model.py    # A script to download and load the model within the sandbox.
+```
+
+### Setup and Usage Steps
+
+1.  **Install the E2B SDK (optional)**:
+    ```bash
+    pip install e2b
+    ```
+
+2.  **Configure E2B API Key**:
+    Add your E2B API key to your `.env` file:
+    ```
+    E2B_API_KEY="your_e2b_api_key"
+    ```
+
+3.  **Prepare Sandbox Environment**:
+    The `e2b/sandbox_setup/` directory contains the necessary files to prepare the sandbox. The `e2b_connector.py` will be responsible for:
+    *   Starting a new sandbox session.
+    *   Uploading the `sandbox_setup` directory.
+    *   Running `pip install -r sandbox_setup/requirements.txt` inside the sandbox.
+    *   Executing the `python sandbox_setup/setup_model.py` script to download and load the Qwen3-VL Thinking model.
+
+4.  **Run Inference**:
+    Once the sandbox is initialized and the model is loaded, the `e2b_connector.py` will provide a method to send prompts to the model and receive responses. The `e2b/main.py` script will serve as a practical example of this entire workflow.
 
 ## Project Goals
 
 1. **Educational Understanding**
 
-   - Comprehensive breakdown of Qwen2.5-VL's architecture
+   - Comprehensive breakdown of Qwen3-VL's architecture (with historical Qwen2.5 comparisons)
    - Clear explanation of key innovations
    - Practical implementation guides
    - Integration patterns for multiple providers
@@ -752,7 +793,7 @@ The system automatically:
 
   def process_image(image_data):
       """
-      Process image using Qwen2.5-VL model.
+      Process image using Qwen3-VL Thinking model.
       
       Learning Notes:
       - Understanding: How the model processes visual input

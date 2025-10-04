@@ -16,9 +16,9 @@ def encode_image(image_path):
 
 # --- 2. API-based Inference ---
 
-def inference_with_api(image_path, prompt, sys_prompt="You are an AI specialized in recognizing and extracting text from historical documents.", model_id="qwen2.5-vl-72b-instruct"):
+def inference_with_api(image_path, prompt, sys_prompt="You are an AI specialized in recognizing and extracting text from historical documents.", model_id="qwen3-vl-235b-a22b-thinking"):
     """
-    Performs inference using the Qwen2.5-VL model via the OpenAI API.
+    Performs inference using the Qwen3-VL model via the OpenAI API.
 
     Args:
         image_path (str): Path to the image file.
@@ -66,10 +66,10 @@ def inference_with_api(image_path, prompt, sys_prompt="You are an AI specialized
 
 # --- 3. Main Processing Function ---
 
-def process_dakota_pdf(image_path, use_api=True, model_path="Qwen/Qwen2.5-VL-72B-Instruct"):
+def process_dakota_pdf(image_path, use_api=True, model_path="Qwen/qwen3-vl-235b-a22b-thinking"):
     """
     Extracts text from a Dakota language PDF (from 1890)
-    using the Qwen2.5-VL model and returns the output in LaTeX format.
+    using the Qwen3-VL model and returns the output in LaTeX format.
 
     Args:
         image_path (str): image_path of the PDF.
@@ -139,3 +139,4 @@ if __name__ == "__main__":
         with open("dakota_dictionary.tex", "w", encoding="utf-8") as f:  # Use utf-8 encoding
             f.write(latex_output)
         print("LaTeX output saved to dakota_dictionary.tex")
+

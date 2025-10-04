@@ -59,7 +59,7 @@
 
 ## Hyperbolic Integration Roadmap
 
-The following steps outline the plan to integrate Qwen2.5BVL via Hyperbolic:
+The following steps outline the plan to integrate Qwen3-VL Thinking via Hyperbolic:
 
 1. Environment Setup:
    - Install the Hyperbolic client package (e.g., via `pip install hyperbolic`).
@@ -73,7 +73,7 @@ The following steps outline the plan to integrate Qwen2.5BVL via Hyperbolic:
    - Write test scripts (such as in `implementation/examples/hyperbolic_connection.py`) to list available models.
    - Confirm successful connection and proper error reporting.
 
-4. Integration into Qwen2.5BVL Workflow:
+4. Integration into Qwen3-VL Thinking Workflow:
    - Integrate the connection module with the main application to enable model inference.
    - Update documentation (README.md) with Hyperbolic integration instructions.
 
@@ -179,3 +179,4 @@ This approach allows us to:
 - Document learning processes
 
 - Create educational resources
+
