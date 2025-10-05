@@ -84,7 +84,6 @@ The following steps outline the plan to integrate Qwen3-VL Thinking via Hyperbol
 ## Upcoming Tasks
 
 ### Identified Tasks
-
 - Review TODOs in PROGRESS.md
 - Review TODOs in tools/update_progress.py
 
@@ -179,4 +178,3 @@ This approach allows us to:
 - Document learning processes
 
 - Create educational resources
-
