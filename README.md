@@ -113,11 +113,11 @@ Each extracted page produces rich linguistic annotations:
 ## Dataset Statistics
 
 **Current Progress** (as of testing):
-- ✅ Grammar sections: 80 pages identified
-- ✅ Dictionary pages: 500+ pages available
-- ✅ Test extraction: 10 interlinear entries, 28 vocabulary items
-- ✅ Character accuracy: 100% preservation of 8 special character types
-- ✅ Average confidence: 92.1%
+- Completed: Grammar sections (80 pages identified)
+- Completed: Dictionary pages (500+ pages available)
+- Completed: Test extraction (10 interlinear entries, 28 vocabulary items)
+- Completed: Character accuracy validation (100% preservation of 8 special character types)
+- Completed: Average confidence benchmark (92.1%)
 
 **Projected Full Dataset**:
 - ~580 pages total (grammar + dictionary)
@@ -344,7 +344,7 @@ python blackfeet_extraction/datasets/training_dataset_builder.py
 
 We tested whether VLMs could extract Dakota special characters without Tesseract training.
 
-**Result: ✅ SUCCESS** - No OCR training required!
+**Result: SUCCESS** - No OCR training required!
 
 ### Comparison
 
@@ -371,36 +371,36 @@ See full analysis: [DAKOTA_EXTRACTION_RESULTS.md](DAKOTA_EXTRACTION_RESULTS.md)
 ## Roadmap
 
 ### Phase 1: Data Extraction (Current)
-- ✅ Prove VLM viability for Dakota character extraction
-- ✅ Build extraction pipeline with Claude Sonnet 4.5
-- ✅ Create Dakota-specific prompt engineering
-- 🔄 Extract full grammar (80 pages) - **In Progress**
-- ⏳ Extract dictionary (500+ pages)
-- ⏳ Validate and clean extracted data
+- Completed: Prove VLM viability for Dakota character extraction
+- Completed: Build extraction pipeline with Claude Sonnet 4.5
+- Completed: Create Dakota-specific prompt engineering
+- In progress: Extract full grammar (80 pages)
+- Pending: Extract dictionary (500+ pages)
+- Pending: Validate and clean extracted data
 
 ### Phase 2: Dataset Preparation (Next)
-- ⏳ Structure data for fine-tuning (JSONL format)
-- ⏳ Create train/validation/test splits
-- ⏳ Build Dakota-English parallel corpus
-- ⏳ Extract morphological patterns
-- ⏳ Document orthography rules
-- ⏳ Quality assurance and human validation
+- Pending: Structure data for fine-tuning (JSONL format)
+- Pending: Create train/validation/test splits
+- Pending: Build Dakota-English parallel corpus
+- Pending: Extract morphological patterns
+- Pending: Document orthography rules
+- Pending: Quality assurance and human validation
 
 ### Phase 3: Model Fine-Tuning (Future)
-- ⏳ Fine-tune LLaMA 3 / Mistral on Dakota
-- ⏳ Adapt Qwen3-VL for Dakota multimodal understanding
-- ⏳ Build Dakota text generation model
-- ⏳ Create Dakota-English translation model
-- ⏳ Develop morphological analyzer
-- ⏳ Benchmark on Dakota language tasks
+- Pending: Fine-tune LLaMA 3 / Mistral on Dakota
+- Pending: Adapt Qwen3-VL for Dakota multimodal understanding
+- Pending: Build Dakota text generation model
+- Pending: Create Dakota-English translation model
+- Pending: Develop morphological analyzer
+- Pending: Benchmark on Dakota language tasks
 
 ### Phase 4: Applications & Tools (Future)
-- ⏳ Web interface for Dakota language learning
-- ⏳ Dakota text generator with orthography validation
-- ⏳ Dakota-English translation API
-- ⏳ Mobile app for language learners
-- ⏳ Educational materials generation
-- ⏳ Collaborate with Dakota language communities
+- Pending: Web interface for Dakota language learning
+- Pending: Dakota text generator with orthography validation
+- Pending: Dakota-English translation API
+- Pending: Mobile app for language learners
+- Pending: Educational materials generation
+- Pending: Collaborate with Dakota language communities
 
 ## Contributing
 
@@ -472,3 +472,40 @@ If you use this work in research or applications, please cite:
 **Project Status**: Active Development
 **Contact**: Open an issue for questions or collaboration opportunities
 **Documentation**: See [DAKOTA_EXTRACTION_RESULTS.md](DAKOTA_EXTRACTION_RESULTS.md) for technical details
+
+## Historical and Modern Impact of Stephen R. Riggs's 1890 Dakota-English Dictionary
+
+### Origin and Funding of Riggs's Dakota Dictionary
+
+Stephen Return Riggs (1812-1883) was a Presbyterian missionary and linguist who lived among the Dakota people for decades. His first printed Dakota language dictionary appeared in 1852 under the sponsorship of the Minnesota Historical Society and with support from the Smithsonian Institution. That early grammar and lexicon drew on collaboration with Samuel and Gideon Pond as well as Thomas S. Williamson, all working under the American Board of Commissioners for Foreign Missions. Riggs and his colleagues continued to revise and expand the work for decades. By the late 1870s, the U.S. Bureau of American Ethnology enlisted Riggs to prepare an expanded dictionary and accompanying texts, providing federal funding and editorial guidance. Riggs worked on the revisions until his death in 1883; Smithsonian ethnologist James Owen Dorsey then edited and finalized the manuscript for publication in 1890 as Volume VII of the "Contributions to North American Ethnology." The resulting 665-page Dakota-English Dictionary represented roughly 40 years of lexical collection and refinement supported by both church institutions and the U.S. government.
+
+### Research Process and Primary Papers
+
+Riggs's dictionary emerged from lifelong immersion rather than a single expedition. He began learning spoken Dakota in 1837 at mission stations in present-day Minnesota, refining an orthography originally developed by the Pond brothers. Over time he collected vocabulary from daily conversation, scripture translations, hymns, and oral literature. At the Bureau of American Ethnology's request he also compiled Dakota folk texts, later published in 1893. Riggs's correspondence, journals, and mission reports preserved in the Stephen R. Riggs and Family Papers at the Minnesota Historical Society document the evolution of the dictionary, while his autobiography "Mary and I: Forty Years with the Sioux" highlights how highly he valued the work. Additional insight comes from James Owen Dorsey's papers at the National Anthropological Archives, which record the Smithsonian's editorial process. These archival fonds form the primary record behind the published volume.
+
+### 19th-Century Use and Impact
+
+Upon release, the Dakota-English Dictionary became the definitive reference for the Dakota language. It supported missionaries, teachers, and interpreters, and enabled continued Bible translation projects led by Riggs and his family. Early linguists and ethnographers relied on the work as they compared Sioux dialects; John Wesley Powell observed in 1880 that the Dakotan languages were documented more thoroughly than any other Indigenous language family at the time. Riggs's fluency also positioned him as an interpreter during treaty negotiations, including Traverse des Sioux in 1851, where his translations shaped the understanding of land agreements. Even while he viewed the dictionary as part of a broader assimilationist mission, it unintentionally preserved Dakota language data that future generations would rely on.
+
+### Modern Legacy and Recognition
+
+Riggs's dictionary has remained in print, with notable reissues in 1968 and 1992. Modern Dakota language programs continue to consult the work for orthographic conventions, example sentences, and dialect notes covering Santee, Yankton, and Teton varieties. Digitization through HathiTrust and Archive.org has made the 1890 edition broadly accessible, and contemporary educators acknowledge it as a cornerstone of Dakota linguistic heritage. The dictionary helped safeguard vocabulary and cultural knowledge that might otherwise have been suppressed during later assimilation efforts, and it remains a foundational reference for revitalization initiatives today.
+
+### Comparison with Blackfoot Language Documentation
+
+Riggs's efforts paralleled contemporaneous work to document the Blackfoot (Siksika) language on the Canadian plains. Anglican missionary John William Tims compiled a Blackfoot grammar and dictionary in the 1880s, publishing it in London in 1889 for use by missionaries and teachers. Earlier Blackfoot word lists by Jean L'Heureux and Samuel Trivett remained unpublished manuscripts until much later. Like Riggs, Tims pursued language documentation to support missionary goals, creating literacy tools and hymn translations. While Riggs benefited from U.S. government backing and created a larger, federally published volume, both projects became vital historical records that preserved Indigenous linguistic knowledge through a period of intense cultural pressure.
+
+### Sources
+
+- Riggs, Stephen Return (1812-1883) | MNopedia - https://www3.mnhs.org/mnopedia/search/index/person/riggs-stephen-return-1812-1883
+- Catalog Record: Grammar and dictionary of the Dakota language... | HathiTrust - https://catalog.hathitrust.org/Record/011255530
+- A Dakota-English Dictionary | Bookshop.org - https://bookshop.org/p/books/a-dakota-english-dictionary-stephen-r-riggs/a7576af38923bb30?ean=9780873512824&next=t&next=t&affiliate=5593
+- The Project Gutenberg eBook of Mary and I, by Stephen Return Riggs - http://www.gutenberg.org/files/42806/42806-h/42806-h.htm
+- First Annual Report of the Bureau of Ethnology | Project Gutenberg - https://www.gutenberg.org/files/32938/32938-h/32938-h.htm
+- Contributions to North American Ethnology, Volume VII: A Dakota-English dictionary - https://pubs.usgs.gov/publication/70037986
+- STEPHEN R. RIGGS AND FAMILY: Finding Aids | Minnesota Historical Society - https://storage.googleapis.com/mnhs-finding-aids-public/library/findaids/00797.html
+- MS 4800 James O. Dorsey papers | Smithsonian Institution - https://sova.si.edu/record/naa.ms4800
+- The Land, Water, and Language of the Dakota, Minnesota's First People | MNopedia - https://www3.mnhs.org/mnopedia/search/index/land-water-and-language-dakota-minnesota-s-first-people
+- Riggs, Stephen Return, 1812-1883 | The Online Books Page - https://onlinebooks.library.upenn.edu/webbin/who/Riggs%2C%20Stephen%20Return%2C%201812-1883
+- Grammar and dictionary of the Blackfoot language in the Dominion of Canada - https://library.si.edu/digital-library/book/grammardictionar00tims
+- Niitsitapiisini - Our Way of Life - Teacher Toolkit | Glenbow Museum - https://www.glenbow.org/blackfoot/teacher_toolkit/english/learningResources/furtherStudy.html
