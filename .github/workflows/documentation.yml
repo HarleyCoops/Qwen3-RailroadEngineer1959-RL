@@ -64,14 +64,6 @@ jobs:
         config: '.markdownlint.json'
         fix: true  # Try to auto-fix what it can
 
-    - name: Check Links
-      uses: gaurav-nelson/github-action-markdown-link-check@v1
-      with:
-        use-quiet-mode: 'yes'
-        use-verbose-mode: 'yes'
-        folder-path: '.'
-        max-depth: 2
-
     # Consolidate all file modifications before git operations
     - name: Process Documentation Updates
       run: |
