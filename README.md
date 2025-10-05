@@ -85,7 +85,7 @@ flowchart TB
 
     subgraph Prompt["Dakota Extraction Prompt Structure"]
         P1[Character Preservation Rules<br/>Explicit Unicode mappings]
-        P2[Interlinear Format Parser<br/>Dakota → Glosses → Translation]
+        P2[Interlinear Format Parser<br/>Dakota to Glosses to Translation]
         P3[JSON Schema Definition<br/>DictionaryEntry structure]
         P4[Confidence Scoring<br/>Self-assessment 0.0-1.0]
 
@@ -133,8 +133,8 @@ flowchart TB
 
     subgraph Storage["Data Persistence"]
         F1[page_089.json<br/>page_090.json<br/>...<br/>page_440.json]
-        F2[Validation Layer<br/>validate_entry()]
-        F3{Confidence > 0.7?}
+        F2[Validation Layer<br/>validate_entry]
+        F3{"Confidence &gt; 0.7?"}
         F4[High Quality<br/>data/extracted/]
         F5[Low Quality<br/>Flagged for review]
         F6[Reasoning Traces<br/>data/reasoning_traces/]
@@ -149,7 +149,7 @@ flowchart TB
     end
 
     subgraph Training["Fine-Tuning Dataset Construction"]
-        G1[Translation Pairs<br/>Dakota ↔ English]
+        G1[Translation Pairs<br/>Dakota to English]
         G2[Instruction Format<br/>LLaMA/Qwen/Mistral]
         G3[Vocabulary Corpus<br/>Word-level mappings]
         G4[Morphological Patterns<br/>Prefix/suffix rules]
@@ -217,7 +217,7 @@ flowchart TB
         J1[Attention Analysis<br/>Which characters trigger<br/>special processing?]
         J2[Feature Visualization<br/>Dakota orthography neurons]
         J3[Activation Patterns<br/>Morphological composition]
-        J4[Cross-lingual Transfer<br/>Dakota → Lakota → English]
+        J4[Cross-lingual Transfer<br/>Dakota to Lakota to English]
         J5[Low-Resource Learning<br/>Few-shot adaptation analysis]
 
         I6 -.probe.-> J1
