@@ -27,11 +27,15 @@ class DictionaryEntry:
     linguistic context beyond simple word-to-word translation.
     """
 
-    # Core identification
+    # Core identification (required fields first)
     entry_id: str  # Unique identifier (e.g., "page_042_entry_015")
     headword: str  # Main Dakota/Blackfeet word (e.g., "ki'-ći-ća-šta-ka")
+    definition_primary: str  # Main English meaning (required)
+    column: int  # 1 or 2 (left or right column)
+    page_number: int  # Page number
+    source_image: str  # Filename of source image
 
-    # Linguistic classification
+    # Linguistic classification (optional fields after required)
     part_of_speech: Optional[str] = None  # v., n., a., adv., recip., pos.
     pos_full: Optional[str] = None  # Full expansion: "verb", "noun", etc.
 
@@ -41,30 +45,24 @@ class DictionaryEntry:
     root_meaning: Optional[str] = None  # What the root means
 
     # English translation
-    definition_primary: str  # Main English meaning
     definition_secondary: Optional[str] = None  # Alternative meanings
 
     # Grammatical information
-    inflected_forms: List[str] = None  # Conjugations, plurals, etc.
+    inflected_forms: Optional[List[str]] = None  # Conjugations, plurals, etc.
     grammatical_notes: Optional[str] = None  # Any grammar explanations
 
     # Usage and examples
     usage_notes: Optional[str] = None  # Context, usage patterns
-    example_phrases: List[str] = None  # Example sentences if present
+    example_phrases: Optional[List[str]] = None  # Example sentences if present
 
     # Cross-references
-    see_also: List[str] = None  # Related words to look up
-    compare_with: List[str] = None  # Similar/contrasting words
+    see_also: Optional[List[str]] = None  # Related words to look up
+    compare_with: Optional[List[str]] = None  # Similar/contrasting words
 
     # Extraction metadata
-    column: int  # 1 or 2 (left or right column)
     line_number: Optional[int] = None  # Approximate line on page
     confidence: float = 1.0  # Extraction confidence (0.0-1.0)
     extraction_notes: Optional[str] = None  # Any issues during extraction
-
-    # Page metadata
-    page_number: int
-    source_image: str  # Filename of source image
 
     def __post_init__(self):
         """Initialize empty lists if None."""
