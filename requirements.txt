@@ -28,7 +28,7 @@ mkdocstrings>=0.24.0
 mkdocstrings-python>=1.7.0
 
 # Qwen3 VL support
-transformers>=4.57.0.dev0
+transformers>=4.45.0
 accelerate>=0.34.2
 bitsandbytes>=0.43.1
 qwen-vl-utils>=0.0.14
