@@ -1,0 +1,12 @@
+# Development dependencies
+-r requirements.txt
+
+# Testing
+pytest>=7.4.0
+
+# Code quality
+black>=23.7.0
+flake8>=6.1.0
+mypy>=1.5.1
+types-requests>=2.31.0
+types-Pillow>=10.0.0

@@ -36,8 +36,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Only install what we actually need for documentation
-        pip install mkdocs mkdocstrings mkdocs-material PyYAML
+        pip install -r requirements-docs.txt
 
     - name: Update Progress Tracking
       if: hashFiles('tools/update_progress.py') != ''
