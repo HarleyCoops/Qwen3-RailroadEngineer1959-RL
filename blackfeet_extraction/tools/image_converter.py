@@ -63,7 +63,7 @@ class ImageConverter:
             output_name = jp2_path.stem + ".jpg"
             output_path = self.output_dir / output_name
 
-        print(f"Converting: {jp2_path.name} → {output_path.name}")
+        print(f"Converting: {jp2_path.name} -> {output_path.name}")
 
         try:
             # Open JP2 file with Pillow
@@ -75,11 +75,11 @@ class ImageConverter:
                 # Save as JPEG
                 img.save(output_path, "JPEG", quality=self.quality, optimize=True)
 
-            print(f"  ✓ Converted successfully")
+            print(f"  OK Converted successfully")
             return output_path
 
         except Exception as e:
-            print(f"  ❌ Error converting {jp2_path.name}: {e}")
+            print(f"  ERROR converting {jp2_path.name}: {e}")
             raise
 
     def convert_all_jp2_files(self) -> List[Path]:
@@ -92,7 +92,7 @@ class ImageConverter:
         jp2_files = sorted(self.input_dir.glob("*.jp2"))
 
         if not jp2_files:
-            print(f"⚠️  No JP2 files found in {self.input_dir}")
+            print(f"WARNING: No JP2 files found in {self.input_dir}")
             return []
 
         print(f"\n{'='*60}")
@@ -105,7 +105,7 @@ class ImageConverter:
                 converted_path = self.convert_jp2_to_jpeg(jp2_file)
                 converted_paths.append(converted_path)
             except Exception as e:
-                print(f"⚠️  Skipping {jp2_file.name} due to error: {e}")
+                print(f"WARNING: Skipping {jp2_file.name} due to error: {e}")
                 continue
 
         print(f"\n{'='*60}")

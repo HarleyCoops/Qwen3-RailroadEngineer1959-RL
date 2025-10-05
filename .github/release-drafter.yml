@@ -1,0 +1,38 @@
+name-template: 'Release ${version}'
+tag-template: 'v$RESOLVED_VERSION'
+change-template: '* $TITLE (#$NUMBER)'
+categories:
+  - title: '🚀 Features'
+    labels:
+      - feature
+      - enhancement
+  - title: '🐛 Fixes'
+    labels:
+      - fix
+      - bug
+  - title: '🧰 Maintenance'
+    labels:
+      - chore
+      - dependencies
+
+template: |
+  ## Summary
+
+  $CHANGES
+
+  ## Contributors
+
+  $CONTRIBUTORS
+
+version-resolver:
+  major:
+    labels:
+      - major
+  minor:
+    labels:
+      - minor
+  patch:
+    labels:
+      - patch
+  default: patch
+
