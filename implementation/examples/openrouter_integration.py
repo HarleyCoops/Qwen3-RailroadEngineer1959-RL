@@ -70,7 +70,7 @@ class Qwen3VLClient:
     ) -> Dict[str, Any]:
         """Send a text-only chat prompt."""
 
-        blocks: List[ContentBlock] = [{"type": "input_text", "text": prompt}]
+        blocks: List[ContentBlock] = [{"type": "text", "text": prompt}]
         return self._make_request(blocks, thinking_budget, temperature, max_tokens)
 
     def analyze_image(
@@ -84,7 +84,7 @@ class Qwen3VLClient:
     ) -> Dict[str, Any]:
         """Analyze a single image with an optional thinking budget."""
 
-        blocks = [self._image_block(image_path), {"type": "input_text", "text": prompt}]
+        blocks = [self._image_block(image_path), {"type": "text", "text": prompt}]
         return self._make_request(blocks, thinking_budget, temperature, max_tokens)
 
     def analyze_document(
@@ -113,7 +113,7 @@ class Qwen3VLClient:
         """Send a sequence of frames for reasoning about a video."""
 
         blocks: List[ContentBlock] = [self._image_block(frame) for frame in video_frames]
-        blocks.append({"type": "input_text", "text": prompt})
+        blocks.append({"type": "text", "text": prompt})
         return self._make_request(blocks, thinking_budget, temperature, max_tokens)
 
     # ------------------------------------------------------------------
@@ -249,10 +249,9 @@ class Qwen3VLClient:
     def _image_block(image_data: Union[str, Path, bytes]) -> ContentBlock:
         encoded, media_type = Qwen3VLClient._encode_image(image_data)
         return {
-            "type": "input_image",
-            "image": {
-                "data": encoded,
-                "media_type": media_type,
+            "type": "image_url",
+            "image_url": {
+                "url": f"data:{media_type};base64,{encoded}"
             },
         }
 
