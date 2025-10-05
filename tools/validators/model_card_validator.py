@@ -48,7 +48,7 @@ class ModelCardValidator:
         """Parse the model card into sections."""
         sections = {}
         current_section = None
-        current_content = []
+        current_content: List[str] = []
 
         for line in self.content.split('\n'):
             if line.startswith('## '):

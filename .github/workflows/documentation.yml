@@ -2,7 +2,7 @@ name: Documentation Automation
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Run once per hour
+    - cron: '0 0 * * *'  # Run once per day at midnight
   workflow_dispatch:         # Manual trigger
   push:
     branches: [ main ]      # Push trigger
@@ -49,12 +49,19 @@ jobs:
     - name: Validate Model Cards
       if: hashFiles('tools/validators/model_card_validator.py') != ''
       run: |
-        python tools/validators/model_card_validator.py implementation/model_cards/*.md || echo "Model card validation skipped"
+        # Skip template files and only validate actual model cards
+        for file in implementation/model_cards/*.md; do
+          if [[ ! "$file" =~ template\.md$ ]]; then
+            python tools/validators/model_card_validator.py "$file" || echo "Validation warning for $file"
+          fi
+        done || echo "Model card validation skipped"
 
     - name: Check Documentation
       run: |
-        find . -name "*.py" -not -path "./venv/*" -exec python -m doctest {} + || echo "Doctest completed with some issues"
-        python -m pydoc -w . || echo "Pydoc generation completed with some issues"
+        # Run doctest only on Python files with doctests
+        find . -name "*.py" -not -path "./venv/*" -not -path "./.git/*" -exec grep -l ">>>" {} \; | xargs -r python -m doctest || echo "Doctest completed with some issues"
+        # Skip pydoc generation as it's not needed for CI
+        echo "Documentation check completed"
 
     - name: Run markdownlint
       uses: DavidAnson/markdownlint-cli2-action@v11
@@ -72,18 +79,27 @@ jobs:
           python tools/fix_markdown.py || echo "Markdown fixing skipped"
         fi
         
-        # Only proceed with git operations if there are actual changes
-        if ! git diff --quiet; then
+        # Only proceed with git operations if there are meaningful changes
+        # Exclude auto-generated files and temporary files from diff check
+        git add -N .
+        if git diff --name-only | grep -vE '(\.html$|\.pdf$|\.pyc$|__pycache__)' | grep -q .; then
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
           
           TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
           
-          git add .
-          git commit -m "Auto-update documentation: $TIMESTAMP [skip ci]"
-          git push || echo "Push failed - likely due to concurrent updates"
+          # Only add markdown and documentation files
+          git add '*.md' || true
+          
+          # Check if there's anything to commit
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: auto-update documentation $TIMESTAMP [skip ci]" || echo "Commit failed"
+            git push || echo "Push failed - likely due to concurrent updates or no changes"
+          else
+            echo "No documentation changes to commit"
+          fi
         else
-          echo "No changes to commit"
+          echo "No meaningful changes to commit"
         fi
 
     - name: Create Documentation PR
