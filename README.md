@@ -49,6 +49,195 @@ Our source is Stephen Return Riggs' comprehensive Dakota grammar and dictionary,
 
 ## Data Extraction Pipeline
 
+### Complete Pipeline Architecture
+
+```mermaid
+flowchart TB
+    subgraph Source["Historical Source (1890s)"]
+        A1[Stephen Return Riggs<br/>Dakota-English Dictionary<br/>665 pages, Internet Archive]
+        A2[Pages 1-88: Grammar<br/>Interlinear translations]
+        A3[Pages 89-440: Dictionary<br/>~10,000-15,000 entries]
+        A1 --> A2
+        A1 --> A3
+    end
+
+    subgraph Input["Image Preparation"]
+        B1[JP2 Images<br/>2000x3000px<br/>Historical scans]
+        B2[ImageConverter<br/>Pillow + OpenJPEG]
+        B3[JPEG Images<br/>Quality: 95<br/>RGB format]
+        B1 -->|convert_jp2_to_jpeg| B2
+        B2 -->|High-quality JPEG| B3
+    end
+
+    subgraph Extraction["VLM Extraction Layer"]
+        C1[Base64 Encoding<br/>image/jpeg]
+        C2[Dakota Extraction Prompt<br/>Specialized for orthography<br/>ć, š, ŋ, ḣ, ṡ preservation]
+        C3{VLM Selection}
+        C4[Claude Sonnet 4.5<br/>claude-sonnet-4-5-20250929<br/>Primary method]
+        C5[Qwen3-VL-235B-A22B<br/>Reasoning budget: 6000 tokens<br/>Alternative method]
+
+        B3 --> C1
+        C1 --> C2
+        C2 --> C3
+        C3 -->|ANTHROPIC_API_KEY| C4
+        C3 -->|OPENROUTER_API_KEY| C5
+    end
+
+    subgraph Prompt["Dakota Extraction Prompt Structure"]
+        P1[Character Preservation Rules<br/>Explicit Unicode mappings]
+        P2[Interlinear Format Parser<br/>Dakota → Glosses → Translation]
+        P3[JSON Schema Definition<br/>DictionaryEntry structure]
+        P4[Confidence Scoring<br/>Self-assessment 0.0-1.0]
+
+        C2 -.includes.-> P1
+        C2 -.includes.-> P2
+        C2 -.includes.-> P3
+        C2 -.includes.-> P4
+    end
+
+    subgraph Response["VLM Response Processing"]
+        D1[Raw Text Response<br/>JSON in markdown blocks]
+        D2[JSON Parser<br/>Extract code blocks]
+        D3{Parse Success?}
+        D4[Structured Data<br/>page_metadata + entries]
+        D5[Error Log<br/>Raw text fallback]
+
+        C4 --> D1
+        C5 --> D1
+        D1 --> D2
+        D2 --> D3
+        D3 -->|Valid JSON| D4
+        D3 -->|Parse error| D5
+    end
+
+    subgraph Schema["Dictionary Entry Schema"]
+        E1["DictionaryEntry (dataclass)
+        ━━━━━━━━━━━━━━━━━━━━━
+        Required Fields:
+        • entry_id: str
+        • headword: str (Dakota word)
+        • definition_primary: str
+        • page_number: int
+        • column: int (1 or 2)
+        • source_image: str
+
+        Optional Fields:
+        • part_of_speech: str
+        • derived_from: str
+        • inflected_forms: List[str]
+        • confidence: float (0.0-1.0)
+        • special_chars: List[str]"]
+
+        D4 -.validates.-> E1
+    end
+
+    subgraph Storage["Data Persistence"]
+        F1[page_089.json<br/>page_090.json<br/>...<br/>page_440.json]
+        F2[Validation Layer<br/>validate_entry()]
+        F3{Confidence > 0.7?}
+        F4[High Quality<br/>data/extracted/]
+        F5[Low Quality<br/>Flagged for review]
+        F6[Reasoning Traces<br/>data/reasoning_traces/]
+
+        D4 --> F1
+        F1 --> F2
+        F2 --> F3
+        F3 -->|Yes| F4
+        F3 -->|No| F5
+        C4 -.reasoning.-> F6
+        C5 -.reasoning.-> F6
+    end
+
+    subgraph Training["Fine-Tuning Dataset Construction"]
+        G1[Translation Pairs<br/>Dakota ↔ English]
+        G2[Instruction Format<br/>LLaMA/Qwen/Mistral]
+        G3[Vocabulary Corpus<br/>Word-level mappings]
+        G4[Morphological Patterns<br/>Prefix/suffix rules]
+
+        F4 --> G1
+        F4 --> G2
+        F4 --> G3
+        F4 --> G4
+    end
+
+    subgraph Output["Training Datasets (JSONL)"]
+        H1["translation_pairs.jsonl
+        ━━━━━━━━━━━━━━━━━━━━━
+        {
+          'source': 'Wićašta',
+          'target': 'man',
+          'metadata': {
+            'pos': 'n.',
+            'special_chars': ['ć','š']
+          }
+        }"]
+
+        H2["instruction_dataset.jsonl
+        ━━━━━━━━━━━━━━━━━━━━━
+        {
+          'instruction': 'Translate Dakota to English',
+          'input': 'Wićašta wańŋ',
+          'output': 'A man',
+          'context': 'noun + indefinite article'
+        }"]
+
+        H3["morphology.jsonl
+        ━━━━━━━━━━━━━━━━━━━━━
+        {
+          'root': 'kaštaka',
+          'derived': 'ki-ći-ća-šta-ka',
+          'affixes': ['ki-','ći-','ća-'],
+          'meaning_shift': 'smile → smile for one'
+        }"]
+
+        G1 --> H1
+        G2 --> H2
+        G4 --> H3
+    end
+
+    subgraph Future["Future: Model Fine-Tuning"]
+        I1[Base Models<br/>Qwen2.5-7B / LLaMA-3-8B]
+        I2[Stage 1: Character Adaptation<br/>Learn Dakota orthography]
+        I3[Stage 2: Vocabulary Learning<br/>Dictionary entries]
+        I4[Stage 3: Translation<br/>Parallel corpus]
+        I5[Stage 4: Generation<br/>Grammatical structures]
+        I6[Dakota Language Model<br/>Translation + Generation]
+
+        H1 --> I1
+        H2 --> I1
+        H3 --> I1
+        I1 --> I2
+        I2 --> I3
+        I3 --> I4
+        I4 --> I5
+        I5 --> I6
+    end
+
+    subgraph Mechanistic["Mechanistic Interpretability Applications"]
+        J1[Attention Analysis<br/>Which characters trigger<br/>special processing?]
+        J2[Feature Visualization<br/>Dakota orthography neurons]
+        J3[Activation Patterns<br/>Morphological composition]
+        J4[Cross-lingual Transfer<br/>Dakota → Lakota → English]
+        J5[Low-Resource Learning<br/>Few-shot adaptation analysis]
+
+        I6 -.probe.-> J1
+        I6 -.probe.-> J2
+        I6 -.probe.-> J3
+        I6 -.probe.-> J4
+        I6 -.probe.-> J5
+    end
+
+    A2 --> B1
+    A3 --> B1
+
+    style Source fill:#f9f,stroke:#333,stroke-width:2px
+    style Extraction fill:#bbf,stroke:#333,stroke-width:2px
+    style Schema fill:#bfb,stroke:#333,stroke-width:2px
+    style Training fill:#ffb,stroke:#333,stroke-width:2px
+    style Future fill:#fbb,stroke:#333,stroke-width:2px
+    style Mechanistic fill:#bff,stroke:#333,stroke-width:2px
+```
+
 ### Vision-Language Model Approach
 
 We use **Claude Sonnet 4.5** and **Qwen3-VL-235B-A22B-Thinking** to directly extract structured linguistic data from historical dictionary images. This approach:
