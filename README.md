@@ -9,6 +9,7 @@ The earlier iterations of this repo targeted Qwen2.5-VL. Historical documentatio
 What still excites me about this model class is the capacity to reason across any modality. The long-term goal remains building an agent that can learn the Blackfeet language from the 1890 dictionary shown below while surfacing detailed chains of thought.
 
 ![Dictionary Sample](Public/Dictionary.jpeg)
+
 ### Inference Providers Integration
 
 The live code paths now target providers that expose the Qwen/Qwen3-VL-235B-A22B-Thinking model. OpenRouter is the fastest way to experiment because it supports the reasoning-token ("thinking budget") API out of the box. Hugging Face and Hyperbolic remain viable but generally require you to host the weights yourself or coordinate with the provider for MoE deployments.
@@ -38,6 +39,7 @@ payload = {
         }
     ],
     "reasoning": {"max_tokens": 2048},  # thinking budget
+
     "include_reasoning": True,
 }
 response = requests.post(
@@ -51,7 +53,9 @@ response = requests.post(
 )
 message = response.json()["choices"][0]["message"]
 print(message["content"])      # assistant answer
+
 print(message.get("reasoning")) # raw thinking tokens (if returned)
+
 ```
 
 > Tip: the helper in `implementation/examples/openrouter_integration.py` wraps this pattern and lets you pass `thinking_budget` as an int (token cap), string (`"low"`, `"medium"`, `"high"`), or rich dict.
@@ -78,11 +82,12 @@ response = client.chat.completions.create(
     ],
 )
 print(response.choices[0].message.content)
+
 ```
 
 #### Hyperbolic Labs Integration
 
-Hyperbolic can proxy Qwen3 deployments, but you currently need to bring your own container build. The existing helper keeps the call shape identical�set `HYPERBOLIC_ENDPOINT` to your deployment URL and `model="qwen/qwen3-vl-235b-a22b-thinking"` in your Hyperbolic control panel.
+Hyperbolic can proxy Qwen3 deployments, but you currently need to bring your own container build. The existing helper keeps the call shape identical�set `HYPERBOLIC_ENDPOINT` to your deployment URL and `model="qwen/qwen3-vl-235b-a22b-thinking"` in your Hyperbolic control panel.
 
 #### Other Providers (RunPod, Together, Anyscale, Replicate)
 
@@ -244,7 +249,7 @@ cp .env.template .env
 
 ## Connecting to Qwen3-VL Thinking via Hugging Face Credentials
 
-Use your Hugging Face credentials to authenticate the `Qwen/Qwen3-VL-235B-A22B-Thinking` weights. Keep in mind that running the 235B MoE locally requires multiple GPUs with large memory footprints�most users should prefer a hosted Inference Endpoint.
+Use your Hugging Face credentials to authenticate the `Qwen/Qwen3-VL-235B-A22B-Thinking` weights. Keep in mind that running the 235B MoE locally requires multiple GPUs with large memory footprints�most users should prefer a hosted Inference Endpoint.
 
 ```python
 import os
@@ -279,7 +284,6 @@ prompt_length = inputs["input_ids"].shape[1]
 completion = outputs[:, prompt_length:]
 print(processor.batch_decode(completion, skip_special_tokens=True)[0])
 
-
 ## Multi-Provider Inference Connector
 
 The project now includes a unified inference connector that allows access to multiple inference providers (Hugging Face, OpenRouter, and Hyperbolic). This connector reads API keys and endpoints from environment variables, and provides an easy interface to perform inference tasks.
@@ -292,12 +296,15 @@ from implementation.inference_connector import InferenceConnector
 connector = InferenceConnector()
 result = connector.infer('huggingface', 'Who are you?')
 print(result)
+
 ```
 
 ### Providers
 
 - **Hugging Face**: Uses the `transformers` stack or a hosted Inference Endpoint. Set `HF_API_KEY` and, if you deploy remotely, `HF_INFERENCE_ENDPOINT`.
+
 - **OpenRouter**: Primary path for Thinking mode. Set `OPENROUTER_API_KEY` and optionally configure `OPENROUTER_REASONING_MAX_TOKENS`, `OPENROUTER_REASONING_EFFORT`, or `OPENROUTER_APP_NAME`/`OPENROUTER_SITE_URL`.
+
 - **Hyperbolic**: BYO deployment. Set `HYPERBOLIC_API_KEY` and `HYPERBOLIC_ENDPOINT` to target your hosted container.
 
 ### Environment Variables
@@ -305,17 +312,26 @@ print(result)
 Make sure to configure the following environment variables:
 
 - QWEN_VL_MODEL_ID (defaults to `Qwen/Qwen3-VL-235B-A22B-Thinking`)
-- HF_API_KEY
-- HF_INFERENCE_ENDPOINT (optional)
-- OPENROUTER_API_KEY
-- OPENROUTER_REASONING_MAX_TOKENS (optional)
-- OPENROUTER_REASONING_EFFORT (optional)
-- OPENROUTER_REASONING_EXCLUDE (optional)
-- OPENROUTER_APP_NAME / OPENROUTER_SITE_URL (optional metadata headers)
-- HYPERBOLIC_API_KEY
-- HYPERBOLIC_ENDPOINT
-- RUNPOD_API_KEY / TOGETHER_API_KEY / ANYSCALE_API_KEY / REPLICATE_API_KEY (if used)
 
+- HF_API_KEY
+
+- HF_INFERENCE_ENDPOINT (optional)
+
+- OPENROUTER_API_KEY
+
+- OPENROUTER_REASONING_MAX_TOKENS (optional)
+
+- OPENROUTER_REASONING_EFFORT (optional)
+
+- OPENROUTER_REASONING_EXCLUDE (optional)
+
+- OPENROUTER_APP_NAME / OPENROUTER_SITE_URL (optional metadata headers)
+
+- HYPERBOLIC_API_KEY
+
+- HYPERBOLIC_ENDPOINT
+
+- RUNPOD_API_KEY / TOGETHER_API_KEY / ANYSCALE_API_KEY / REPLICATE_API_KEY (if used)
 
 ## E2B Deployment (Self-Hosted Sandbox)
 
@@ -328,35 +344,46 @@ This integration is kept separate from the primary multi-provider connector to m
 To keep the E2B implementation self-contained, it will reside in its own `e2b/` directory:
 
 ```
+
 e2b/
 ├── e2b_connector.py      # Main class for managing the E2B sandbox lifecycle.
+
 ├── main.py               # Example script to demonstrate starting and using the sandbox.
+
 └── sandbox_setup/
     ├── requirements.txt  # Python dependencies to be installed inside the sandbox.
+
     └── setup_model.py    # A script to download and load the model within the sandbox.
+
 ```
 
 ### Setup and Usage Steps
 
 1.  **Install the E2B SDK (optional)**:
+
     ```bash
     pip install e2b
     ```
 
 2.  **Configure E2B API Key**:
+
     Add your E2B API key to your `.env` file:
+
     ```
+
     E2B_API_KEY="your_e2b_api_key"
     ```
 
 3.  **Prepare Sandbox Environment**:
+
     The `e2b/sandbox_setup/` directory contains the necessary files to prepare the sandbox. The `e2b_connector.py` will be responsible for:
-    *   Starting a new sandbox session.
-    *   Uploading the `sandbox_setup` directory.
-    *   Running `pip install -r sandbox_setup/requirements.txt` inside the sandbox.
-    *   Executing the `python sandbox_setup/setup_model.py` script to download and load the Qwen3-VL Thinking model.
+    -   Starting a new sandbox session.
+    -   Uploading the `sandbox_setup` directory.
+    -   Running `pip install -r sandbox_setup/requirements.txt` inside the sandbox.
+    -   Executing the `python sandbox_setup/setup_model.py` script to download and load the Qwen3-VL Thinking model.
 
 4.  **Run Inference**:
+
     Once the sandbox is initialized and the model is loaded, the `e2b_connector.py` will provide a method to send prompts to the model and receive responses. The `e2b/main.py` script will serve as a practical example of this entire workflow.
 
 ## Project Goals
@@ -396,33 +423,41 @@ This section outlines the step-by-step pipeline for integrating Qwen2.5-VL with 
 ### 1. Environment Setup
 
 - Install required client packages (e.g., via pip for Hyperbolic, Hugging Face, etc.).
+
 - Configure environment variables (e.g., HYPERBOLIC_API_KEY, HYPERBOLIC_ENDPOINT, HF_API_KEY).
 
 ### 2. Connection Module Development
 
 - Develop dedicated modules for each provider (e.g., hyperbolic_connection.py, openrouter_integration.py).
+
 - Implement connection tests, detailed error handling, and logging to capture API responses and failures.
 
 ### 3. Testing and Verification
 
 - Write test scripts to verify connectivity and proper API responses (refer to implementation/examples/ for examples).
+
 - Integrate these tests in the CI/CD pipeline to automatically validate deployments.
 
 ### 4. Integration with Qwen2.5-VL Workflow
 
 - Combine provider-specific modules under a unified interface to simplify inference requests.
+
 - Abstract provider details so that switching backends requires minimal code changes.
 
 ### 5. CI/CD and Automated Monitoring
 
 - Embed integration tests into GitHub Actions workflows to trigger on code push and pull requests.
+
 - Monitor API performance and error tracking to ensure seamless inference service.
+
 - Automate documentation updates and PR generation based on test outcomes.
 
 ### 6. Future Enhancements
 
 - Expand support to additional providers as needed (e.g., Together AI, Anyscale, Replicate).
+
 - Optimize performance, security, and cost management across providers.
+
 - Continuously review and update documentation based on integration progress and user feedback.
 
 ## Automated Documentation & Development

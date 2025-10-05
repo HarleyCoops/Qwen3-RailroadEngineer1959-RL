@@ -41,67 +41,90 @@
 - [x] Validation tools
 
 - [x] Provider selection guide
+
 - [x] GitHub Actions workflow
+
 - [x] markdown fixer and fix formatting
+
 - [x] gitignore to exclude data directory
+
 - [x] README with automated documentation details
+
 - [x] GitHub Actions workflow
+
 - [x] Dictionary image path in README
+
 - [x] README with dictionary downloader documentation
+
 - [x] dictionary downloader and update dependencies
+
 - [x] documentation workflow
+
 - [x] documentation workflow and dependency
 
 ## Current Development Focus
 
 ### Current Focus Areas
 
-
 ## Hyperbolic Integration Roadmap
 
 The following steps outline the plan to integrate Qwen3-VL Thinking via Hyperbolic:
 
 1. Environment Setup:
+
    - Install the Hyperbolic client package (e.g., via `pip install hyperbolic`).
    - Configure environment variables: `HYPERBOLIC_API_KEY` and (optionally) `HYPERBOLIC_ENDPOINT`.
 
 2. Develop Connection Module:
+
    - Create a dedicated module to initialise and test connectivity with Hyperbolic.
    - Implement error handling and logging for API calls.
 
 3. Testing and Verification:
+
    - Write test scripts (such as in `implementation/examples/hyperbolic_connection.py`) to list available models.
    - Confirm successful connection and proper error reporting.
 
 4. Integration into Qwen3-VL Thinking Workflow:
+
    - Integrate the connection module with the main application to enable model inference.
    - Update documentation (README.md) with Hyperbolic integration instructions.
 
 5. Future Enhancements:
+
    - Explore performance monitoring and additional API functionalities offered by Hyperbolic.
    - Schedule automated connection tests as part of CI/CD.
 
 ## Upcoming Tasks
 
 ### Identified Tasks
-- Review TODOs in PROGRESS.md
-- Review TODOs in tools/update_progress.py
 
+- Review TODOs in PROGRESS.md
+
+- Review TODOs in tools/update_progress.py
 
 ## Modules Checklist
 
 - [ ] Dakota_Extraction.py (Basic extraction functionality; integration pending)
+
 - [ ] DakotaLatex (Clean preamble and remove duplicate package imports)
+
 - [ ] hyperbolic_chat_connection.py (Review connection handling and error logging)
+
 - [ ] hyperbolic_connection.py (Ensure robust hyperbolic connection stability)
+
 - [ ] hyperbolic_latex_request.py (Integrate with LaTeX conversion tools)
+
 - [ ] openrouter_integration.py (Connect and test OpenRouter API queries)
 
 ## Remaining Tasks
 
 - Update usage documentation for each module
+
 - Provide example outputs and logs
+
 - Validate integration with external data sources
+
 - Create unit tests for core functionalities
 
 ## Learning Objectives
