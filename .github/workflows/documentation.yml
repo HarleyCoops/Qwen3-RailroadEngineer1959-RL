@@ -31,15 +31,13 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.8'
+        python-version: '3.11'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install mkdocs mkdocstrings mkdocs-material
-        if [ -f requirements.txt ]; then
-          pip install -r requirements.txt
-        fi
+        # Only install what we actually need for documentation
+        pip install mkdocs mkdocstrings mkdocs-material PyYAML
 
     - name: Update Progress Tracking
       if: hashFiles('tools/update_progress.py') != ''
