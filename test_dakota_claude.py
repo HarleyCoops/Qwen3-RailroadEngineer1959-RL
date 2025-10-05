@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Test Blackfoot Grammar Extraction with Claude Sonnet 4.5
+Test Dakota Grammar Extraction with Claude Sonnet 4.5
 
-Tests if VLM correctly captures Blackfoot special characters (ć, š, ŋ, ḣ, ṡ)
+Tests if VLM correctly captures Dakota special characters (ć, š, ŋ, ḣ, ṡ)
 from the processed grammar images without needing Tesseract training.
 """
 
@@ -24,14 +24,14 @@ except ImportError:
     print("  pip install anthropic")
     sys.exit(1)
 
-from blackfeet_extraction.core.blackfoot_extraction_prompt import build_blackfoot_extraction_prompt
+from blackfeet_extraction.core.dakota_extraction_prompt import build_dakota_extraction_prompt
 
 
-def test_blackfoot_extraction(image_path: Path):
-    """Test extraction on a Blackfoot grammar page."""
+def test_dakota_extraction(image_path: Path):
+    """Test extraction on a Dakota grammar page."""
 
     print("\n" + "="*80)
-    print(" BLACKFOOT CHARACTER EXTRACTION TEST - CLAUDE SONNET 4.5")
+    print(" DAKOTA CHARACTER EXTRACTION TEST - CLAUDE SONNET 4.5")
     print("="*80)
     print(f"\nImage: {image_path.name}")
     print()
@@ -56,14 +56,14 @@ def test_blackfoot_extraction(image_path: Path):
     image_bytes = image_path.read_bytes()
     encoded = base64.b64encode(image_bytes).decode("utf-8")
 
-    # Build Blackfoot-specific extraction prompt
-    page_context = "This page contains Blackfoot interlinear translations. Focus on preserving special characters: ć, š, ŋ, ḣ, ṡ, ó, á"
-    prompt = build_blackfoot_extraction_prompt(page_context)
+    # Build Dakota-specific extraction prompt
+    page_context = "This page contains Dakota interlinear translations. Focus on preserving special characters: ć, š, ŋ, ḣ, ṡ, ó, á"
+    prompt = build_dakota_extraction_prompt(page_context)
 
     print("\nAnalyzing with Claude Sonnet 4.5...")
     print("  Model: claude-sonnet-4-5-20250929")
     print("  Max tokens: 16000")
-    print("  Focus: Blackfoot character preservation")
+    print("  Focus: Dakota character preservation")
     print()
 
     # Call Claude API
@@ -135,14 +135,14 @@ def test_blackfoot_extraction(image_path: Path):
                         all_special_chars.update(entry['special_characters_found'])
 
             # Save to file first (Unicode safe)
-            output_dir = Path("data/blackfoot_test")
+            output_dir = Path("data/dakota_test")
             output_dir.mkdir(parents=True, exist_ok=True)
 
-            output_path = output_dir / "blackfoot_extraction_test.json"
+            output_path = output_dir / "dakota_extraction_test.json"
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(extracted_data, f, indent=2, ensure_ascii=False)
 
-            response_path = output_dir / "blackfoot_extraction_test_response.txt"
+            response_path = output_dir / "dakota_extraction_test_response.txt"
             with open(response_path, 'w', encoding='utf-8') as f:
                 f.write(response_text)
 
@@ -194,11 +194,11 @@ def test_blackfoot_extraction(image_path: Path):
         print("\n" + "="*80)
         print(" CHARACTER VALIDATION")
         print("="*80)
-        print("\nExpected Blackfoot characters: c-acute, s-caron, eng, o-acute, dotted consonants")
+        print("\nExpected Dakota characters: c-acute, s-caron, eng, o-acute, dotted consonants")
         print("See extracted JSON file for full Unicode preservation")
         print()
         print("  SUCCESS - VLM extraction completed!")
-        print("  Check data/blackfoot_test/blackfoot_extraction_test.json for full results")
+        print("  Check data/dakota_test/dakota_extraction_test.json for full results")
         print()
 
     except Exception as e:
@@ -207,7 +207,7 @@ def test_blackfoot_extraction(image_path: Path):
 
 
 def main():
-    # Test on first Blackfoot grammar page
+    # Test on first Dakota grammar page
     test_image = Path("data/processed_images/grammardictionar00riggrich_0089.jpg")
 
     if not test_image.exists():
@@ -219,7 +219,7 @@ def main():
                 print(f"  {img.name}")
         sys.exit(1)
 
-    test_blackfoot_extraction(test_image)
+    test_dakota_extraction(test_image)
 
 
 if __name__ == "__main__":

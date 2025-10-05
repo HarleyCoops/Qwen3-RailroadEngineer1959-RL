@@ -1,14 +1,14 @@
-# Blackfoot Character Extraction Test Results
+# Dakota Character Extraction Test Results
 
 ## Summary
 
-✅ **SUCCESS**: Vision-Language Model (Claude Sonnet 4.5) successfully extracts Blackfoot special characters without needing Tesseract OCR training.
+✅ **SUCCESS**: Vision-Language Model (Claude Sonnet 4.5) successfully extracts Dakota special characters without needing Tesseract OCR training.
 
 ## Test Details
 
 - **Date**: 2025-10-05
 - **Model**: Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`)
-- **Test Image**: `grammardictionar00riggrich_0089.jpg` (Blackfoot Grammar, page 61)
+- **Test Image**: `grammardictionar00riggrich_0089.jpg` (Dakota Grammar, page 61)
 - **Document**: Chapter IX - Interlinear Translations (Parable of the Prodigal Son)
 
 ## Special Characters Successfully Extracted
@@ -37,7 +37,7 @@ The VLM correctly identified and preserved **8 distinct special character types*
 
 ```json
 {
-  "blackfoot_text": "Wićašta wań éińhińtku nonpa : unkań hakakata kiń he atkuku kiń heéiya :",
+  "dakota_text": "Wićašta wań éińhińtku nonpa : unkań hakakata kiń he atkuku kiń heéiya :",
   "word_glosses": ["Man", "a", "son-his", "two", ":", "and", "youngest", "the", "that", "father-his", "the", "said-to-him", ":"],
   "english_translation": "A man had two sons: and the youngest said to his father:",
   "special_characters_found": ["ć", "š", "ń", "ń"],
@@ -49,7 +49,7 @@ The VLM correctly identified and preserved **8 distinct special character types*
 
 ### 1. No Tesseract Training Required ✅
 
-- All Blackfoot characters are **standard Unicode**
+- All Dakota characters are **standard Unicode**
 - Modern VLMs have seen these characters during pre-training
 - **Prompt engineering alone** is sufficient for recognition
 
@@ -82,20 +82,20 @@ The VLM demonstrated understanding of:
 
 ## Recommended Approach
 
-### For Blackfoot Grammar/Dictionary Extraction:
+### For Dakota Grammar/Dictionary Extraction:
 
 **Use Vision-Language Model with Specialized Prompt** ✅
 
 1. **Tool**: Claude Sonnet 4.5 or Qwen3-VL-235B-Thinking
-2. **Method**: Blackfoot-specific extraction prompt (see `blackfeet_extraction/core/blackfoot_extraction_prompt.py`)
+2. **Method**: Dakota-specific extraction prompt (see `blackfeet_extraction/core/dakota_extraction_prompt.py`)
 3. **Format**: Interlinear translation structure
 4. **Output**: Structured JSON with preserved Unicode
 
 ### Implementation Files Created
 
-- ✅ `blackfeet_extraction/core/blackfoot_extraction_prompt.py` - Specialized prompt for Blackfoot
-- ✅ `test_blackfoot_claude.py` - Test script for character validation
-- ✅ `data/blackfoot_test/blackfoot_extraction_test.json` - Sample extraction results
+- ✅ `blackfeet_extraction/core/dakota_extraction_prompt.py` - Specialized prompt for Dakota
+- ✅ `test_dakota_claude.py` - Test script for character validation
+- ✅ `data/dakota_test/dakota_extraction_test.json` - Sample extraction results
 
 ## Next Steps
 
@@ -106,8 +106,8 @@ The VLM demonstrated understanding of:
    python test_claude_extraction.py --start-page 1 --end-page 80
    ```
 
-2. **Use Blackfoot prompt** instead of Dakota prompt:
-   - Update `claude_page_processor.py` to import `build_blackfoot_extraction_prompt`
+2. **Use Dakota prompt**:
+   - Update `claude_page_processor.py` to import `build_dakota_extraction_prompt`
    - Adjust schema for interlinear format (not dictionary format)
 
 3. **Cost Estimate**:
@@ -116,10 +116,10 @@ The VLM demonstrated understanding of:
 
 ### Character Set Documentation
 
-Update `.env.template` to document Blackfoot characters:
+Update `.env.template` to document Dakota characters:
 
 ```bash
-# Blackfoot Orthography - Special Characters
+# Dakota Orthography - Special Characters
 # These are automatically recognized by VLMs:
 # ć (U+0107) - c-acute
 # š (U+0161) - s-caron
@@ -133,7 +133,7 @@ Update `.env.template` to document Blackfoot characters:
 
 ## Conclusion
 
-✅ **Vision-Language Models successfully extract Blackfoot custom alphabets without OCR training**
+✅ **Vision-Language Models successfully extract Dakota custom alphabets without OCR training**
 
 The original question was: *"Do we need Tesseract for custom letters like ḣ with a dot over it?"*
 
@@ -142,11 +142,11 @@ The original question was: *"Do we need Tesseract for custom letters like ḣ wi
 2. Explicit prompting to preserve diacritics
 3. High reasoning budgets for character accuracy
 
-**Recommendation**: Proceed with VLM-based extraction using the Blackfoot-specific prompt. Avoid Tesseract training complexity entirely.
+**Recommendation**: Proceed with VLM-based extraction using the Dakota-specific prompt. Avoid Tesseract training complexity entirely.
 
 ---
 
 **Test conducted**: 2025-10-05
 **Model**: Claude Sonnet 4.5
 **Result**: All special characters extracted correctly ✅
-**Files**: `data/blackfoot_test/blackfoot_extraction_test.json`
+**Files**: `data/dakota_test/dakota_extraction_test.json`
