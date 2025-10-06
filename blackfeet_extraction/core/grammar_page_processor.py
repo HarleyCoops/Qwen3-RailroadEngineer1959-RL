@@ -302,11 +302,13 @@ class GrammarPageProcessor:
                 with open(output_path, "w", encoding="utf-8") as f:
                     f.write(grammar_page.to_json())
 
-                print(f"✓ Page {page_num}: {len(grammar_page.grammar_rules)} rules, "
-                      f"{len(grammar_page.interlinear_examples)} examples")
+                print(
+                    f"OK Page {page_num}: {len(grammar_page.grammar_rules)} rules, "
+                    f"{len(grammar_page.interlinear_examples)} examples"
+                )
 
             except Exception as e:
-                print(f"✗ Error processing page {page_num}: {e}")
+                print(f"ERROR processing page {page_num}: {e}")
 
         return grammar_pages
 

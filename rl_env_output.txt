@@ -1,0 +1,292 @@
+
+======================================================================
+ DAKOTA GRAMMAR RL ENVIRONMENT
+======================================================================
+Loaded 1036 rules from 6 categories
+Environment initialized with 1036 rules
+Categories: ['conjugation', 'morphology', 'particles', 'phonology', 'syntax', 'translation']
+
+Loaded 1036 grammar rules
+Categories: conjugation, morphology, particles, phonology, syntax, translation
+
+Running 3 demo episodes...
+
+--- Episode 1 ---
+
+Step 1
+  Rule: grammar_p8_r13
+  Category: phonology
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: [Action with Dakota text]
+  Reward: 2.50 (base: 1.00, accuracy: 1.00, difficulty: 1.0x)
+
+Step 2
+  Rule: grammar_p10_r7
+  Category: syntax
+  Challenge: translate
+  Pattern: wa-/ya- + active verb
+  Action: [Action with Dakota text]
+  Reward: 2.75 (base: 1.00, accuracy: 0.50, difficulty: 1.5x)
+
+Step 3
+  Rule: grammar_p14_r3
+  Category: particles
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: [Action with Dakota text]
+  Reward: 4.50 (base: 1.00, accuracy: 1.00, difficulty: 2.0x)
+
+Step 4
+  Rule: interlinear_p56_t11_translation
+  Category: translation
+  Challenge: translate
+  Pattern: he topakiya oyakapi
+  Action: translate: he topakiya oyakapi
+  Reward: 2.75 (base: 1.00, accuracy: 0.50, difficulty: 1.5x)
+
+Step 5
+  Rule: interlinear_p58_t13_translation
+  Category: translation
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: [Action with Dakota text]
+  Reward: 3.00 (base: 1.00, accuracy: 1.00, difficulty: 1.5x)
+
+Step 6
+  Rule: interlinear_p111_t3_translation
+  Category: translation
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: [Action with Dakota text]
+  Reward: 3.00 (base: 1.00, accuracy: 1.00, difficulty: 1.5x)
+
+Step 7
+  Rule: grammar_p55_r4
+  Category: morphology
+  Challenge: translate
+  Pattern: Noun + plural ending
+  Action: translate: ninapepi
+  Reward: 2.75 (base: 1.00, accuracy: 0.50, difficulty: 1.5x)
+
+Step 8
+  Rule: grammar_p5_r3
+  Category: phonology
+  Challenge: identify_pattern
+  Pattern: Accent on second syllable from beginning
+  Action: request_examples
+  Reward: 2.00 (base: 1.00, accuracy: 0.00, difficulty: 2.0x)
+
+Step 9
+  Rule: grammar_p24_r5
+  Category: morphology
+  Challenge: translate
+  Pattern: -pi suffix
+  Action: [Action with Dakota text]
+  Reward: 3.00 (base: 1.00, accuracy: 0.50, difficulty: 2.0x)
+
+Step 10
+  Rule: interlinear_p51_t6_translation
+  Category: translation
+  Challenge: translate
+  Pattern: [Dakota text - encoding issue]
+  Action: request_hint
+  Reward: 2.25 (base: 1.00, accuracy: 0.50, difficulty: 1.5x)
+
+Episode complete!
+  Total steps: 10
+  Total reward: 28.50
+  Average reward: 2.85
+  Rules explored: 10
+  Categories: translation, phonology, particles, morphology, syntax
+
+--- Episode 2 ---
+
+Step 1
+  Rule: grammar_p22_r5
+  Category: conjugation
+  Challenge: apply_rule
+  Pattern: Irregular conjugation pattern for 'hiyu'
+  Action: apply_pattern: Irregular conjugation pattern for 'hiyu'
+  Reward: 2.50 (base: 1.00, accuracy: 1.00, difficulty: 1.0x)
+
+Step 2
+  Rule: interlinear_p33_t2_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: [Dakota text - encoding issue]
+  Action: pattern_is: translation
+  Reward: 3.50 (base: 1.00, accuracy: 1.00, difficulty: 1.5x)
+
+Step 3
+  Rule: grammar_p26_r9
+  Category: conjugation
+  Challenge: identify_pattern
+  Pattern: [Dakota text - encoding issue]
+  Action: request_examples
+  Reward: 2.00 (base: 1.00, accuracy: 0.00, difficulty: 2.0x)
+
+Step 4
+  Rule: interlinear_p49_t8_translation
+  Category: translation
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: skip_rule
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 5
+  Rule: interlinear_p42_t4_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: samwakiya
+  Action: pattern_is: translation
+  Reward: 3.00 (base: 1.00, accuracy: 1.00, difficulty: 1.5x)
+
+Step 6
+  Rule: grammar_p60_r9
+  Category: syntax
+  Challenge: translate
+  Pattern: [Dakota text - encoding issue]
+  Action: [Action with Dakota text]
+  Reward: 3.50 (base: 1.00, accuracy: 0.50, difficulty: 2.0x)
+
+Step 7
+  Rule: grammar_p47_r3
+  Category: morphology
+  Challenge: apply_rule
+  Pattern: Verb + pi (for plural subject/object)
+  Action: skip_rule
+  Reward: 2.00 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 8
+  Rule: grammar_p25_r5
+  Category: morphology
+  Challenge: identify_pattern
+  Pattern: n-/m- + verb
+  Action: request_examples
+  Reward: 2.00 (base: 1.00, accuracy: 0.00, difficulty: 2.0x)
+
+Step 9
+  Rule: grammar_p55_r4
+  Category: morphology
+  Challenge: translate
+  Pattern: Noun + plural ending
+  Action: translate: hena Dakotapi
+  Reward: 2.25 (base: 1.00, accuracy: 0.50, difficulty: 1.5x)
+
+Step 10
+  Rule: interlinear_p59_t25_translation
+  Category: translation
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: request_example
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Episode complete!
+  Total steps: 10
+  Total reward: 23.75
+  Average reward: 2.38
+  Rules explored: 10
+  Categories: morphology, conjugation, translation, syntax
+
+--- Episode 3 ---
+
+Step 1
+  Rule: grammar_p28_r3
+  Category: conjugation
+  Challenge: translate
+  Pattern: [Dakota text - encoding issue]
+  Action: request_hint
+  Reward: 2.00 (base: 1.00, accuracy: 0.50, difficulty: 1.0x)
+
+Step 2
+  Rule: interlinear_p48_t14_translation
+  Category: translation
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: [Action with Dakota text]
+  Reward: 3.50 (base: 1.00, accuracy: 1.00, difficulty: 1.5x)
+
+Step 3
+  Rule: interlinear_p63_t3_translation
+  Category: translation
+  Challenge: apply_rule
+  Pattern: [Dakota text - encoding issue]
+  Action: request_example
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 4
+  Rule: interlinear_p62_t4_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: [Dakota text - encoding issue]
+  Action: request_examples
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 5
+  Rule: interlinear_p32_t2_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: David Sopiya waštedaka
+  Action: request_examples
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 6
+  Rule: interlinear_p49_t7_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: [Dakota text - encoding issue]
+  Action: request_examples
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 7
+  Rule: interlinear_p52_t14_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: [Dakota text - encoding issue]
+  Action: request_examples
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 8
+  Rule: interlinear_p42_t31_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: [Dakota text - encoding issue]
+  Action: request_examples
+  Reward: 1.50 (base: 1.00, accuracy: 0.00, difficulty: 1.5x)
+
+Step 9
+  Rule: interlinear_p56_t10_translation
+  Category: translation
+  Challenge: translate
+  Pattern: [Dakota text - encoding issue]
+  Action: [Action with Dakota text]
+  Reward: 2.25 (base: 1.00, accuracy: 0.50, difficulty: 1.5x)
+
+Step 10
+  Rule: interlinear_p45_t7_translation
+  Category: translation
+  Challenge: identify_pattern
+  Pattern: [Dakota text - encoding issue]
+  Action: pattern_is: translation
+  Reward: 3.00 (base: 1.00, accuracy: 1.00, difficulty: 1.5x)
+
+Episode complete!
+  Total steps: 10
+  Total reward: 19.75
+  Average reward: 1.98
+  Rules explored: 10
+  Categories: conjugation, translation
+
+======================================================================
+ ENVIRONMENT READY
+======================================================================
+
+Configuration saved: data\rl_environment\environment_config.json
+
+Next steps:
+  1. Implement verification functions for each rule type
+  2. Create training curriculum (easy -> hard)
+  3. Connect to PrimeIntellect verifier system
+  4. Train RL agent on Dakota grammar
+

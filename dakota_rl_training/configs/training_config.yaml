@@ -41,7 +41,7 @@ environments:
     type: "MultiTurnEnv"
     class: "DakotaGrammarEnv"
     max_turns: 3
-    dataset: "../data/grammar_test/rl_tasks_page_061.jsonl"
+    dataset: "datasets/grammar_tasks_complete.jsonl"  # Updated: 5,657 tasks from images 31-92
     rubric: "DakotaGrammarRubric"
     reward_method: "composite_reward"
 
@@ -49,7 +49,7 @@ environments:
   - name: "dakota_morphology_simple"
     type: "SingleTurnEnv"
     class: "DakotaMorphologyEnv"
-    dataset: "../data/grammar_test/rl_tasks_page_061.jsonl"
+    dataset: "datasets/grammar_tasks_complete.jsonl"  # Updated: 5,657 tasks from images 31-92
     rubric: "DakotaGrammarRubric"
     reward_method: "binary_reward"
     filter_task_type: "morphology"  # Only morphology tasks
@@ -82,21 +82,24 @@ rewards:
 # Curriculum learning
 curriculum:
   enabled: true
-  strategy: "progressive"  # Start basic, increase difficulty
+  strategy: "progressive"  # Start easy, increase difficulty
   stages:
-    - name: "basic_morphology"
-      difficulty: "basic"
-      min_accuracy: 0.8  # Must reach 80% before advancing
+    - name: "easy_tasks"
+      dataset: "datasets/grammar_tasks_easy.jsonl"  # 1,998 easy tasks
+      difficulty: "easy"
+      min_accuracy: 0.80  # Must reach 80% before advancing
       max_epochs: 1
 
-    - name: "intermediate_morphology"
-      difficulty: "intermediate"
+    - name: "medium_tasks"
+      dataset: "datasets/grammar_tasks_medium.jsonl"  # 2,155 medium tasks
+      difficulty: "medium"
       min_accuracy: 0.75
       max_epochs: 1
 
-    - name: "advanced_all"
-      difficulty: "advanced"
-      min_accuracy: 0.7
+    - name: "hard_tasks"
+      dataset: "datasets/grammar_tasks_hard.jsonl"  # 398 hard tasks
+      difficulty: "hard"
+      min_accuracy: 0.70
       max_epochs: 1
 
 # Verification (PrimeIntellect TOPLOC)

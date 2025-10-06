@@ -1,0 +1,163 @@
+[
+  {
+    "prompt": "Translate this Dakota sentence to English:\n\na",
+    "answer": "has the sound of English a in father",
+    "info": {
+      "task_type": "word_translation",
+      "rule_id": "grammar_p1_r1",
+      "rule_type": "phonology",
+      "dakota_text": "a",
+      "special_chars": [],
+      "difficulty": "easy",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Translate this Dakota sentence to English:\n\ne",
+    "answer": "has the sound of English e in they, or of a in face",
+    "info": {
+      "task_type": "word_translation",
+      "rule_id": "grammar_p1_r1",
+      "rule_type": "phonology",
+      "dakota_text": "e",
+      "special_chars": [],
+      "difficulty": "easy",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Translate this Dakota sentence to English:\n\ni",
+    "answer": "has the sound of i in marine, or of e in me",
+    "info": {
+      "task_type": "word_translation",
+      "rule_id": "grammar_p1_r1",
+      "rule_type": "phonology",
+      "dakota_text": "i",
+      "special_chars": [],
+      "difficulty": "easy",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Translate this Dakota sentence to English:\n\no",
+    "answer": "has the sound of English o in go, note",
+    "info": {
+      "task_type": "word_translation",
+      "rule_id": "grammar_p1_r1",
+      "rule_type": "phonology",
+      "dakota_text": "o",
+      "special_chars": [],
+      "difficulty": "easy",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Translate this Dakota sentence to English:\n\nu",
+    "answer": "has the sound of English u in rule, or of oo in food",
+    "info": {
+      "task_type": "word_translation",
+      "rule_id": "grammar_p1_r1",
+      "rule_type": "phonology",
+      "dakota_text": "u",
+      "special_chars": [],
+      "difficulty": "easy",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nDakota has five vowels, each with one uniform sound, except when followed by the nasal 'ŋ' which somewhat modifies them\n\nExamples:\n  - a\n  - e\n",
+    "answer": "a, e, i, o, u",
+    "info": {
+      "task_type": "identify_pattern",
+      "rule_id": "grammar_p1_r1",
+      "rule_type": "phonology",
+      "pattern": "a, e, i, o, u",
+      "difficulty": "easy",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nDakota has twenty-four consonants, exclusive of the sound represented by the apostrophe (')\n\n",
+    "answer": "b, ć, ċ, d, g, ġ, h, ḣ, k",
+    "info": {
+      "task_type": "identify_pattern",
+      "rule_id": "grammar_p1_r2",
+      "rule_type": "phonology",
+      "pattern": "b, ć, ċ, d, g, ġ, h, ḣ, k",
+      "difficulty": "hard",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nThe letter b has its common English sound\n\n",
+    "answer": "b",
+    "info": {
+      "task_type": "identify_pattern",
+      "rule_id": "grammar_p1_r3",
+      "rule_type": "phonology",
+      "pattern": "b",
+      "difficulty": "hard",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Translate this Dakota sentence to English:\n\nć",
+    "answer": "as in chin",
+    "info": {
+      "task_type": "word_translation",
+      "rule_id": "grammar_p1_r4",
+      "rule_type": "phonology",
+      "dakota_text": "ć",
+      "special_chars": [
+        "ć"
+      ],
+      "difficulty": "hard",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  },
+  {
+    "prompt": "Translate this English sentence to Dakota:\n\nas in chin\n\nNote: formerly written as c",
+    "answer": "ć",
+    "info": {
+      "task_type": "reverse_translation",
+      "rule_id": "grammar_p1_r4",
+      "rule_type": "phonology",
+      "english_text": "as in chin",
+      "special_chars": [
+        "ć"
+      ],
+      "difficulty": "advanced",
+      "source_pages": [
+        31
+      ],
+      "confidence": 1.0
+    }
+  }
+]
