@@ -1,0 +1,42 @@
+# Dakota RL Orchestrator Configuration
+# Coordinates training and inference servers
+
+[orchestrator]
+# Orchestrator settings
+host = "0.0.0.0"
+port = 9000
+max_workers = 4
+
+[trainer]
+# Trainer endpoint
+host = "localhost"
+port = 8001
+timeout = 300
+
+[inference]
+# Inference server endpoint
+host = "localhost"
+port = 8000
+timeout = 120
+
+[environment]
+# Environment configuration
+env_name = "DakotaGrammarEnv"
+max_concurrent_envs = 32
+task_timeout = 60
+
+[rollout]
+# Rollout collection settings
+batch_size = 16
+num_rollouts_per_update = 64
+max_rollout_length = 512
+
+[verification]
+# TOPLOC verification
+enabled = true
+checkpoint_frequency = 100
+verify_worker_outputs = true
+
+[logging]
+log_level = "info"
+log_interval = 10

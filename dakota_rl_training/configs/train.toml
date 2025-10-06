@@ -1,0 +1,148 @@
+# Dakota Grammar RL Training Configuration
+# For use with PrimeIntellect prime-rl framework
+
+[model]
+name_or_path = "Qwen/Qwen2.5-7B-Instruct"
+revision = "main"
+torch_dtype = "auto"
+
+[model.lora]
+enabled = true
+r = 64
+lora_alpha = 128
+lora_dropout = 0.05
+target_modules = ["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
+[training]
+# RL algorithm configuration
+algorithm = "grpo"  # Group Relative Policy Optimization
+num_epochs = 3
+per_device_train_batch_size = 4
+gradient_accumulation_steps = 4
+learning_rate = 5.0e-6
+warmup_steps = 100
+max_grad_norm = 1.0
+
+# RL-specific parameters
+ppo_epochs = 4
+gamma = 0.99
+gae_lambda = 0.95
+clip_range = 0.2
+vf_coef = 0.5
+ent_coef = 0.01
+
+# Optimization
+optimizer = "adamw"
+lr_scheduler_type = "cosine"
+weight_decay = 0.01
+
+[dataset]
+# Training data paths
+train_file = "datasets/grammar_tasks_easy.jsonl"  # Start with easy curriculum
+validation_file = "datasets/grammar_tasks_easy.jsonl"
+
+# Splits
+train_split = 0.8
+val_split = 0.2
+shuffle = true
+seed = 42
+
+# Filtering
+min_confidence = 0.7  # Only high-confidence extractions
+
+[curriculum]
+enabled = true
+strategy = "progressive"
+
+[[curriculum.stages]]
+name = "easy_tasks"
+dataset = "datasets/grammar_tasks_easy.jsonl"
+difficulty = "easy"
+min_accuracy = 0.80
+max_epochs = 1
+
+[[curriculum.stages]]
+name = "medium_tasks"
+dataset = "datasets/grammar_tasks_medium.jsonl"
+difficulty = "medium"
+min_accuracy = 0.75
+max_epochs = 1
+
+[[curriculum.stages]]
+name = "hard_tasks"
+dataset = "datasets/grammar_tasks_hard.jsonl"
+difficulty = "hard"
+min_accuracy = 0.70
+max_epochs = 1
+
+[environment]
+# Dakota Grammar Environment configuration
+env_name = "DakotaGrammarEnv"
+max_turns = 3
+task_timeout = 60
+
+# Reward weights for different task types
+[environment.rewards.morphology]
+character_preservation = 0.4
+affix_accuracy = 0.4
+semantic_correctness = 0.2
+
+[environment.rewards.translation]
+character_preservation = 0.3
+semantic_correctness = 0.7
+
+[environment.rewards.reverse_translation]
+character_preservation = 0.5
+semantic_correctness = 0.5
+
+[environment.special_chars]
+# Dakota special characters that MUST be preserved
+required_chars = ["ć", "š", "ŋ", "ḣ", "ṡ", "á", "é", "í", "ó", "ú", "ķ", "ś", "ṅ", "ź", "ė", "č", "ž", "ʼ"]
+char_corruption_penalty = -0.5
+rare_char_bonus = 0.1
+rare_chars = ["ʼ", "ź", "ė", "ḣ", "ṡ"]
+
+[verifier]
+# TOPLOC verification for distributed training
+use_toploc = true
+checkpoint_frequency = 100
+rollout_verification = true
+
+[logging]
+# Weights & Biases configuration
+wandb_project = "dakota-rl-grammar"
+wandb_entity = null  # Set to your username
+log_interval = 10
+eval_interval = 100
+
+# Metrics to track
+metrics = [
+    "reward/mean",
+    "reward/std",
+    "char_accuracy",
+    "affix_accuracy",
+    "semantic_accuracy",
+    "char_accuracy_by_char",
+    "affix_accuracy_by_affix"
+]
+
+[checkpointing]
+output_dir = "./checkpoints"
+save_steps = 500
+save_total_limit = 3
+save_optimizer_states = true
+resume_from_checkpoint = null
+
+[inference]
+# Generation parameters
+temperature = 0.7
+top_p = 0.9
+max_new_tokens = 128
+do_sample = true
+
+[distributed]
+# Distributed training configuration
+enabled = false  # Set true for multi-GPU/multi-node
+backend = "nccl"
+num_workers = 1
+fsdp_enabled = false
