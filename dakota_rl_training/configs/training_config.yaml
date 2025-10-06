@@ -1,0 +1,167 @@
+# Dakota Grammar RL Training Configuration
+# For use with PrimeIntellect prime-rl framework
+
+model:
+  base: "Qwen/Qwen2.5-7B-Instruct"  # Base model for fine-tuning
+  lora_rank: 64
+  lora_alpha: 128
+  lora_dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "v_proj"
+    - "k_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+training:
+  framework: "prime-rl"
+  algorithm: "GRPO"  # Group Relative Policy Optimization
+  num_epochs: 3
+  batch_size: 16
+  mini_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 5.0e-6
+  warmup_steps: 100
+  max_grad_norm: 1.0
+
+  # RL-specific
+  ppo_epochs: 4
+  gamma: 0.99  # Discount factor
+  gae_lambda: 0.95  # Generalized Advantage Estimation
+  clip_range: 0.2  # PPO clipping
+  vf_coef: 0.5  # Value function coefficient
+  ent_coef: 0.01  # Entropy bonus
+
+# Environments configuration
+environments:
+  # Multi-turn environment for complex tasks
+  - name: "dakota_grammar_multiturn"
+    type: "MultiTurnEnv"
+    class: "DakotaGrammarEnv"
+    max_turns: 3
+    dataset: "../data/grammar_test/rl_tasks_page_061.jsonl"
+    rubric: "DakotaGrammarRubric"
+    reward_method: "composite_reward"
+
+  # Single-turn environment for simple morphology
+  - name: "dakota_morphology_simple"
+    type: "SingleTurnEnv"
+    class: "DakotaMorphologyEnv"
+    dataset: "../data/grammar_test/rl_tasks_page_061.jsonl"
+    rubric: "DakotaGrammarRubric"
+    reward_method: "binary_reward"
+    filter_task_type: "morphology"  # Only morphology tasks
+
+# Reward function weights
+rewards:
+  # For morphology tasks
+  morphology:
+    character_preservation: 0.4
+    affix_accuracy: 0.4
+    semantic_correctness: 0.2
+
+  # For translation tasks
+  translation:
+    character_preservation: 0.3
+    semantic_correctness: 0.7
+
+  # For reverse translation (English → Dakota)
+  reverse_translation:
+    character_preservation: 0.5
+    semantic_correctness: 0.5
+
+  # Difficulty multipliers
+  difficulty_weights:
+    basic: 1.0
+    intermediate: 1.2
+    advanced: 1.5
+    expert: 2.0
+
+# Curriculum learning
+curriculum:
+  enabled: true
+  strategy: "progressive"  # Start basic, increase difficulty
+  stages:
+    - name: "basic_morphology"
+      difficulty: "basic"
+      min_accuracy: 0.8  # Must reach 80% before advancing
+      max_epochs: 1
+
+    - name: "intermediate_morphology"
+      difficulty: "intermediate"
+      min_accuracy: 0.75
+      max_epochs: 1
+
+    - name: "advanced_all"
+      difficulty: "advanced"
+      min_accuracy: 0.7
+      max_epochs: 1
+
+# Verification (PrimeIntellect TOPLOC)
+verifier:
+  use_toploc: true  # Verifiable inference for distributed training
+  checkpoint_frequency: 100
+  rollout_verification: true  # Verify rollouts from untrusted workers
+
+# Dataset configuration
+dataset:
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  shuffle: true
+  seed: 42
+
+  # Task filtering
+  min_confidence: 0.7  # Only use high-confidence extractions
+  balance_by_difficulty: true  # Equal representation of difficulties
+
+# Logging and checkpointing
+logging:
+  wandb_project: "dakota-rl-grammar"
+  wandb_entity: null  # Set to your wandb username
+  log_interval: 10
+  eval_interval: 100
+  save_interval: 500
+
+  # Metrics to track
+  metrics:
+    - "reward/mean"
+    - "reward/std"
+    - "char_accuracy"
+    - "affix_accuracy"
+    - "semantic_accuracy"
+    - "char_accuracy_by_char"  # Per-character tracking
+    - "affix_accuracy_by_affix"  # Per-affix tracking
+
+checkpointing:
+  save_dir: "./checkpoints"
+  keep_last_n: 3
+  save_optimizer_state: true
+
+# Distributed training (PrimeIntellect)
+distributed:
+  enabled: false  # Set true for distributed training
+  backend: "prime-rl"
+  num_workers: 4
+  worker_timeout: 300  # seconds
+
+# Inference settings
+inference:
+  temperature: 0.7
+  top_p: 0.9
+  max_new_tokens: 128
+  do_sample: true
+
+# Special character handling
+special_chars:
+  # Dakota special characters that MUST be preserved
+  required_chars: ["ć", "š", "ŋ", "ḣ", "ṡ", "á", "é", "í", "ó", "ú", "ķ", "ś", "ṅ", "ź", "ė", "č", "ž", "ʼ"]
+
+  # Penalize character corruption heavily
+  char_corruption_penalty: -0.5
+
+  # Reward rare character usage
+  rare_char_bonus: 0.1
+  rare_chars: ["ʼ", "ź", "ė", "ḣ", "ṡ"]  # Less common in data
