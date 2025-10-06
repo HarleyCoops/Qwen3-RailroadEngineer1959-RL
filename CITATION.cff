@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: "Dakota Language Preservation via VLM Extraction and RL Training"
+message: "If you use this software or methodology, please cite as below."
+type: software
+authors:
+  - family-names: "Cooper"
+    given-names: "Harley"
+year: 2025
+repository-code: "https://github.com/HarleyCoops/Dakota1890"
+license: Apache-2.0
+keywords: [Dakota, low-resource, VLM, OCR, grammar, RL, PrimeIntellect]

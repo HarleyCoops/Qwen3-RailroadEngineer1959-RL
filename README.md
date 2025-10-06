@@ -1,5 +1,9 @@
 # Dakota Language Preservation Through Vision-Language Models
 
+![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
+![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)
+![Works Offline](https://img.shields.io/badge/smoke%20tests-offline-brightgreen)
+
 ![Dakota Dictionary Sample](Public/Dictionary.jpeg)
 
 ---
@@ -492,9 +496,9 @@ pip install openai  # For OpenRouter/Qwen3-VL
 
 ### 1. Setup
 ```bash
-git clone <repository>
+git clone https://github.com/HarleyCoops/Dakota1890.git
 cd Dakota1890
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 # Add API keys to .env
 echo "ANTHROPIC_API_KEY=your_key_here" > .env
@@ -556,7 +560,7 @@ If you use this work, please cite:
 
 ## License
 
-[Specify license - consider Indigenous data sovereignty principles]
+Code is licensed under **Apache-2.0** (see `LICENSE`). The included historical Dakota text (Riggs, 1890) is in the **public domain**; see `DATA_LICENSE.md` for details and scope.
 
 ---
 
