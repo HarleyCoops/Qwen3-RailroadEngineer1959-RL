@@ -1,5 +1,18 @@
 # Dakota Dictionary Extraction - Quick Start
 
+## 1) Clone & install
+```bash
+git clone https://github.com/HarleyCoops/Dakota1890.git
+cd Dakota1890
+python -m pip install -r requirements.txt
+```
+
+> **Tip:** To run the offline smoke tests (no paid APIs), use:
+> ```bash
+> python -m pip install pytest ruff
+> OFFLINE=1 pytest -q
+> ```
+
 ## 🎯 Important: Dictionary Starts at Page 89
 
 **Pages 1-88**: Grammar rules and linguistic notes
