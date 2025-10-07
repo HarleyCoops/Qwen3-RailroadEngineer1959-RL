@@ -72,14 +72,16 @@ python blackfeet_extraction/datasets/training_dataset_builder.py
 #   - vocabulary.json (word-level mappings)
 ```
 
-### Testing Different Providers
+### Testing and Evaluation
 
 ```bash
-# Test OpenRouter/Qwen3-VL
-python implementation/examples/openrouter_integration.py
+# Run offline smoke tests (no API calls)
+OFFLINE=1 pytest -q
 
-# Test inference connector
-python test_inference.py
+# Run evaluation on extraction quality
+python eval/run_eval.py --pred eval/fixtures/sample_predictions.jsonl \
+    --truth eval/fixtures/sample_ground_truth.jsonl \
+    --out eval/report.md
 ```
 
 ## Architecture
@@ -101,9 +103,17 @@ python test_inference.py
   - `extract_dakota_dictionary.py`: Original extraction script
   - `test_dakota_extraction.py`: Various test scripts
 
-- **`implementation/`**: Multi-provider VLM integration
-  - `inference_connector.py`: Unified interface supporting OpenRouter, HuggingFace, Hyperbolic
-  - `examples/openrouter_integration.py`: Qwen3VLClient with reasoning budget controls
+- **`dakota_rl_training/`**: Reinforcement Learning training pipeline
+  - `verifiers/grammar_env.py`: Multi-turn & single-turn RL environments
+  - `verifiers/rubrics.py`: Compositional reward functions for Dakota grammar
+  - `configs/training_config.yaml`: GRPO training configuration
+  - `datasets/`: Generated RL training tasks (5,657 tasks from 1,036 grammar rules)
+  - `train.py`: Launch script for local or distributed training
+
+- **`eval/`**: Extraction quality evaluation framework
+  - `score_extraction.py`: Token accuracy, character distance, diacritic preservation metrics
+  - `run_eval.py`: CLI wrapper for reproducible evaluation with commit tracking
+  - `fixtures/`: Sample ground truth and predictions for testing
 
 - **`data/`**: Extraction outputs (created during extraction)
   - `processed_images/`: Converted JPEG files from JP2 source
@@ -112,9 +122,17 @@ python test_inference.py
   - `training_datasets/`: Fine-tuning ready datasets
   - `reasoning_traces/`: VLM reasoning process (when using thinking budget)
 
-- **`dictionary/grammardictionar00riggrich_jp2/`**: Source images (440 JP2 files)
+- **`Dictionary/grammardictionar00riggrich_jp2/`**: Source images (440 JP2 files)
   - Pages 1-88: Grammar rules and linguistic analysis
   - Pages 89-440: Dictionary entries (extraction target)
+
+- **Root-level pipeline scripts**:
+  - `convert_all_images.py`: JP2 → JPEG batch conversion
+  - `extract_grammar_pages.py`: Grammar extraction (pages 1-88)
+  - `organize_grammar_for_rl.py`: Grammar rules → RL task format
+  - `convert_rules_to_primeintellect.py`: Generate 5,657 RL training tasks
+  - `create_grammar_rl_environment.py`: Setup RL environment with curriculum learning
+  - `run_complete_grammar_pipeline.py`: End-to-end grammar extraction + RL setup
 
 ### Key Components
 
@@ -155,6 +173,20 @@ Converts extracted JSON to fine-tuning formats:
 - `build_instruction_dataset()`: Instruction-following format (for LLaMA, Qwen, etc.)
 - `build_vocabulary_corpus()`: Word-level mappings
 - `generate_statistics()`: Quality metrics and coverage analysis
+
+**5. RL Training Components (`dakota_rl_training/`)**
+
+Reinforcement Learning training system built on PrimeIntellect:
+
+- **DakotaGrammarEnv**: Multi-turn environment with progressive feedback (up to 3 turns)
+- **DakotaMorphologyEnv**: Single-turn environment for fast verification
+- **DakotaGrammarRubric**: Compositional reward functions:
+  - Character preservation (40%): Verifies ć, š, ŋ, ḣ preservation
+  - Affix accuracy (40%): Checks morphological correctness (-ku, ta-, etc.)
+  - Semantic accuracy (20%): Translation quality via word overlap
+  - Difficulty multiplier: 1.0x (easy) to 2.0x (hard)
+- **Training config**: GRPO algorithm, Qwen2.5-7B-Instruct base, LoRA rank 64
+- **Curriculum**: 3-stage progression (easy → medium → hard) with 5,657 total tasks
 
 ## Dakota Language Orthography
 
@@ -277,6 +309,39 @@ python -c "import json; data = json.load(open('data/dakota_test/dakota_extractio
 - Verify special character preservation
 - Filter by confidence thresholds
 
+## Complete Grammar → RL Pipeline
+
+**End-to-end workflow for grammar-based RL training**:
+
+```bash
+# 1. Convert images (one-time setup)
+python convert_all_images.py
+
+# 2. Extract grammar rules from pages 1-88
+python extract_grammar_pages.py --pages 1-88 --yes
+# Output: 1,036 grammar rules in data/grammar_extracted/
+
+# 3. Organize rules for RL training
+python organize_grammar_for_rl.py --input data/grammar_extracted/
+# Output: Categorized rules in data/rl_training_rules/
+
+# 4. Generate RL training tasks
+python convert_rules_to_primeintellect.py
+# Output: 5,657 tasks in dakota_rl_training/datasets/
+
+# 5. Launch RL training
+cd dakota_rl_training
+python train.py --config configs/training_config.yaml
+
+# OR for distributed training via PrimeIntellect:
+prime-rl train --config configs/training_config.yaml --num-workers 4 --use-toploc
+```
+
+**Complete pipeline in one command**:
+```bash
+python run_complete_grammar_pipeline.py
+```
+
 ## Quick Reference: Extraction Code Patterns
 
 **Claude Sonnet 4.5 Extraction (Recommended)**:
@@ -313,21 +378,21 @@ response = client.messages.create(
 extracted_data = json.loads(response.content[0].text)
 ```
 
-**Qwen3-VL with Reasoning Budget (Alternative)**:
+**Testing Extraction Quality**:
 
 ```python
-from implementation.examples.openrouter_integration import Qwen3VLClient
+# Run evaluation on extracted data
+from eval.score_extraction import compute_metrics
 
-client = Qwen3VLClient(os.getenv("OPENROUTER_API_KEY"))
+# Load ground truth and predictions
+ground_truth = load_jsonl("eval/fixtures/sample_ground_truth.jsonl")
+predictions = load_jsonl("data/extracted/page_089_predictions.jsonl")
 
-# Extract with extended reasoning
-response = client.analyze_image(
-    Path("page_089.jpg"),
-    build_dakota_extraction_prompt(),
-    thinking_budget=6000  # Higher budget for better character accuracy
-)
-
-print(f"Reasoning tokens used: {response['reasoning_tokens']}")
+# Compute metrics
+metrics = compute_metrics(predictions, ground_truth)
+print(f"Token accuracy: {metrics['token_accuracy']:.2%}")
+print(f"Character distance: {metrics['char_distance']:.3f}")
+print(f"Diacritic preservation: {metrics['diacritic_preservation']:.2%}")
 ```
 
 **Creating Fine-Tuning Dataset**:
@@ -355,11 +420,63 @@ translation_pair = entry.to_translation_pair()
 instruction_format = entry.to_instruction_format()
 ```
 
+## RL Training: Testing Verifiers Locally
+
+**Test environment before full training**:
+
+```python
+# Test Dakota grammar environment
+cd dakota_rl_training
+python -c "
+from verifiers.grammar_env import DakotaGrammarEnv
+from verifiers.rubrics import DakotaGrammarRubric
+import asyncio
+
+async def test():
+    env = DakotaGrammarEnv(max_turns=3)
+    rubric = DakotaGrammarRubric()
+
+    task = {
+        'prompt': 'Apply possessive suffix to suŋka (younger brother)',
+        'answer': 'Dawid suŋkaku',
+        'info': {'task_type': 'morphology', 'difficulty': 'intermediate',
+                 'special_chars': ['ŋ'], 'required_affixes': ['-ku']}
+    }
+
+    messages = [
+        {'role': 'user', 'content': task['prompt']},
+        {'role': 'assistant', 'content': 'Dawid suŋkaku'}
+    ]
+
+    feedback, state = await env.env_response(messages, {}, **task)
+    reward = rubric.composite_reward('Dawid suŋkaku', task['answer'], task['info'])
+
+    print(f'Feedback: {feedback[0][\"content\"]}')
+    print(f'Reward: {reward:.2f}')
+
+asyncio.run(test())
+"
+```
+
+## Testing and CI
+
+```bash
+# Run offline smoke tests (no API calls required)
+OFFLINE=1 pytest -q
+
+# Runs test_offline_eval.py only
+# Skips all tests with API keywords: claude, anthropic, openrouter, etc.
+```
+
+**CI configuration**: `.github/workflows/ci.yml` runs offline tests on every push
+
 ## Additional Resources
 
 - Quick start: `START_HERE.md` or `QUICK_START_DAKOTA.md`
+- Grammar RL pipeline: `GRAMMAR_RL_PIPELINE.md`
+- Dakota RL training: `dakota_rl_training/README.md`
 - Extraction results: `DAKOTA_EXTRACTION_RESULTS.md`
+- Evaluation guide: `EVALUATION.md`
 - Progress tracking: `PROGRESS.md`
-- Historical context: `README.md` (sections on Stephen R. Riggs)
-- Complete guide: `blackfeet_extraction/COMPLETE_GUIDE.md`
+- Historical context: `README.md` (Novel methodology section)
 - Style guidance: Do not use emoji or emoticons in responses or documentation edits
