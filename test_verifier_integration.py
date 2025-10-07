@@ -15,7 +15,7 @@ from pathlib import Path
 # Add dakota_rl_training to path
 sys.path.insert(0, str(Path(__file__).parent / "dakota_rl_training"))
 
-from verifiers.grammar_env import DakotaGrammarEnv, DakotaMorphologyEnv
+from verifiers.grammar_env import DakotaGrammarEnv
 from verifiers.rubrics import DakotaGrammarRubric
 
 
@@ -87,7 +87,7 @@ async def test_multiturn_env():
     is_complete = await env.is_completed(messages, state, **task)
     feedback_msgs, new_state = await env.env_response(messages, state, **task)
 
-    print(f"\n✓ Correct Answer Test:")
+    print("\n✓ Correct Answer Test:")
     print(f"  Complete: {is_complete}")
     print(f"  Special chars correct: {new_state.get('special_chars_correct', False)}")
     print(f"  Affixes correct: {new_state.get('affixes_correct', False)}")
@@ -103,7 +103,7 @@ async def test_multiturn_env():
 
     feedback_wrong, new_state_wrong = await env.env_response(messages_wrong, state_wrong, **task)
 
-    print(f"\n✓ Wrong Answer Test:")
+    print("\n✓ Wrong Answer Test:")
     print(f"  Feedback: {feedback_wrong[0]['content']}")
 
     return True
@@ -169,7 +169,7 @@ async def test_translation_task():
             if task['info']['task_type'] == 'word_translation':
                 break
 
-    print(f"\nTranslation Task:")
+    print("\nTranslation Task:")
     print(f"Dakota: {task['info'].get('dakota_text', 'N/A')}")
     print(f"English: {task['answer']}")
     print(f"Special chars: {task['info'].get('special_chars', [])}")
@@ -182,7 +182,7 @@ async def test_translation_task():
 
     feedback, new_state = await env.env_response(messages, state, **task)
 
-    print(f"\n✓ Translation Test:")
+    print("\n✓ Translation Test:")
     print(f"  Semantic correct: {new_state.get('semantic_correct', False)}")
     print(f"  Feedback: {feedback[0]['content']}")
 

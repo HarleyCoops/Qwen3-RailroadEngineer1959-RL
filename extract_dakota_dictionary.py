@@ -65,7 +65,7 @@ def check_setup():
     try:
         from PIL import Image
         test_file = next(dict_dir.glob("*.jp2"))
-        with Image.open(test_file) as img:
+        with Image.open(test_file):
             pass
         print("  ✓ PIL can read JP2 files")
     except Exception as e:
@@ -119,10 +119,10 @@ def test_extraction():
     print("\n" + "="*70)
     print(" TEST COMPLETE")
     print("="*70)
-    print(f"\nReview outputs:")
-    print(f"  - Extraction: data/extracted/page_001.json")
-    print(f"  - Reasoning: data/reasoning_traces/page_001_reasoning.json")
-    print(f"\nIf results look good, run:")
+    print("\nReview outputs:")
+    print("  - Extraction: data/extracted/page_001.json")
+    print("  - Reasoning: data/reasoning_traces/page_001_reasoning.json")
+    print("\nIf results look good, run:")
     print(f"  python {sys.argv[0]} --pages 1-10")
     print()
 
@@ -163,7 +163,7 @@ def process_range(start: int, end: int):
             continue
 
         try:
-            extraction = processor.extract_page(
+            processor.extract_page(
                 image_path=image_path,
                 page_number=page_num,
                 thinking_budget=6000,
@@ -187,11 +187,11 @@ def process_range(start: int, end: int):
     print("="*70)
     print(f"\nPages processed: {start}-{end}")
     print(f"Total entries: {stats.get('total_entries', 0)}")
-    print(f"\nDatasets ready for training:")
-    print(f"  - Translation pairs: data/training_datasets/translation_*.jsonl")
-    print(f"  - Instruction dataset: data/training_datasets/instruction_dataset.jsonl")
-    print(f"  - Vocabulary: data/training_datasets/vocabulary.json")
-    print(f"  - Text corpus: data/training_datasets/blackfeet_corpus.txt")
+    print("\nDatasets ready for training:")
+    print("  - Translation pairs: data/training_datasets/translation_*.jsonl")
+    print("  - Instruction dataset: data/training_datasets/instruction_dataset.jsonl")
+    print("  - Vocabulary: data/training_datasets/vocabulary.json")
+    print("  - Text corpus: data/training_datasets/blackfeet_corpus.txt")
     print()
 
 

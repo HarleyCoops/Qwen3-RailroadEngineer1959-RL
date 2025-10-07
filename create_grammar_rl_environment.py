@@ -15,7 +15,7 @@ The environment:
 import json
 import random
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
@@ -389,14 +389,14 @@ def main():
             try:
                 print(f"  Pattern: {state.context['dakota_pattern']}")
             except UnicodeEncodeError:
-                print(f"  Pattern: [Dakota text - encoding issue]")
+                print("  Pattern: [Dakota text - encoding issue]")
 
             # Random action for demo
             action = random.choice(state.available_actions)
             try:
                 print(f"  Action: {action}")
             except UnicodeEncodeError:
-                print(f"  Action: [Action with Dakota text]")
+                print("  Action: [Action with Dakota text]")
 
             state, reward, done, info = env.step(action)
             print(f"  Reward: {reward.total:.2f} (base: {reward.base_reward:.2f}, "
@@ -406,7 +406,7 @@ def main():
             steps += 1
 
         stats = env.get_statistics()
-        print(f"\nEpisode complete!")
+        print("\nEpisode complete!")
         print(f"  Total steps: {stats['episode_length']}")
         print(f"  Total reward: {stats['total_reward']:.2f}")
         print(f"  Average reward: {stats['average_reward']:.2f}")

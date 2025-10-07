@@ -8,7 +8,7 @@ extraction prompt for maximum precision.
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 from datetime import datetime
 import sys
 
@@ -75,7 +75,7 @@ class AdvancedPageProcessor:
         prompt = build_extraction_prompt(page_context)
 
         print(f"Analyzing with thinking budget: {thinking_budget} tokens...")
-        print(f"Using Dakota dictionary specialized prompt...")
+        print("Using Dakota dictionary specialized prompt...")
 
         # Call Qwen3-VL with high thinking budget for accuracy
         response = self.client.analyze_image(

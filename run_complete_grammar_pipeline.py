@@ -9,7 +9,6 @@ Runs all three phases:
 
 import subprocess
 import sys
-from pathlib import Path
 
 
 def run_command(command, description):
@@ -29,7 +28,7 @@ def run_command(command, description):
         print(f"\nERROR: {description} failed with code {result.returncode}")
         sys.exit(1)
 
-    print(f"\n✓ {description} complete")
+    print(f"\n[OK] {description} complete")
 
 
 def main():
@@ -93,16 +92,16 @@ def main():
     print(" PIPELINE COMPLETE!")
     print("="*70)
 
-    print("\n📁 Output locations:")
-    print(f"  Grammar extraction: data/grammar_extracted/")
-    print(f"  RL training rules:  data/rl_training_rules/")
-    print(f"  RL environment:     data/rl_environment/")
+    print("\nOutput locations:")
+    print("  Grammar extraction: data/grammar_extracted/")
+    print("  RL training rules:  data/rl_training_rules/")
+    print("  RL environment:     data/rl_environment/")
 
-    print("\n📊 Review outputs:")
+    print("\nReview outputs:")
     print("  cat data/rl_training_rules/rl_rules_summary.txt")
     print("  cat data/rl_environment/environment_config.json")
 
-    print("\n🚀 Next steps:")
+    print("\nNext steps:")
     print("  1. Review extracted rules and environment config")
     print("  2. Connect to PrimeIntellect verifier system")
     print("  3. Train RL agent on Dakota grammar")

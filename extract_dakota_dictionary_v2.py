@@ -72,7 +72,7 @@ def check_setup():
     try:
         from PIL import Image
         test_file = next(dict_dir.glob("*.jp2"))
-        with Image.open(test_file) as img:
+        with Image.open(test_file):
             pass
         print("  ✓ PIL can read JP2 files")
     except Exception as e:
@@ -142,10 +142,10 @@ def test_extraction():
     print("\n" + "="*70)
     print(" TEST COMPLETE")
     print("="*70)
-    print(f"\n📁 Review outputs:")
+    print("\n📁 Review outputs:")
     print(f"  - Extraction: data/extracted/page_{DICTIONARY_START_PAGE:03d}.json")
     print(f"  - Reasoning: data/reasoning_traces/page_{DICTIONARY_START_PAGE:03d}_reasoning.json")
-    print(f"\n✅ If results look good, process more pages:")
+    print("\n✅ If results look good, process more pages:")
     print(f"  python {sys.argv[0]} --pages {DICTIONARY_START_PAGE}-{DICTIONARY_START_PAGE+11}  # 12 pages")
     print(f"  python {sys.argv[0]} --pages {DICTIONARY_START_PAGE}-150  # More pages")
     print()
@@ -200,7 +200,7 @@ def process_range(start: int, end: int):
 
         try:
             print(f"\n{'─'*70}")
-            extraction = processor.extract_page(
+            processor.extract_page(
                 image_path=image_path,
                 page_number=page_num,
                 thinking_budget=6000,
@@ -225,15 +225,15 @@ def process_range(start: int, end: int):
     print("\n" + "="*70)
     print(" EXTRACTION COMPLETE")
     print("="*70)
-    print(f"\n📊 Statistics:")
+    print("\n📊 Statistics:")
     print(f"  Pages processed: {start}-{end} ({end-start+1} pages)")
     print(f"  Total entries: {stats.get('total_entries', 0)}")
     print(f"  Avg entries/page: {stats.get('avg_entries_per_page', 0):.1f}")
-    print(f"\n📁 Datasets created:")
-    print(f"  - Translation: data/training_datasets/translation_*.jsonl")
-    print(f"  - Instructions: data/training_datasets/instruction_dataset.jsonl")
-    print(f"  - Vocabulary: data/training_datasets/vocabulary.json")
-    print(f"  - Corpus: data/training_datasets/blackfeet_corpus.txt")
+    print("\n📁 Datasets created:")
+    print("  - Translation: data/training_datasets/translation_*.jsonl")
+    print("  - Instructions: data/training_datasets/instruction_dataset.jsonl")
+    print("  - Vocabulary: data/training_datasets/vocabulary.json")
+    print("  - Corpus: data/training_datasets/blackfeet_corpus.txt")
     print()
 
 

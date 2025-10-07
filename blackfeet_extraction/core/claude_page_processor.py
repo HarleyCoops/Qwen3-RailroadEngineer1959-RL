@@ -8,7 +8,7 @@ Same sophisticated extraction prompt and reasoning capabilities.
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 from datetime import datetime
 import base64
 
@@ -90,8 +90,8 @@ class ClaudePageProcessor:
         # Build specialized prompt
         prompt = build_extraction_prompt(page_context)
 
-        print(f"Analyzing with Claude Sonnet 4.5...")
-        print(f"Using Dakota dictionary specialized prompt...")
+        print("Analyzing with Claude Sonnet 4.5...")
+        print("Using Dakota dictionary specialized prompt...")
 
         # Call Claude API
         try:

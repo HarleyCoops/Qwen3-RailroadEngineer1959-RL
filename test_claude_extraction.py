@@ -6,28 +6,26 @@ This uses Anthropic's API directly - more reliable than OpenRouter.
 Processes 20 consecutive dictionary pages (109-128).
 """
 
+import importlib.util
 import os
 import sys
-from pathlib import Path
-from dotenv import load_dotenv
 import time
+from pathlib import Path
+
+from dotenv import load_dotenv
+from blackfeet_extraction.tools.image_converter import ImageConverter
+from blackfeet_extraction.core.claude_page_processor import ClaudePageProcessor
+from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 
 # Load environment
 load_dotenv()
 
 # Check for anthropic package
-try:
-    import anthropic
-except ImportError:
+if importlib.util.find_spec("anthropic") is None:
     print("ERROR: anthropic package not installed")
     print("\nInstall with:")
     print("  pip install anthropic")
     sys.exit(1)
-
-# Import our processors
-from blackfeet_extraction.tools.image_converter import ImageConverter
-from blackfeet_extraction.core.claude_page_processor import ClaudePageProcessor
-from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 
 
 def process_pages(start_page: int = 89, end_page: int = 108):
@@ -48,7 +46,7 @@ def process_pages(start_page: int = 89, end_page: int = 108):
         print("\nGet your key from: https://console.anthropic.com/")
         return False
 
-    print(f"\nOK API key found")
+    print("\nOK API key found")
 
     # Estimate cost
     estimated_cost = num_pages * 0.05
@@ -147,13 +145,10 @@ def process_pages(start_page: int = 89, end_page: int = 108):
         )
 
         builder.build_all_datasets()
-        stats = builder.generate_statistics()
-
-        print(f"\nOK Datasets created")
+        print("\nOK Datasets created")
 
     except Exception as e:
         print(f"WARNING: Dataset building skipped: {e}")
-        stats = {"total_pages": successful, "total_entries": total_entries}
 
     # Summary
     print("\n" + "="*70)
@@ -164,16 +159,16 @@ def process_pages(start_page: int = 89, end_page: int = 108):
     print(f"Total entries: {total_entries}")
     print(f"Average entries/page: {total_entries/successful if successful > 0 else 0:.1f}")
 
-    print(f"\nOutput files:")
-    print(f"  - Extractions: data/extracted/page_*.json")
-    print(f"  - Responses: data/reasoning_traces/page_*_claude_response.txt")
-    print(f"  - Datasets: data/training_datasets/")
+    print("\nOutput files:")
+    print("  - Extractions: data/extracted/page_*.json")
+    print("  - Responses: data/reasoning_traces/page_*_claude_response.txt")
+    print("  - Datasets: data/training_datasets/")
 
-    print(f"\nNext steps:")
-    print(f"  1. Review data/extracted/ for quality")
-    print(f"  2. Check sample entries in page_089.json")
-    print(f"  3. Process more pages if quality is good")
-    print(f"  4. Use datasets in data/training_datasets/ for model training")
+    print("\nNext steps:")
+    print("  1. Review data/extracted/ for quality")
+    print("  2. Check sample entries in page_089.json")
+    print("  3. Process more pages if quality is good")
+    print("  4. Use datasets in data/training_datasets/ for model training")
 
     return successful > 0
 

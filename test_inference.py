@@ -5,13 +5,12 @@ This script tests both text and image analysis capabilities.
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
+from implementation.examples.openrouter_integration import Qwen3VLClient
 
 # Load environment variables
 load_dotenv()
-
-# Import the client
-from implementation.examples.openrouter_integration import Qwen3VLClient
 
 def test_text_inference():
     """Test basic text reasoning."""

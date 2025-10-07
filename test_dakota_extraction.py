@@ -43,7 +43,7 @@ def test_blackfoot_extraction(image_path: Path, thinking_budget: int = 6000):
     client = Qwen3VLClient(api_key)
 
     # Build extraction prompt
-    page_context = f"This is page from Blackfoot Grammar and Dictionary. Focus on preserving special characters: ć, š, ŋ, ḣ, ṡ, ó, á"
+    page_context = "This is page from Blackfoot Grammar and Dictionary. Focus on preserving special characters: ć, š, ŋ, ḣ, ṡ, ó, á"
     prompt = build_blackfoot_extraction_prompt(page_context)
 
     print("🔍 Analyzing image with Qwen3-VL Thinking model...")
@@ -128,7 +128,7 @@ def test_blackfoot_extraction(image_path: Path, thinking_budget: int = 6000):
         print(f"\n\n💾 Full extraction saved to: {output_path}")
 
     except json.JSONDecodeError as e:
-        print(f"⚠️  Warning: Could not parse as JSON")
+        print("⚠️  Warning: Could not parse as JSON")
         print(f"Error: {e}")
         print("\nRaw response:")
         print("-" * 80)

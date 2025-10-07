@@ -6,9 +6,8 @@ It ensures all required sections are present and properly formatted.
 """
 
 import re
-import yaml
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 class ModelCardValidator:
     """Validates model cards against the template structure."""

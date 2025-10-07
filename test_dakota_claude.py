@@ -6,11 +6,15 @@ Tests if VLM correctly captures Dakota special characters (ć, š, ŋ, ḣ, ṡ)
 from the processed grammar images without needing Tesseract training.
 """
 
+import base64
+import json
 import os
 import sys
-import json
 from pathlib import Path
+
 from dotenv import load_dotenv
+
+from blackfeet_extraction.core.dakota_extraction_prompt import build_dakota_extraction_prompt
 
 # Load environment
 load_dotenv()
@@ -23,8 +27,6 @@ except ImportError:
     print("\nInstall with:")
     print("  pip install anthropic")
     sys.exit(1)
-
-from blackfeet_extraction.core.dakota_extraction_prompt import build_dakota_extraction_prompt
 
 
 def test_dakota_extraction(image_path: Path):
@@ -52,7 +54,6 @@ def test_dakota_extraction(image_path: Path):
 
     # Read and encode image
     print(f"\nReading image: {image_path}")
-    import base64
     image_bytes = image_path.read_bytes()
     encoded = base64.b64encode(image_bytes).decode("utf-8")
 
@@ -98,7 +99,7 @@ def test_dakota_extraction(image_path: Path):
             if block.type == "text":
                 response_text += block.text
 
-        print(f"OK Response received")
+        print("OK Response received")
         print(f"  Input tokens: {response.usage.input_tokens}")
         print(f"  Output tokens: {response.usage.output_tokens}")
 
@@ -162,7 +163,7 @@ def test_dakota_extraction(image_path: Path):
                     print(f"\nEntry {i}:")
                     # Use ASCII replacement for console
                     blackfoot = entry.get('blackfoot_text', 'N/A')
-                    print(f"  Blackfoot text extracted (see JSON for full Unicode)")
+                    print("  Blackfoot text extracted (see JSON for full Unicode)")
                     print(f"  Length: {len(blackfoot)} chars")
 
                     print(f"  English:   {entry.get('english_translation', 'N/A')}")
@@ -185,7 +186,7 @@ def test_dakota_extraction(image_path: Path):
             print(f"OK Full response saved to: {response_path}")
 
         except json.JSONDecodeError as e:
-            print(f"\nWARNING: Could not parse as JSON")
+            print("\nWARNING: Could not parse as JSON")
             print(f"Error: {e}")
             print("\nRaw response (first 1000 chars):")
             print("-" * 80)

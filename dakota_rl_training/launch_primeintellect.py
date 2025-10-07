@@ -102,7 +102,7 @@ class PrimeIntellectTrainer:
                 result = response.json()
                 job_id = result.get('job_id')
 
-                print(f"\n[SUCCESS] Training job created!")
+                print("\n[SUCCESS] Training job created!")
                 print(f"Job ID: {job_id}")
                 print(f"Status: {result.get('status', 'pending')}")
 
@@ -111,7 +111,7 @@ class PrimeIntellectTrainer:
 
                 return job_id
             else:
-                print(f"\n[ERROR] Failed to create training job")
+                print("\n[ERROR] Failed to create training job")
                 print(f"Status: {response.status_code}")
                 print(f"Response: {response.text}")
                 return None
@@ -139,7 +139,7 @@ class PrimeIntellectTrainer:
 
                 if 'metrics' in status:
                     metrics = status['metrics']
-                    print(f"\nCurrent Metrics:")
+                    print("\nCurrent Metrics:")
                     print(f"  Reward: {metrics.get('reward/mean', 0):.3f}")
                     print(f"  Char Accuracy: {metrics.get('char_accuracy', 0):.2%}")
                     print(f"  Affix Accuracy: {metrics.get('affix_accuracy', 0):.2%}")

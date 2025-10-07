@@ -7,17 +7,17 @@ Processes pages 109-128 automatically without confirmation prompts.
 
 import os
 import sys
-from pathlib import Path
-from dotenv import load_dotenv
 import time
+from pathlib import Path
 
-# Load environment
-load_dotenv()
+from dotenv import load_dotenv
 
-# Import our processors
 from blackfeet_extraction.tools.image_converter import ImageConverter
 from blackfeet_extraction.core.claude_page_processor import ClaudePageProcessor
 from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
+
+# Load environment
+load_dotenv()
 
 
 def main():
@@ -39,14 +39,14 @@ def main():
         print("  ANTHROPIC_API_KEY=your_key_here")
         return False
 
-    print(f"\nOK API key found")
+    print("\nOK API key found")
 
     # Show estimates
     estimated_cost = num_pages * 0.05
     estimated_time = num_pages * 45  # seconds per page
     print(f"\nEstimated cost: ${estimated_cost:.2f}")
     print(f"Estimated time: {estimated_time/60:.1f} minutes")
-    print(f"\nStarting in 3 seconds...")
+    print("\nStarting in 3 seconds...")
     time.sleep(3)
 
     # Step 1: Convert all pages
@@ -148,10 +148,10 @@ def main():
     print(f"Total time: {total_time/60:.1f} minutes")
     print(f"Average: {total_time/successful if successful > 0 else 0:.1f} seconds/page")
 
-    print(f"\nOutput:")
-    print(f"  - data/extracted/page_*.json")
-    print(f"  - data/reasoning_traces/page_*_claude_response.txt")
-    print(f"  - data/training_datasets/")
+    print("\nOutput:")
+    print("  - data/extracted/page_*.json")
+    print("  - data/reasoning_traces/page_*_claude_response.txt")
+    print("  - data/training_datasets/")
 
     return successful > 0
 

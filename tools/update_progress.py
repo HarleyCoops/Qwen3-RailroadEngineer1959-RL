@@ -8,10 +8,9 @@ This script automatically updates the PROGRESS.md file based on:
 """
 
 import re
-from datetime import datetime
 from pathlib import Path
 import subprocess
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 class ProgressUpdater:
     def __init__(self, progress_file: str = "PROGRESS.md"):

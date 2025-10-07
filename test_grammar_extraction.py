@@ -60,12 +60,12 @@ def test_grammar_extraction():
             )
             image_path = jpeg_path
         else:
-            print(f"ERROR: Could not find source image")
+            print("ERROR: Could not find source image")
             return
 
     print(f"\nProcessing page {test_page}...")
     print(f"Image: {image_path}")
-    print(f"Context: Chapter IX - Interlinear Translations")
+    print("Context: Chapter IX - Interlinear Translations")
     print()
 
     # Process page
@@ -114,7 +114,7 @@ def test_grammar_extraction():
             if not is_valid:
                 print(f"  ⚠ Validation Issues: {issues}")
             else:
-                print(f"  ✓ Valid")
+                print("  ✓ Valid")
 
             # Show first transformation
             if rule.transformations:

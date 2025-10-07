@@ -13,7 +13,7 @@ RL Rule Format:
 
 import json
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict
 from dataclasses import dataclass, asdict
 from collections import defaultdict
 
@@ -363,11 +363,11 @@ def main():
             f.write(f"  Description: {rule_set.description}\n")
 
             # List first 5 rules
-            f.write(f"  Sample rules:\n")
+            f.write("  Sample rules:\n")
             for rule in rule_set.rules[:5]:
                 f.write(f"    - {rule.rule_name[:60]}\n")
 
-        f.write(f"\n\nNext Steps:\n")
+        f.write("\n\nNext Steps:\n")
         f.write("-"*70 + "\n")
         f.write("1. Review rules in data/rl_training_rules/rules_*.json\n")
         f.write("2. Generate negative examples for each rule\n")

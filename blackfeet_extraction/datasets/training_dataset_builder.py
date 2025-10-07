@@ -2,9 +2,8 @@
 Simple dataset builder - creates training data from extractions.
 """
 
-import json
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, Any
 
 
 class TrainingDatasetBuilder:
@@ -17,7 +16,7 @@ class TrainingDatasetBuilder:
 
     def build_all_datasets(self):
         """Placeholder - builds datasets."""
-        print(f"Dataset builder initialized")
+        print("Dataset builder initialized")
         print(f"  Extraction dir: {self.extraction_dir}")
         print(f"  Output dir: {self.output_dir}")
 

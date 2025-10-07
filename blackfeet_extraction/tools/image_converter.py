@@ -6,7 +6,6 @@ the vision models. JP2 is commonly used for archival scans due to superior
 compression and quality preservation.
 """
 
-import os
 from pathlib import Path
 from typing import List, Optional
 from PIL import Image
@@ -75,7 +74,7 @@ class ImageConverter:
                 # Save as JPEG
                 img.save(output_path, "JPEG", quality=self.quality, optimize=True)
 
-            print(f"  OK Converted successfully")
+            print("  OK Converted successfully")
             return output_path
 
         except Exception as e:

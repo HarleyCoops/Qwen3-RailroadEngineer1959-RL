@@ -113,7 +113,7 @@ def main():
 
         if jp2_files:
             print(f"Found {len(jp2_files)} JP2 files to convert...")
-            converted = converter.convert_all_jp2_files()
+            converter.convert_all_jp2_files()
             image_dir = Path(args.processed)
         elif jpg_files:
             print(f"Found {len(jpg_files)} JPEG files (no conversion needed)")
@@ -177,7 +177,7 @@ def main():
     print("="*70)
     print(f"\n✓ Extracted data:     {args.extracted}/")
     print(f"✓ Training datasets:  {args.datasets}/")
-    print(f"✓ Reasoning traces:   data/reasoning_traces/")
+    print("✓ Reasoning traces:   data/reasoning_traces/")
     print("\nNext steps:")
     print("  1. Review extracted data in", args.extracted)
     print("  2. Check reasoning traces for quality assurance")

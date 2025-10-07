@@ -25,7 +25,7 @@ def main():
 
     print(f"\nFound {total_files} JP2 files in {jp2_dir}")
     print(f"Output directory: {output_dir}")
-    print(f"\nThis will convert all images to JPEG format.")
+    print("\nThis will convert all images to JPEG format.")
     print("Already converted images will be skipped.\n")
 
     # Create converter

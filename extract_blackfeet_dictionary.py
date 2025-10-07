@@ -72,7 +72,7 @@ def check_environment():
     try:
         from PIL import Image
         # Test opening a JP2 file
-        with Image.open(jp2_files[0]) as img:
+        with Image.open(jp2_files[0]):
             pass
         print("  ✓ Pillow can read JP2 files")
     except Exception as e:
@@ -189,10 +189,10 @@ def process_pages(start: int, end: int):
     print("="*70)
     print(f"\nProcessed pages: {start}-{end}")
     print(f"Total entries: {stats.get('total_entries', 0)}")
-    print(f"\nOutput locations:")
-    print(f"  - Extracted data: data/extracted/")
-    print(f"  - Training datasets: data/training_datasets/")
-    print(f"  - Reasoning traces: data/reasoning_traces/")
+    print("\nOutput locations:")
+    print("  - Extracted data: data/extracted/")
+    print("  - Training datasets: data/training_datasets/")
+    print("  - Reasoning traces: data/reasoning_traces/")
 
 
 def build_datasets_only():

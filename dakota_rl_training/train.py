@@ -58,7 +58,7 @@ def main():
             print(f"[OK] Dataset found: {dataset}")
         else:
             print(f"[ERROR] Dataset not found: {dataset}")
-            print(f"  Please run: python convert_rules_to_primeintellect.py")
+            print("  Please run: python convert_rules_to_primeintellect.py")
             return
 
     print("\n" + "="*70)
@@ -95,9 +95,9 @@ def main():
     print("\n" + "="*70)
     print(" READY TO TRAIN")
     print("="*70)
-    print(f"\nDataset: 5,657 tasks from 1,036 grammar rules")
-    print(f"Curriculum: Easy (1,998) -> Medium (2,155) -> Hard (398)")
-    print(f"Expected time: 8-12 hours on distributed workers")
+    print("\nDataset: 5,657 tasks from 1,036 grammar rules")
+    print("Curriculum: Easy (1,998) -> Medium (2,155) -> Hard (398)")
+    print("Expected time: 8-12 hours on distributed workers")
     print()
 
 

@@ -4,21 +4,17 @@ Dakota Grammar Extraction Pipeline
 Extracts grammar rules from pages 1-88 for RL training
 """
 
-import os
-import sys
-import json
-from pathlib import Path
-from dotenv import load_dotenv
-import anthropic
 import base64
+import json
+import os
+from pathlib import Path
+
+import anthropic
+from dotenv import load_dotenv
+from blackfeet_extraction.tools.image_converter import ImageConverter
 
 # Load environment
 load_dotenv()
-
-# Add project root to path
-sys.path.insert(0, str(Path(__file__).parent))
-
-from blackfeet_extraction.tools.image_converter import ImageConverter
 
 
 def build_grammar_extraction_prompt():
@@ -123,7 +119,7 @@ def extract_grammar_page_with_claude(image_path: Path, page_number: int) -> dict
     # Build prompt
     prompt = build_grammar_extraction_prompt()
 
-    print(f"  Sending to Claude Sonnet 4.5...")
+    print("  Sending to Claude Sonnet 4.5...")
 
     # Extract with Claude
     response = client.messages.create(
@@ -264,7 +260,7 @@ def main():
         image_path = processed_dir / f"grammardictionar00riggrich_{page_num:04d}.jpg"
 
         if not image_path.exists():
-            print(f"  WARNING: Image not found, skipping")
+            print("  WARNING: Image not found, skipping")
             continue
 
         try:

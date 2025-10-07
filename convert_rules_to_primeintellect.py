@@ -182,7 +182,7 @@ def create_pattern_identification_task(rule: Dict) -> Optional[Dict]:
     if not rule.get('dakota_pattern'):
         return None
 
-    prompt = f"Identify the grammatical pattern in this Dakota rule:\n\n"
+    prompt = "Identify the grammatical pattern in this Dakota rule:\n\n"
     prompt += f"{rule['rule_description']}\n\n"
 
     # Show examples if available
@@ -311,12 +311,12 @@ def main():
             difficulty_stats[difficulty] = difficulty_stats.get(difficulty, 0) + 1
 
     print(f"\nGenerated {len(all_tasks)} training tasks")
-    print(f"\nBy task type:")
+    print("\nBy task type:")
     for task_type, count in sorted(stats.items()):
         if count > 0:
             print(f"  {task_type:25s}: {count:4d} tasks")
 
-    print(f"\nBy difficulty:")
+    print("\nBy difficulty:")
     for difficulty, count in sorted(difficulty_stats.items()):
         print(f"  {difficulty:10s}: {count:4d} tasks")
 
