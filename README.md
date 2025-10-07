@@ -532,6 +532,69 @@ python train.py --config configs/training_config.yaml
 
 ---
 
+## Immediate Fixes
+
+### Assessment
+
+The repository contains several critical issues that prevent the pipeline from running as documented:
+
+1. **Import Dependencies Broken**
+   - `AdvancedPageProcessor` imports `implementation.examples.openrouter_integration.Qwen3VLClient` ([blackfeet_extraction/core/advanced_page_processor.py:18](blackfeet_extraction/core/advanced_page_processor.py#L18))
+   - This module does not exist in the repository
+   - All extraction/inference scripts fail on import ([test_inference.py:10](test_inference.py#L10))
+   - **Impact**: Core extraction pipeline cannot run
+
+2. **Invalid Extracted Data**
+   - Dictionary extraction files contain stray Markdown code fences
+   - Example: [data/extracted/page_116.json:1387](data/extracted/page_116.json#L1387) ends with "```"
+   - Files are invalid JSON and cannot be loaded by standard parsers
+   - **Impact**: Extracted data is not consumable by downstream tools
+
+3. **Incomplete RL Rule Corpus**
+   - Hundreds of rule entries contain `[TO BE GENERATED: ...]` placeholders
+   - Missing: negative examples, constraints, verification patterns
+   - Example: [data/rl_training_rules/rules_morphology.json:43](data/rl_training_rules/rules_morphology.json#L43) and throughout corpus
+   - **Impact**: RL training dataset is not production-ready
+
+4. **Toy Training Tasks**
+   - Generated tasks are trivial prompts: "Translate this Dakota sentence… a → has the sound of English a in father"
+   - Does not match claimed grammar challenge complexity
+   - Example: [dakota_rl_training/datasets/sample_tasks.json:3](dakota_rl_training/datasets/sample_tasks.json#L3)
+   - Difficulty tags like "advanced" are not handled by training code
+   - **Impact**: Training tasks do not deliver promised curriculum
+
+5. **No Actual Training Implementation**
+   - [dakota_rl_training/train.py:68-80](dakota_rl_training/train.py#L68-L80) only prints instructions
+   - Does not construct environment or call trainer
+   - Script tells user to manually run PrimeIntellect
+   - Environment logic uses "simplified" placeholder rewards ([create_grammar_rl_environment.py:227-247](create_grammar_rl_environment.py#L227-L247))
+   - **Impact**: No automated RL training; system is not closed-loop
+
+**Summary**: The implementation is primarily documentation with non-functional stubs. The advertised VLM→RL closed-loop system cannot run without significant development work.
+
+### Next Steps
+
+**Priority 1: Make Extraction Runnable**
+1. Remove or implement missing `Qwen3VLClient` dependency
+2. Fix JSON output to remove Markdown artifacts
+3. Verify `test_dakota_claude.py` runs end-to-end without errors
+
+**Priority 2: Complete RL Training Data**
+1. Replace `[TO BE GENERATED]` placeholders with actual data
+2. Generate real negative examples for grammar rules
+3. Create validation tasks that match curriculum difficulty claims
+4. Verify compositional reward functions match task requirements
+
+**Priority 3: Implement Training Bridge**
+1. Build actual PrimeIntellect integration (not just print statements)
+2. Implement environment that loads and verifies against real rules
+3. Add training loop that monitors progress and saves checkpoints
+4. Create reproducible training script with config validation
+
+**Status Tracking**: See [PROGRESS.md](PROGRESS.md) for implementation updates
+
+---
+
 ## Citation
 
 If you use this work, please cite:
