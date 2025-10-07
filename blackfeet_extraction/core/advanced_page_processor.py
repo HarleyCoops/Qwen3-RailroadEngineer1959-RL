@@ -15,7 +15,14 @@ import sys
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from implementation.examples.openrouter_integration import Qwen3VLClient
+try:
+    import anthropic
+except ImportError:
+    print("ERROR: anthropic package not installed")
+    print("Install with: pip install anthropic")
+    raise
+
+import base64
 from blackfeet_extraction.schemas.dictionary_schema import (
     DictionaryEntry,
     validate_entry,
@@ -32,13 +39,15 @@ class AdvancedPageProcessor:
         api_key: Optional[str] = None,
         output_dir: str = "data/extracted",
         reasoning_dir: str = "data/reasoning_traces",
+        model: str = "claude-sonnet-4-5-20250929",
     ):
         """Initialize processor."""
-        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
+        self.api_key = api_key or os.getenv("ANTHROPIC_API_KEY")
         if not self.api_key:
-            raise ValueError("OPENROUTER_API_KEY must be set")
+            raise ValueError("ANTHROPIC_API_KEY must be set")
 
-        self.client = Qwen3VLClient(self.api_key)
+        self.client = anthropic.Anthropic(api_key=self.api_key)
+        self.model = model
         self.output_dir = Path(output_dir)
         self.reasoning_dir = Path(reasoning_dir)
 
@@ -49,7 +58,7 @@ class AdvancedPageProcessor:
         self,
         image_path: Path,
         page_number: int,
-        thinking_budget: int = 6000,  # Higher for complex extraction
+        max_tokens: int = 16000,  # Max output tokens for Claude
         page_context: str = "",
     ) -> Dict[str, Any]:
         """
@@ -58,7 +67,7 @@ class AdvancedPageProcessor:
         Args:
             image_path: Path to page image
             page_number: Page number
-            thinking_budget: Reasoning tokens (higher = more careful)
+            max_tokens: Maximum output tokens
             page_context: Optional context about this page
 
         Returns:
@@ -74,21 +83,46 @@ class AdvancedPageProcessor:
         # Build specialized prompt
         prompt = build_extraction_prompt(page_context)
 
-        print(f"Analyzing with thinking budget: {thinking_budget} tokens...")
+        print(f"Analyzing with Claude Sonnet 4.5...")
         print("Using Dakota dictionary specialized prompt...")
 
-        # Call Qwen3-VL with high thinking budget for accuracy
-        response = self.client.analyze_image(
-            image_path,
-            prompt,
-            thinking_budget=thinking_budget,
-            temperature=0.2,  # Low for consistency
-            max_tokens=16000,  # Allow for many entries
+        # Encode image
+        image_data = self._encode_image(image_path)
+
+        # Call Claude API
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=max_tokens,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": image_data["media_type"],
+                                "data": image_data["data"],
+                            },
+                        },
+                        {
+                            "type": "text",
+                            "text": prompt,
+                        },
+                    ],
+                }
+            ],
         )
+
+        # Extract text response
+        response_text = ""
+        for block in response.content:
+            if block.type == "text":
+                response_text += block.text
 
         # Parse response
         extraction = self._parse_response(
-            response["text"],
+            response_text,
             page_number,
             image_path.name,
         )
@@ -98,27 +132,23 @@ class AdvancedPageProcessor:
             "page_number": page_number,
             "image_path": str(image_path),
             "processed_at": datetime.now().isoformat(),
-            "reasoning_tokens": response.get("reasoning_tokens"),
-            "total_tokens": response.get("usage", {}).get("total_tokens"),
-            "thinking_budget": thinking_budget,
+            "model": self.model,
+            "input_tokens": response.usage.input_tokens,
+            "output_tokens": response.usage.output_tokens,
         }
 
         # Validate entries
         self._validate_extraction(extraction)
 
-        # Save reasoning trace
-        if response.get("reasoning"):
-            self._save_reasoning_trace(
-                page_number,
-                response["reasoning"],
-                extraction,
-            )
+        # Save response
+        self._save_response(page_number, response_text, extraction)
 
         # Save extraction
         self._save_extraction(page_number, extraction)
 
         print(f"✓ Extracted {len(extraction.get('entries', []))} entries")
-        print(f"✓ Reasoning tokens: {response.get('reasoning_tokens', 'N/A')}")
+        print(f"✓ Input tokens: {response.usage.input_tokens}")
+        print(f"✓ Output tokens: {response.usage.output_tokens}")
 
         return extraction
 
@@ -225,24 +255,39 @@ class AdvancedPageProcessor:
             json.dump(extraction, f, indent=2, ensure_ascii=False)
         print(f"✓ Saved to: {output_path}")
 
-    def _save_reasoning_trace(
+    def _encode_image(self, image_path: Path) -> Dict[str, str]:
+        """Encode image to base64 for Claude API."""
+        image_bytes = image_path.read_bytes()
+        encoded = base64.b64encode(image_bytes).decode("utf-8")
+
+        # Determine media type from extension
+        ext = image_path.suffix.lower()
+        media_types = {
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".png": "image/png",
+            ".webp": "image/webp",
+        }
+        media_type = media_types.get(ext, "image/jpeg")
+
+        return {
+            "data": encoded,
+            "media_type": media_type,
+        }
+
+    def _save_response(
         self,
         page_number: int,
-        reasoning: str,
+        response_text: str,
         extraction: Dict[str, Any],
     ) -> None:
-        """Save reasoning trace."""
-        trace_path = self.reasoning_dir / f"page_{page_number:03d}_reasoning.json"
-        trace = {
-            "page_number": page_number,
-            "timestamp": datetime.now().isoformat(),
-            "reasoning": reasoning,
-            "num_entries": len(extraction.get("entries", [])),
-            "page_metadata": extraction.get("page_metadata", {}),
-        }
-        with open(trace_path, "w", encoding="utf-8") as f:
-            json.dump(trace, f, indent=2, ensure_ascii=False)
-        print(f"✓ Saved reasoning to: {trace_path}")
+        """Save Claude's full response."""
+        response_path = self.reasoning_dir / f"page_{page_number:03d}_claude_response.txt"
+        with open(response_path, "w", encoding="utf-8") as f:
+            f.write(f"Page {page_number} - Claude Sonnet 4.5 Response\n")
+            f.write(f"{'='*70}\n\n")
+            f.write(response_text)
+        print(f"✓ Saved response to: {response_path}")
 
     def display_sample_entries(self, extraction: Dict[str, Any], num: int = 3) -> None:
         """Display sample entries for review."""
@@ -298,7 +343,7 @@ def main():
     extraction = processor.extract_page(
         image_path=first_image,
         page_number=1,
-        thinking_budget=6000,
+        max_tokens=16000,
         page_context="First page of dictionary, may contain title/header material",
     )
 
