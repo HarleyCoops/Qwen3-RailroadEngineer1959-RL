@@ -1,7 +1,7 @@
 """
-Test Blackfoot Character Extraction
+Test Dakota Character Extraction
 
-This script tests whether the VLM correctly captures Blackfoot special characters
+This script tests whether the VLM correctly captures Dakota special characters
 like ć, š, ŋ, ḣ, ṡ from historical grammar/dictionary images.
 """
 
@@ -9,60 +9,93 @@ import os
 import sys
 from pathlib import Path
 import json
+import base64
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from implementation.examples.openrouter_integration import Qwen3VLClient
-from blackfeet_extraction.core.blackfoot_extraction_prompt import build_blackfoot_extraction_prompt
+try:
+    import anthropic
+except ImportError:
+    print("ERROR: anthropic package not installed")
+    print("Install with: pip install anthropic")
+    sys.exit(1)
+
+from blackfeet_extraction.core.dakota_extraction_prompt import build_dakota_extraction_prompt
 
 
-def test_blackfoot_extraction(image_path: Path, thinking_budget: int = 6000):
+def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
     """
-    Test extraction on a Blackfoot grammar page.
+    Test extraction on a Dakota grammar page using Claude Sonnet 4.5.
 
     Args:
         image_path: Path to image file
-        thinking_budget: Reasoning tokens (higher = better accuracy)
+        max_tokens: Maximum tokens for response
     """
     print("\n" + "="*80)
-    print(" BLACKFOOT CHARACTER EXTRACTION TEST")
+    print(" DAKOTA CHARACTER EXTRACTION TEST")
     print("="*80)
     print(f"\nImage: {image_path.name}")
-    print(f"Thinking budget: {thinking_budget} tokens")
+    print(f"Max tokens: {max_tokens}")
     print()
 
     # Initialize client
-    api_key = os.getenv("OPENROUTER_API_KEY")
+    api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        print("ERROR: OPENROUTER_API_KEY not found in environment")
+        print("ERROR: ANTHROPIC_API_KEY not found in environment")
         print("Set it in your .env file or export it:")
-        print("  export OPENROUTER_API_KEY='your-key-here'")
+        print("  export ANTHROPIC_API_KEY='your-key-here'")
         return
 
-    client = Qwen3VLClient(api_key)
+    client = anthropic.Anthropic(api_key=api_key)
 
     # Build extraction prompt
-    page_context = "This is page from Blackfoot Grammar and Dictionary. Focus on preserving special characters: ć, š, ŋ, ḣ, ṡ, ó, á"
-    prompt = build_blackfoot_extraction_prompt(page_context)
+    page_context = "This is page from Dakota Grammar and Dictionary. Focus on preserving special characters: ć, š, ŋ, ḣ, ṡ, ó, á"
+    prompt = build_dakota_extraction_prompt(page_context)
 
-    print("🔍 Analyzing image with Qwen3-VL Thinking model...")
-    print("   (This uses extended reasoning to ensure character accuracy)")
+    print("🔍 Analyzing image with Claude Sonnet 4.5...")
+    print("   (Optimized for Dakota character preservation)")
     print()
 
-    # Extract with high thinking budget
-    result = client.analyze_image(
-        image_path=image_path,
-        prompt=prompt,
-        thinking_budget=thinking_budget
+    # Read and encode image
+    with open(image_path, 'rb') as f:
+        image_data = base64.standard_b64encode(f.read()).decode('utf-8')
+
+    # Extract with Claude
+    response = client.messages.create(
+        model="claude-sonnet-4-5-20250929",
+        max_tokens=max_tokens,
+        messages=[{
+            "role": "user",
+            "content": [
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": "image/jpeg",
+                        "data": image_data
+                    }
+                },
+                {
+                    "type": "text",
+                    "text": prompt
+                }
+            ]
+        }]
     )
+
+    result = {
+        'text': response.content[0].text,
+        'response_tokens': response.usage.output_tokens,
+        'input_tokens': response.usage.input_tokens
+    }
 
     # Display results
     print("\n" + "="*80)
     print(" EXTRACTION RESULTS")
     print("="*80)
 
-    print(f"\n📊 Reasoning tokens used: {result['reasoning_tokens']}")
+    print(f"\n📊 Input tokens: {result['input_tokens']}")
     print(f"📝 Response tokens: {result['response_tokens']}")
     print()
 
@@ -134,20 +167,6 @@ def test_blackfoot_extraction(image_path: Path, thinking_budget: int = 6000):
         print("-" * 80)
         print(result['text'])
 
-    # Display reasoning trace if available
-    if result.get('reasoning'):
-        print("\n\n🧠 REASONING TRACE (First 500 chars):")
-        print("-" * 80)
-        print(result['reasoning'][:500])
-        if len(result['reasoning']) > 500:
-            print(f"\n... (truncated, {len(result['reasoning'])} total chars)")
-
-        # Save reasoning trace
-        reasoning_path = Path("data/test_extraction_blackfoot_reasoning.txt")
-        with open(reasoning_path, 'w', encoding='utf-8') as f:
-            f.write(result['reasoning'])
-        print(f"\n💾 Full reasoning trace saved to: {reasoning_path}")
-
     print("\n" + "="*80)
     print(" TEST COMPLETE")
     print("="*80)
@@ -156,7 +175,7 @@ def test_blackfoot_extraction(image_path: Path, thinking_budget: int = 6000):
     # Character validation summary
     print("🎯 CHARACTER VALIDATION:")
     print("-" * 80)
-    print("Check the extracted text above for these Blackfoot characters:")
+    print("Check the extracted text above for these Dakota characters:")
     print("  ✓ ć (c-acute)     - in Wićášta, mićú")
     print("  ✓ š (s-caron)     - in Wićášta, wašte")
     print("  ✓ ŋ (eng)         - in éiŋhiŋtku, toŋaŋa")
@@ -169,14 +188,18 @@ def test_blackfoot_extraction(image_path: Path, thinking_budget: int = 6000):
 
 
 if __name__ == "__main__":
-    # Test on first Blackfoot page
+    # Test on first Dakota dictionary page
     test_image = Path("data/processed_images/grammardictionar00riggrich_0089.jpg")
 
     if not test_image.exists():
         print(f"❌ Test image not found: {test_image}")
         print("\nAvailable images:")
-        for img in Path("data/processed_images").glob("*.jpg"):
-            print(f"  {img}")
+        images_dir = Path("data/processed_images")
+        if images_dir.exists():
+            for img in images_dir.glob("*.jpg"):
+                print(f"  {img}")
+        else:
+            print(f"  Directory not found: {images_dir}")
         sys.exit(1)
 
-    test_blackfoot_extraction(test_image, thinking_budget=6000)
+    test_dakota_extraction(test_image, max_tokens=16000)

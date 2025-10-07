@@ -1,7 +1,10 @@
-# Core dependencies for Qwen3-VL API integration
-# This project uses OpenRouter API - no local model inference needed
+# Core dependencies for Dakota language extraction
+# This project uses Claude Sonnet 4.5 via Anthropic API - no local model inference needed
 
-# HTTP requests to OpenRouter and other APIs
+# Anthropic API for Claude Sonnet 4.5 (primary VLM)
+anthropic>=0.39.0
+
+# HTTP requests for API calls
 requests>=2.31.0
 
 # Image processing for vision tasks
