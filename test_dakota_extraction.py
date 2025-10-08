@@ -188,6 +188,11 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
 
 
 if __name__ == "__main__":
+    # Skip if in offline mode for CI
+    if os.getenv("OFFLINE") == "1":
+        print("OFFLINE mode: Skipping Dakota extraction test.")
+        sys.exit(0)
+
     # Test on first Dakota dictionary page
     test_image = Path("data/processed_images/grammardictionar00riggrich_0089.jpg")
 

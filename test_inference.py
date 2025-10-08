@@ -133,6 +133,11 @@ def test_image_inference():
 
 def main():
     """Run all tests."""
+    # Skip if in offline mode for CI
+    if os.getenv("OFFLINE") == "1":
+        print("OFFLINE mode: Skipping inference tests.")
+        return
+
     print("\n")
     print("*" * 60)
     print("  Claude Sonnet 4.5 Inference Test")
