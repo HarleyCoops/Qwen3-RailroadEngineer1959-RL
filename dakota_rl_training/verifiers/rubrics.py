@@ -8,12 +8,13 @@ Based on actual extraction from page 61:
 - Difficulty-adjusted rewards (basic → expert)
 """
 
-import verifiers as vf
 from typing import List, Dict, Any
 import re
 
+from .base import Rubric
 
-class DakotaGrammarRubric(vf.Rubric):
+
+class DakotaGrammarRubric(Rubric):
     """Reward functions for Dakota grammar tasks"""
 
     def __init__(self):
@@ -285,6 +286,16 @@ class DakotaGrammarRubric(vf.Rubric):
             return base_reward + bonus
 
         return base_reward
+
+    def score(self, response: str, expected: str, **kwargs: Any) -> float:
+        """
+        Implementation of the abstract Rubric.score interface.
+
+        Kwargs may include a `task_info` dictionary, which defaults to an empty
+        mapping when not provided.
+        """
+        task_info = kwargs.get("task_info", {})
+        return self.composite_reward(response, expected, task_info, **kwargs)
 
     @staticmethod
     def _levenshtein(s1: str, s2: str) -> int:

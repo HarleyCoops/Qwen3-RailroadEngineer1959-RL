@@ -7,10 +7,11 @@ This environment is based on actual extracted grammar from page 61:
 - Special character verification: ŋ, š, ć, ź, ž, ʼ
 """
 
-import verifiers as vf
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 import re
+
+from .base import MultiTurnEnv, SingleTurnEnv
 
 
 @dataclass
@@ -24,7 +25,7 @@ class DakotaState:
     partial_credit: float = 0.0
 
 
-class DakotaGrammarEnv(vf.MultiTurnEnv):
+class DakotaGrammarEnv(MultiTurnEnv):
     """
     Multi-turn environment for Dakota grammar learning
 
@@ -283,7 +284,7 @@ class DakotaGrammarEnv(vf.MultiTurnEnv):
             return "Check your answer carefully."
 
 
-class DakotaMorphologyEnv(vf.SingleTurnEnv):
+class DakotaMorphologyEnv(SingleTurnEnv):
     """
     Single-turn environment for simple morphology tasks
     (faster than multi-turn for basic transformations)

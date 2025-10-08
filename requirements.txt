@@ -10,5 +10,8 @@ requests>=2.31.0
 # Image processing for vision tasks
 Pillow>=10.0.0
 
+# Dataset publishing and model hub integration
+huggingface-hub>=0.24.0
+
 # Environment variable management
 python-dotenv>=1.0.0
