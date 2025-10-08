@@ -174,6 +174,11 @@ def process_pages(start_page: int = 89, end_page: int = 108):
 
 
 def main():
+    # Skip if in offline mode for CI
+    if os.getenv("OFFLINE") == "1":
+        print("OFFLINE mode: Skipping Claude extraction test.")
+        sys.exit(0)
+
     success = process_pages(start_page=109, end_page=128)
 
     if success:
