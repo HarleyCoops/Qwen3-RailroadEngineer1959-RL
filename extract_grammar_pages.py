@@ -12,93 +12,44 @@ from pathlib import Path
 import anthropic
 from dotenv import load_dotenv
 from dakota_extraction.tools.image_converter import ImageConverter
+from dakota_extraction.core.grammar_extraction_prompt import build_grammar_extraction_prompt
 
 # Load environment
 load_dotenv()
 
 
-def build_grammar_extraction_prompt():
+def build_grammar_extraction_prompt_with_context(page_number: int):
     """Build specialized prompt for grammar rule extraction."""
-    return """You are extracting Dakota language grammar rules from a historical linguistic text.
+    # Use the more detailed prompt from grammar_extraction_prompt.py
+    base_prompt = build_grammar_extraction_prompt(
+        page_context=f"""CRITICAL: This is page {page_number} from the 1890 Dakota Grammar section. 
 
-This page contains grammatical analysis and linguistic rules for the Dakota language.
+Extract ALL grammatical information including:
+- ANY morphological patterns (affixes, word formation)
+- ANY phonological rules (sound changes, vowel harmony)
+- ANY syntactic patterns (word order, sentence structure)
+- ANY interlinear examples (Dakota text with word-by-word glosses)
+- ANY linguistic terminology that describes grammatical structures
 
-Your task: Extract ALL grammatical information as structured data.
+Even if this page appears to be:
+- Introductory material
+- Ethnographic content
+- Historical notes
+- Cultural descriptions
 
-Focus on:
-1. Grammar rules (verb conjugation, noun declension, particle usage)
-2. Example sentences with interlinear glosses
-3. Linguistic patterns and transformations
-4. Morphological analysis
-5. Phonological rules
+STILL extract ANY grammatical patterns, linguistic rules, or morphological examples found within the text.
 
-For interlinear examples, preserve this format:
-- Line 1: Dakota text (preserve ć, š, ŋ, ḣ, ṡ, and all diacritics)
-- Line 2: Word-by-word English glosses
-- Line 3: Full English translation
+Look for:
+- Dakota words with grammatical explanations
+- Examples of word formation
+- Patterns of affixation
+- Sound change rules
+- Sentence structure examples
+- Any linguistic terminology that describes how Dakota works grammatically
 
-CRITICAL: Preserve ALL Dakota special characters exactly:
-- Acute accents: á, é, í, ó, ú (pitch markers)
-- Caron diacritics: č, š, ž
-- Eng: ŋ (ng sound)
-- Dotted consonants: ḣ, ṡ
-- Syllable breaks: hyphens (e.g., wa-šté)
-- Glottal stop: ʼ
-
-Return JSON with this structure:
-{
-  "page_number": <int>,
-  "grammar_rules": [
-    {
-      "rule_id": "grammar_p<page>_r<rule_num>",
-      "rule_type": "<morphology|syntax|phonology|particles|conjugation|declension>",
-      "rule_description": "<clear description of the grammatical rule>",
-      "dakota_pattern": "<Dakota language pattern or structure>",
-      "english_explanation": "<explanation in English>",
-      "examples": [
-        {
-          "dakota": "<Dakota text with all diacritics>",
-          "gloss": "<word-by-word gloss if provided>",
-          "english": "<English translation>",
-          "notes": "<any linguistic notes>"
-        }
-      ],
-      "constraints": "<any constraints or conditions>",
-      "confidence": <0.0-1.0>
-    }
-  ],
-  "interlinear_texts": [
-    {
-      "text_id": "interlinear_p<page>_t<text_num>",
-      "dakota_lines": ["<line 1>", "<line 2>", ...],
-      "gloss_lines": ["<gloss 1>", "<gloss 2>", ...],
-      "english_translation": "<full translation>",
-      "linguistic_notes": "<any annotations>",
-      "confidence": <0.0-1.0>
-    }
-  ],
-  "linguistic_terms": [
-    {
-      "term": "<linguistic term>",
-      "definition": "<definition or explanation>",
-      "dakota_examples": ["<example 1>", "<example 2>"]
-    }
-  ],
-  "page_notes": "<any additional context or notes>",
-  "special_characters_found": ["list of Dakota special characters used"],
-  "extraction_quality": "<excellent|good|fair|poor>",
-  "extraction_notes": "<any extraction challenges or ambiguities>"
-}
-
-Rules:
-- Extract EVERY grammar rule, no matter how small
-- Preserve ALL Dakota text exactly as written
-- Maintain interlinear alignment
-- Include ALL examples
-- Note any unclear or damaged text
-- Set confidence based on text clarity
-
-Output ONLY valid JSON, no additional text."""
+If you find Dakota words being analyzed linguistically, extract the grammatical patterns even if they're embedded in non-grammar content."""
+    )
+    return base_prompt
 
 
 def extract_grammar_page_with_claude(image_path: Path, page_number: int) -> dict:
@@ -117,7 +68,7 @@ def extract_grammar_page_with_claude(image_path: Path, page_number: int) -> dict
     encoded = base64.b64encode(image_bytes).decode("utf-8")
 
     # Build prompt
-    prompt = build_grammar_extraction_prompt()
+    prompt = build_grammar_extraction_prompt_with_context(page_number)
 
     print("  Sending to Claude Sonnet 4.5...")
 
@@ -157,6 +108,16 @@ def extract_grammar_page_with_claude(image_path: Path, page_number: int) -> dict
     try:
         extraction = json.loads(response_text)
         extraction["page_number"] = page_number
+        
+        # Handle schema differences - normalize field names
+        # The detailed prompt might use "interlinear_examples" instead of "interlinear_texts"
+        if "interlinear_examples" in extraction and "interlinear_texts" not in extraction:
+            extraction["interlinear_texts"] = extraction.pop("interlinear_examples")
+        
+        # Ensure grammar_rules exists (might be empty but should exist)
+        if "grammar_rules" not in extraction:
+            extraction["grammar_rules"] = []
+        
         return extraction
     except json.JSONDecodeError as e:
         print(f"  ERROR: Failed to parse JSON: {e}")
@@ -167,7 +128,7 @@ def extract_grammar_page_with_claude(image_path: Path, page_number: int) -> dict
             "interlinear_texts": [],
             "linguistic_terms": [],
             "error": str(e),
-            "raw_response": response_text
+            "raw_response": response_text[:2000]  # Store first 2000 chars for debugging
         }
 
 
@@ -180,8 +141,8 @@ def main():
     parser.add_argument(
         "--pages",
         type=str,
-        default="1-88",
-        help="Page range to extract (e.g., 1-10, 1-88)"
+        default="10-88",  # Skip front matter pages 1-9
+        help="Page range to extract (e.g., 10-88, 10-20). Note: Pages 1-9 are front matter"
     )
     parser.add_argument(
         "--test",
@@ -209,7 +170,7 @@ def main():
         return
 
     # Setup directories
-    jp2_dir = Path("dictionary/grammardictionar00riggrich_jp2")
+    jp2_dir = Path("Dictionary/grammardictionar00riggrich_jp2")
     processed_dir = Path("data/processed_images")
     output_dir = Path("data/grammar_extracted")
 

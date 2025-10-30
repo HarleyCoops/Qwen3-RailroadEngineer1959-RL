@@ -4,17 +4,18 @@ Dakota Dictionary Extraction Pipeline - Updated for Page 89 Start
 Following the Stoney Nakoda approach by @harleycoops
 
 Dictionary Structure:
-- Pages 1-88: Grammar rules and linguistic notes (skip for now)
-- Pages 89-440: Dictionary entries (our target)
+- Pages 1-92: Grammar rules and linguistic notes (already extracted for RL training)
+- Pages 95-440: Dictionary entries (extract these for SFT training)
 
-This script extracts structured linguistic data from dictionary pages only.
+This script extracts Dakota words with their English definitions from dictionary pages.
+The extracted pairs (headword + definition_primary) feed into synthetic Q&A generation for SFT.
 
 Usage:
-    # Test on page 89 (first dictionary page)
+    # Test on page 95 (first dictionary page)
     python extract_dakota_dictionary_v2.py --test
 
     # Process first 20 dictionary pages
-    python extract_dakota_dictionary_v2.py --pages 89-108
+    python extract_dakota_dictionary_v2.py --pages 95-114
 
     # Process all dictionary pages
     python extract_dakota_dictionary_v2.py --all-dictionary
@@ -34,16 +35,16 @@ try:
     from dakota_extraction.core.advanced_page_processor import AdvancedPageProcessor
     from dakota_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"ERROR: Import error: {e}")
     print("\nPlease ensure you're in the project root and run:")
     print("  pip install -r requirements.txt")
     sys.exit(1)
 
 
 # Constants
-DICTIONARY_START_PAGE = 89  # Dictionary entries begin here
+DICTIONARY_START_PAGE = 95  # Dictionary entries begin here (after grammar section ends at 92)
 DICTIONARY_END_PAGE = 440   # Last page
-GRAMMAR_PAGES = 88          # Pages 1-88 are grammar
+GRAMMAR_PAGES = 92          # Pages 1-92 are grammar (ends at page 92)
 
 
 def check_setup():
@@ -51,22 +52,22 @@ def check_setup():
     print("Checking setup...")
 
     # API key
-    if not os.getenv("OPENROUTER_API_KEY"):
-        print("❌ OPENROUTER_API_KEY not set")
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        print("ERROR: ANTHROPIC_API_KEY not set")
         print("\nAdd to your .env file:")
-        print("  OPENROUTER_API_KEY=your_key_here")
+        print("  ANTHROPIC_API_KEY=your_key_here")
         return False
 
     # Dictionary files
-    dict_dir = Path("dictionary/grammardictionar00riggrich_jp2")
+    dict_dir = Path("Dictionary/grammardictionar00riggrich_jp2")
     if not dict_dir.exists():
-        print(f"❌ Dictionary directory not found: {dict_dir}")
+        print(f"ERROR: Dictionary directory not found: {dict_dir}")
         return False
 
     jp2_count = len(list(dict_dir.glob("*.jp2")))
-    print(f"  ✓ Found {jp2_count} JP2 pages")
-    print(f"  ✓ Grammar pages: 1-{GRAMMAR_PAGES}")
-    print(f"  ✓ Dictionary pages: {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}")
+    print(f"  Found {jp2_count} JP2 pages")
+    print(f"  Grammar pages: 1-{GRAMMAR_PAGES}")
+    print(f"  Dictionary pages: {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}")
 
     # Test Pillow JP2 support
     try:
@@ -74,42 +75,42 @@ def check_setup():
         test_file = next(dict_dir.glob("*.jp2"))
         with Image.open(test_file):
             pass
-        print("  ✓ PIL can read JP2 files")
+        print("  PIL can read JP2 files")
     except Exception as e:
-        print(f"❌ PIL cannot read JP2: {e}")
+        print(f"ERROR: PIL cannot read JP2: {e}")
         print("\nInstall OpenJPEG:")
         print("  Windows: https://www.openjpeg.org/")
         print("  Linux: sudo apt-get install libopenjp2-7")
         print("  Mac: brew install openjpeg")
         return False
 
-    print("  ✓ Setup complete\n")
+    print("  Setup complete\n")
     return True
 
 
 def test_extraction():
-    """Test on page 89 (first dictionary page)."""
+    """Test on page 95 (first dictionary page)."""
     print("\n" + "="*70)
     print(f" TEST MODE: Page {DICTIONARY_START_PAGE} (First Dictionary Page)")
     print("="*70)
-    print(f"\n📖 Pages 1-{GRAMMAR_PAGES}: Grammar rules (skipped)")
-    print(f"📚 Pages {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}: Dictionary entries (extracting)\n")
+    print(f"\nPages 1-{GRAMMAR_PAGES}: Grammar rules (already extracted)")
+    print(f"Pages {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}: Dictionary entries (extracting for SFT)\n")
 
     # Convert page 89
     converter = ImageConverter(
-        input_dir="dictionary/grammardictionar00riggrich_jp2",
+        input_dir="Dictionary/grammardictionar00riggrich_jp2",
         output_dir="data/processed_images",
         quality=95,
     )
 
     # Get page 89 specifically
-    page_file = Path(f"dictionary/grammardictionar00riggrich_jp2/grammardictionar00riggrich_{DICTIONARY_START_PAGE:04d}.jp2")
+    page_file = Path(f"Dictionary/grammardictionar00riggrich_jp2/grammardictionar00riggrich_{DICTIONARY_START_PAGE:04d}.jp2")
 
     if not page_file.exists():
-        print(f"❌ Page {DICTIONARY_START_PAGE} not found: {page_file}")
+        print(f"ERROR: Page {DICTIONARY_START_PAGE} not found: {page_file}")
 
         # Show what's available
-        jp2_files = sorted(Path("dictionary/grammardictionar00riggrich_jp2").glob("*.jp2"))
+        jp2_files = sorted(Path("Dictionary/grammardictionar00riggrich_jp2").glob("*.jp2"))
         print("\nAvailable pages:")
         print(f"  First: {jp2_files[0].name}")
         print(f"  Last: {jp2_files[-1].name}")
@@ -122,7 +123,7 @@ def test_extraction():
     # Extract with advanced processor
     print("\nExtracting dictionary entries...")
     print("Using Dakota-specialized extraction schema...")
-    print("This will use Qwen3-VL's reasoning to understand entry structure...\n")
+    print("This will use Claude Sonnet 4.5 to extract dictionary entries...\n")
 
     processor = AdvancedPageProcessor(
         output_dir="data/extracted",
@@ -132,7 +133,7 @@ def test_extraction():
     extraction = processor.extract_page(
         image_path=image,
         page_number=DICTIONARY_START_PAGE,
-        thinking_budget=6000,
+        max_tokens=16000,
         page_context="First dictionary page - entries begin here after grammar section",
     )
 
@@ -142,10 +143,10 @@ def test_extraction():
     print("\n" + "="*70)
     print(" TEST COMPLETE")
     print("="*70)
-    print("\n📁 Review outputs:")
+    print("\nReview outputs:")
     print(f"  - Extraction: data/extracted/page_{DICTIONARY_START_PAGE:03d}.json")
     print(f"  - Reasoning: data/reasoning_traces/page_{DICTIONARY_START_PAGE:03d}_reasoning.json")
-    print("\n✅ If results look good, process more pages:")
+    print("\nIf results look good, process more pages:")
     print(f"  python {sys.argv[0]} --pages {DICTIONARY_START_PAGE}-{DICTIONARY_START_PAGE+11}  # 12 pages")
     print(f"  python {sys.argv[0]} --pages {DICTIONARY_START_PAGE}-150  # More pages")
     print()
@@ -159,9 +160,9 @@ def process_range(start: int, end: int):
 
     # Validate range
     if start < DICTIONARY_START_PAGE:
-        print(f"\n⚠️  WARNING: Pages 1-{GRAMMAR_PAGES} contain grammar rules!")
+        print(f"\nWARNING: Pages 1-{GRAMMAR_PAGES} contain grammar rules!")
         print(f"Dictionary entries start at page {DICTIONARY_START_PAGE}.")
-        print(f"\n💡 Recommended: --pages {DICTIONARY_START_PAGE}-{end}")
+        print(f"\nRecommended: --pages {DICTIONARY_START_PAGE}-{end}")
 
         confirm = input(f"\nProcess pages {start}-{end} anyway? [y/N]: ")
         if confirm.lower() != 'y':
@@ -171,18 +172,18 @@ def process_range(start: int, end: int):
     # Convert images
     print("\nStep 1: Converting JP2 to JPEG...")
     converter = ImageConverter(
-        input_dir="dictionary/grammardictionar00riggrich_jp2",
+        input_dir="Dictionary/grammardictionar00riggrich_jp2",
         output_dir="data/processed_images",
         quality=95,
     )
 
     print(f"Converting {end-start+1} pages...")
     for page_num in range(start, end + 1):
-        jp2_file = Path(f"dictionary/grammardictionar00riggrich_jp2/grammardictionar00riggrich_{page_num:04d}.jp2")
+        jp2_file = Path(f"Dictionary/grammardictionar00riggrich_jp2/grammardictionar00riggrich_{page_num:04d}.jp2")
         if jp2_file.exists():
             converter.convert_jp2_to_jpeg(jp2_file)
         else:
-            print(f"  ⚠️  Page {page_num} not found, skipping")
+            print(f"  WARNING: Page {page_num} not found, skipping")
 
     # Extract entries
     print("\nStep 2: Extracting dictionary entries...")
@@ -195,18 +196,18 @@ def process_range(start: int, end: int):
         image_path = Path(f"data/processed_images/grammardictionar00riggrich_{page_num:04d}.jpg")
 
         if not image_path.exists():
-            print(f"⚠️  Skipping page {page_num} - image not found")
+            print(f"WARNING: Skipping page {page_num} - image not found")
             continue
 
         try:
-            print(f"\n{'─'*70}")
+            print(f"\n{'-'*70}")
             processor.extract_page(
                 image_path=image_path,
                 page_number=page_num,
-                thinking_budget=6000,
+                max_tokens=16000,
             )
         except Exception as e:
-            print(f"❌ Error on page {page_num}: {e}")
+            print(f"ERROR: Error on page {page_num}: {e}")
             continue
 
     # Build datasets
@@ -225,15 +226,15 @@ def process_range(start: int, end: int):
     print("\n" + "="*70)
     print(" EXTRACTION COMPLETE")
     print("="*70)
-    print("\n📊 Statistics:")
+    print("\nStatistics:")
     print(f"  Pages processed: {start}-{end} ({end-start+1} pages)")
     print(f"  Total entries: {stats.get('total_entries', 0)}")
     print(f"  Avg entries/page: {stats.get('avg_entries_per_page', 0):.1f}")
-    print("\n📁 Datasets created:")
-    print("  - Translation: data/training_datasets/translation_*.jsonl")
-    print("  - Instructions: data/training_datasets/instruction_dataset.jsonl")
-    print("  - Vocabulary: data/training_datasets/vocabulary.json")
-    print("  - Corpus: data/training_datasets/blackfeet_corpus.txt")
+    print("\nExtracted dictionary entries saved to:")
+    print("  - data/extracted/page_*.json")
+    print("\nNext steps:")
+    print("  1. Run generate_synthetic_dakota.py to create Q&A pairs")
+    print("  2. Run convert_extracted_to_chat.py to format for OpenAI fine-tuning")
     print()
 
 
@@ -241,23 +242,23 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Extract Dakota dictionary entries (pages 89+)",
+        description="Extract Dakota dictionary entries (pages 95+) for SFT training",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
 Dictionary Structure:
-  Pages 1-{GRAMMAR_PAGES}:    Grammar rules (skip for now)
-  Pages {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}: Dictionary entries (extract these)
+  Pages 1-{GRAMMAR_PAGES}:    Grammar rules (already extracted for RL training)
+  Pages {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}: Dictionary entries (extract these for SFT)
 
 Examples:
   %(prog)s --test                    # Test on page {DICTIONARY_START_PAGE}
-  %(prog)s --pages {DICTIONARY_START_PAGE}-100            # First 12 dictionary pages
+  %(prog)s --pages {DICTIONARY_START_PAGE}-114            # First 20 dictionary pages
   %(prog)s --pages {DICTIONARY_START_PAGE}-200            # More pages
   %(prog)s --all-dictionary          # All dictionary pages ({DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE})
 
 Costs:
   ~$0.25 per page
-  12 pages: ~$3
-  All dictionary (352 pages): ~$88
+  20 pages: ~$5
+  All dictionary (346 pages): ~$86.50
         """
     )
 
@@ -285,27 +286,27 @@ Costs:
 
     elif args.pages:
         if "-" not in args.pages:
-            print("❌ Pages must be a range (e.g., 89-100)")
+            print("ERROR: Pages must be a range (e.g., 95-114)")
             sys.exit(1)
 
         start, end = map(int, args.pages.split("-"))
 
         if start < 1 or end > DICTIONARY_END_PAGE or start > end:
-            print(f"❌ Invalid range. Must be 1-{DICTIONARY_END_PAGE} and start <= end")
+            print(f"ERROR: Invalid range. Must be 1-{DICTIONARY_END_PAGE} and start <= end")
             sys.exit(1)
 
         # Helpful suggestions
         if start < DICTIONARY_START_PAGE:
-            print(f"\n💡 Note: Dictionary entries start at page {DICTIONARY_START_PAGE}")
+            print(f"\nNote: Dictionary entries start at page {DICTIONARY_START_PAGE}")
             print(f"   Pages 1-{GRAMMAR_PAGES} contain grammar rules (different structure)")
 
         num_pages = end - start + 1
         estimated_cost = num_pages * 0.25
         estimated_time = num_pages * 2  # minutes
 
-        print(f"\n📊 Processing {num_pages} pages ({start}-{end})")
-        print(f"💰 Estimated cost: ${estimated_cost:.2f}")
-        print(f"⏱️  Estimated time: {estimated_time} minutes")
+        print(f"\nProcessing {num_pages} pages ({start}-{end})")
+        print(f"Estimated cost: ${estimated_cost:.2f}")
+        print(f"Estimated time: {estimated_time} minutes")
 
         confirm = input("\nContinue? [y/N]: ")
         if confirm.lower() != "y":
@@ -319,10 +320,10 @@ Costs:
         estimated_cost = num_pages * 0.25
         estimated_hours = (num_pages * 2) / 60
 
-        print(f"\n⚠️  Processing ALL dictionary pages ({DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE})")
-        print(f"📊 Total pages: {num_pages}")
-        print(f"💰 Estimated cost: ${estimated_cost:.2f}")
-        print(f"⏱️  Estimated time: {estimated_hours:.1f} hours")
+        print(f"\nWARNING: Processing ALL dictionary pages ({DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE})")
+        print(f"Total pages: {num_pages}")
+        print(f"Estimated cost: ${estimated_cost:.2f}")
+        print(f"Estimated time: {estimated_hours:.1f} hours")
         print("\nThis will:")
         print("  - Use significant API tokens")
         print("  - Take many hours to complete")

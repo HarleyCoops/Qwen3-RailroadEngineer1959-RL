@@ -146,9 +146,9 @@ class AdvancedPageProcessor:
         # Save extraction
         self._save_extraction(page_number, extraction)
 
-        print(f"✓ Extracted {len(extraction.get('entries', []))} entries")
-        print(f"✓ Input tokens: {response.usage.input_tokens}")
-        print(f"✓ Output tokens: {response.usage.output_tokens}")
+        print(f"Extracted {len(extraction.get('entries', []))} entries")
+        print(f"Input tokens: {response.usage.input_tokens}")
+        print(f"Output tokens: {response.usage.output_tokens}")
 
         return extraction
 
@@ -193,7 +193,7 @@ class AdvancedPageProcessor:
                     entry = DictionaryEntry(**entry_data)
                     entries.append(entry.to_dict())
                 except Exception as e:
-                    print(f"  ⚠️  Warning: Could not create entry {i+1}: {e}")
+                    print(f"  WARNING: Could not create entry {i+1}: {e}")
                     # Keep raw data
                     entries.append(entry_data)
 
@@ -204,7 +204,7 @@ class AdvancedPageProcessor:
             }
 
         except json.JSONDecodeError as e:
-            print(f"⚠️  JSON parsing failed: {e}")
+            print(f"WARNING: JSON parsing failed: {e}")
             print(f"Raw response:\n{response_text[:500]}...")
             return {
                 "page_metadata": {"error": str(e)},
@@ -214,9 +214,9 @@ class AdvancedPageProcessor:
 
     def _validate_extraction(self, extraction: Dict[str, Any]) -> None:
         """Validate extracted entries and print warnings."""
-        print(f"\n{'─'*70}")
+        print(f"\n{'-'*70}")
         print("VALIDATION")
-        print(f"{'─'*70}")
+        print(f"{'-'*70}")
 
         total = len(extraction.get("entries", []))
         valid_count = 0
@@ -244,7 +244,12 @@ class AdvancedPageProcessor:
         if warnings:
             print("\nValidation Issues:")
             for warning in warnings[:10]:  # Show first 10
-                print(f"  ⚠️  {warning}")
+                try:
+                    print(f"  WARNING: {warning}")
+                except UnicodeEncodeError:
+                    # Handle Unicode characters that can't be printed to Windows console
+                    safe_warning = warning.encode('ascii', 'replace').decode('ascii')
+                    print(f"  WARNING: {safe_warning}")
             if len(warnings) > 10:
                 print(f"  ... and {len(warnings) - 10} more")
 
@@ -253,7 +258,7 @@ class AdvancedPageProcessor:
         output_path = self.output_dir / f"page_{page_number:03d}.json"
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(extraction, f, indent=2, ensure_ascii=False)
-        print(f"✓ Saved to: {output_path}")
+        print(f"Saved to: {output_path}")
 
     def _encode_image(self, image_path: Path) -> Dict[str, str]:
         """Encode image to base64 for Claude API."""
@@ -287,7 +292,7 @@ class AdvancedPageProcessor:
             f.write(f"Page {page_number} - Claude Sonnet 4.5 Response\n")
             f.write(f"{'='*70}\n\n")
             f.write(response_text)
-        print(f"✓ Saved response to: {response_path}")
+        print(f"Saved response to: {response_path}")
 
     def display_sample_entries(self, extraction: Dict[str, Any], num: int = 3) -> None:
         """Display sample entries for review."""
@@ -296,18 +301,41 @@ class AdvancedPageProcessor:
             print("\nNo entries to display")
             return
 
-        print(f"\n{'═'*70}")
+        print(f"\n{'='*70}")
         print(f"SAMPLE ENTRIES (showing {min(num, len(entries))} of {len(entries)})")
-        print(f"{'═'*70}")
+        print(f"{'='*70}")
 
         for entry_dict in entries[:num]:
-            print(f"\n{entry_dict.get('headword', 'N/A')}")
-            print(f"  POS: {entry_dict.get('part_of_speech', 'N/A')}")
+            headword = entry_dict.get('headword', 'N/A')
+            pos = entry_dict.get('part_of_speech', 'N/A')
+            definition = entry_dict.get('definition_primary', 'N/A')
+            
+            # Safe printing for Windows console
+            try:
+                print(f"\n{headword}")
+                print(f"  POS: {pos}")
+            except UnicodeEncodeError:
+                headword_safe = headword.encode('ascii', 'replace').decode('ascii')
+                print(f"\n{headword_safe}")
+                print(f"  POS: {pos}")
+            
             if entry_dict.get("derived_from"):
                 print(f"  From: {entry_dict['derived_from']}")
-            print(f"  Definition: {entry_dict.get('definition_primary', 'N/A')}")
+            
+            try:
+                print(f"  Definition: {definition}")
+            except UnicodeEncodeError:
+                def_safe = definition.encode('ascii', 'replace').decode('ascii')
+                print(f"  Definition: {def_safe}")
+            
             if entry_dict.get("inflected_forms"):
-                print(f"  Forms: {', '.join(entry_dict['inflected_forms'])}")
+                forms_str = ', '.join(entry_dict['inflected_forms'])
+                try:
+                    print(f"  Forms: {forms_str}")
+                except UnicodeEncodeError:
+                    forms_safe = forms_str.encode('ascii', 'replace').decode('ascii')
+                    print(f"  Forms: {forms_safe}")
+            
             print(f"  Confidence: {entry_dict.get('confidence', 0):.2f}")
             print(f"  Column: {entry_dict.get('column', '?')}")
 

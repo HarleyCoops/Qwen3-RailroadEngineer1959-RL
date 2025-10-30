@@ -7,7 +7,7 @@ import os
 import subprocess
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 def check_prerequisites() -> bool:
     """Check if required tools are installed."""
+    # Try local prime first
     try:
         result = subprocess.run(
             ["prime", "--version"],
@@ -24,32 +25,96 @@ def check_prerequisites() -> bool:
             timeout=5
         )
         if result.returncode == 0:
-            logger.info("PrimeIntellect CLI found")
+            logger.info("PrimeIntellect CLI found (local)")
             return True
     except (subprocess.TimeoutExpired, FileNotFoundError):
         pass
     
-    logger.warning("PrimeIntellect CLI not found. Install with: pip install prime-intellect-cli")
+    # Try WSL prime
+    try:
+        result = subprocess.run(
+            ["wsl", "prime", "--version"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        if result.returncode == 0:
+            logger.info("PrimeIntellect CLI found (WSL)")
+            return True
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+    
+    logger.warning("PrimeIntellect CLI not found. Install with: pip install prime-intellect-cli or uv tool install prime")
     return False
+
+
+def get_prime_command() -> List[str]:
+    """Get the correct prime command (local or WSL)."""
+    # Try local first
+    try:
+        subprocess.run(["prime", "--version"], capture_output=True, timeout=2)
+        return ["prime"]
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+    
+    # Fall back to WSL
+    return ["wsl", "prime"]
 
 
 def build_package(package_dir: Path) -> bool:
     """Build the Python package."""
     logger.info(f"Building package from {package_dir}")
+    
+    # Try python3 -m build first (most common in WSL)
     try:
-        subprocess.run(
-            ["python", "-m", "build"],
+        result = subprocess.run(
+            ["python3", "-m", "build"],
             cwd=package_dir,
-            check=True
+            check=True,
+            capture_output=True,
+            text=True
         )
-        logger.info("Package built successfully")
+        logger.info("Package built successfully with python3 -m build")
         return True
     except subprocess.CalledProcessError as e:
-        logger.error(f"Build failed: {e}")
-        return False
+        logger.debug(f"python3 -m build failed: {e.stderr}")
+        pass
     except FileNotFoundError:
-        logger.error("python -m build not available. Install with: pip install build")
-        return False
+        pass
+    
+    # Try python -m build
+    try:
+        result = subprocess.run(
+            ["python", "-m", "build"],
+            cwd=package_dir,
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        logger.info("Package built successfully with python -m build")
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+    
+    # Try uv build (if uv is available)
+    try:
+        result = subprocess.run(
+            ["uv", "build"],
+            cwd=package_dir,
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        logger.info("Package built successfully with uv build")
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        pass
+    
+    logger.error("Build failed: Need either 'python -m build' or 'uv build'. Install with:")
+    logger.error("  pip install build")
+    logger.error("  or")
+    logger.error("  uv pip install build")
+    return False
 
 
 def publish_environment(
@@ -84,46 +149,53 @@ def publish_environment(
         return False
     
     if env_name is None:
-        # Try to extract from pyproject.toml
-        import tomli
-        try:
-            with open(package_dir / "pyproject.toml", "rb") as f:
-                pyproject = tomli.load(f)
-                env_name = pyproject.get("project", {}).get("name", "dakota-grammar-translation")
-        except Exception:
-            env_name = "dakota-grammar-translation"
+        env_name = "Dakota1890"  # Default to Dakota1890
     
     # Build package first
     if not build_package(package_dir):
         return False
     
-    # Publish command
-    cmd = [
-        "prime", "env", "publish",
-        str(package_dir),
-        "--owner", owner,
-        "--name", env_name,
-        "--version", version
-    ]
+    # Get the correct prime command (local or WSL)
+    prime_cmd = get_prime_command()
     
+    # According to PrimeIntellect docs, 'prime env push' should be run
+    # from inside the package directory and reads metadata from pyproject.toml
+    # No need to pass --owner, --name, or --version flags
+    
+    # Change to package directory and run push
+    # For WSL, convert Windows path to WSL path if needed
+    work_dir = str(package_dir)
+    if prime_cmd[0] == "wsl" and work_dir.startswith("C:"):
+        work_dir = work_dir.replace("C:\\", "/mnt/c/").replace("\\", "/")
+    
+    # Push command - must be run from package directory
+    cmd = prime_cmd + ["env", "push"]
+    
+    # Optional flags
     if dry_run:
         logger.info(f"Dry run - would execute: {' '.join(cmd)}")
+        logger.info(f"  From directory: {work_dir}")
         return True
     
-    logger.info(f"Publishing {env_name} v{version} to PrimeIntellect...")
+    logger.info(f"Pushing {env_name} v{version} to PrimeIntellect...")
+    logger.info(f"Running from: {work_dir}")
     try:
         result = subprocess.run(
             cmd,
+            cwd=work_dir,
             check=True,
             capture_output=True,
             text=True
         )
-        logger.info("Environment published successfully!")
+        logger.info("Environment pushed successfully!")
         logger.info(result.stdout)
         return True
     except subprocess.CalledProcessError as e:
-        logger.error(f"Publish failed: {e}")
-        logger.error(e.stderr)
+        logger.error(f"Push failed: {e}")
+        if e.stderr:
+            logger.error(e.stderr)
+        if e.stdout:
+            logger.error(e.stdout)
         return False
 
 
@@ -143,14 +215,14 @@ def main():
     parser.add_argument(
         "--owner",
         type=str,
-        default=os.getenv("PRIMEINTELLECT_OWNER", "HarleyCoops"),
-        help="PrimeIntellect owner/organization"
+        default=os.getenv("PRIMEINTELLECT_OWNER", "cm758faf6000zwilxepmmi7xp"),
+        help="PrimeIntellect owner/organization (defaults to your user ID)"
     )
     parser.add_argument(
         "--name",
         type=str,
-        default=None,
-        help="Environment name (defaults to package name)"
+        default="Dakota1890",
+        help="Environment name (defaults to Dakota1890)"
     )
     parser.add_argument(
         "--version",
@@ -175,11 +247,13 @@ def main():
     )
     
     if success:
-        logger.info("✓ Publishing complete!")
-        logger.info(f"Environment: {args.owner}/{args.name or 'dakota-grammar-translation'}")
-        logger.info(f"Install with: pip install {args.name or 'dakota-grammar-translation'}")
+        logger.info("Publishing complete!")
+        logger.info(f"Environment: {args.owner}/{args.name or 'Dakota1890'}")
+        logger.info(f"View at: https://primeintellect.ai/env/{args.owner}/{args.name or 'Dakota1890'}")
+        logger.info(f"\nTo use in training:")
+        logger.info(f"  environment: {args.owner}/{args.name or 'Dakota1890'}")
     else:
-        logger.error("✗ Publishing failed")
+        logger.error("Publishing failed")
         return 1
     
     return 0

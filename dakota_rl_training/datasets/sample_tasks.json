@@ -1,163 +1,160 @@
 [
   {
-    "prompt": "Translate this Dakota sentence to English:\n\na",
-    "answer": "has the sound of English a in father",
-    "info": {
-      "task_type": "word_translation",
-      "rule_id": "grammar_p1_r1",
-      "rule_type": "phonology",
-      "dakota_text": "a",
-      "special_chars": [],
-      "difficulty": "easy",
-      "source_pages": [
-        31
-      ],
-      "confidence": 1.0
-    }
-  },
-  {
-    "prompt": "Translate this Dakota sentence to English:\n\ne",
-    "answer": "has the sound of English e in they, or of a in face",
-    "info": {
-      "task_type": "word_translation",
-      "rule_id": "grammar_p1_r1",
-      "rule_type": "phonology",
-      "dakota_text": "e",
-      "special_chars": [],
-      "difficulty": "easy",
-      "source_pages": [
-        31
-      ],
-      "confidence": 1.0
-    }
-  },
-  {
-    "prompt": "Translate this Dakota sentence to English:\n\ni",
-    "answer": "has the sound of i in marine, or of e in me",
-    "info": {
-      "task_type": "word_translation",
-      "rule_id": "grammar_p1_r1",
-      "rule_type": "phonology",
-      "dakota_text": "i",
-      "special_chars": [],
-      "difficulty": "easy",
-      "source_pages": [
-        31
-      ],
-      "confidence": 1.0
-    }
-  },
-  {
-    "prompt": "Translate this Dakota sentence to English:\n\no",
-    "answer": "has the sound of English o in go, note",
-    "info": {
-      "task_type": "word_translation",
-      "rule_id": "grammar_p1_r1",
-      "rule_type": "phonology",
-      "dakota_text": "o",
-      "special_chars": [],
-      "difficulty": "easy",
-      "source_pages": [
-        31
-      ],
-      "confidence": 1.0
-    }
-  },
-  {
-    "prompt": "Translate this Dakota sentence to English:\n\nu",
-    "answer": "has the sound of English u in rule, or of oo in food",
-    "info": {
-      "task_type": "word_translation",
-      "rule_id": "grammar_p1_r1",
-      "rule_type": "phonology",
-      "dakota_text": "u",
-      "special_chars": [],
-      "difficulty": "easy",
-      "source_pages": [
-        31
-      ],
-      "confidence": 1.0
-    }
-  },
-  {
-    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nDakota has five vowels, each with one uniform sound, except when followed by the nasal 'ŋ' which somewhat modifies them\n\nExamples:\n  - a\n  - e\n",
-    "answer": "a, e, i, o, u",
+    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nNegation construction with 'šni' - the negative particle 'šni' follows the verb to negate it\n\n",
+    "answer": "[verb] šni",
     "info": {
       "task_type": "identify_pattern",
-      "rule_id": "grammar_p1_r1",
-      "rule_type": "phonology",
-      "pattern": "a, e, i, o, u",
-      "difficulty": "easy",
-      "source_pages": [
-        31
-      ],
-      "confidence": 1.0
-    }
-  },
-  {
-    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nDakota has twenty-four consonants, exclusive of the sound represented by the apostrophe (')\n\n",
-    "answer": "b, ć, ċ, d, g, ġ, h, ḣ, k",
-    "info": {
-      "task_type": "identify_pattern",
-      "rule_id": "grammar_p1_r2",
-      "rule_type": "phonology",
-      "pattern": "b, ć, ċ, d, g, ġ, h, ḣ, k",
+      "rule_id": "grammar_p?_r1",
+      "rule_type": "syntax",
+      "pattern": "[verb] šni",
       "difficulty": "hard",
       "source_pages": [
-        31
+        20
       ],
-      "confidence": 1.0
+      "confidence": 0.6
     }
   },
   {
-    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nThe letter b has its common English sound\n\n",
-    "answer": "b",
+    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nCompound verb formation - verbs can be compounded to create new meanings\n\n",
+    "answer": "[verb stem 1] + [verb stem 2]",
     "info": {
       "task_type": "identify_pattern",
-      "rule_id": "grammar_p1_r3",
-      "rule_type": "phonology",
-      "pattern": "b",
+      "rule_id": "grammar_p?_r2",
+      "rule_type": "morphology",
+      "pattern": "[verb stem 1] + [verb stem 2]",
       "difficulty": "hard",
       "source_pages": [
-        31
+        20
       ],
-      "confidence": 1.0
+      "confidence": 0.5
     }
   },
   {
-    "prompt": "Translate this Dakota sentence to English:\n\nć",
-    "answer": "as in chin",
+    "prompt": "Translate this Dakota sentence to English:\n\ndemonstrative",
+    "answer": "A word that points to or identifies a noun, indicating its position relative to the speaker",
     "info": {
       "task_type": "word_translation",
-      "rule_id": "grammar_p1_r4",
-      "rule_type": "phonology",
-      "dakota_text": "ć",
-      "special_chars": [
-        "ć"
-      ],
-      "difficulty": "hard",
+      "rule_id": "term_p20_demonstrative",
+      "rule_type": "morphology",
+      "dakota_text": "demonstrative",
+      "special_chars": [],
+      "difficulty": "medium",
       "source_pages": [
-        31
+        20
       ],
-      "confidence": 1.0
+      "confidence": 0.8
     }
   },
   {
-    "prompt": "Translate this English sentence to Dakota:\n\nas in chin\n\nNote: formerly written as c",
-    "answer": "ć",
+    "prompt": "Translate this English sentence to Dakota:\n\nA word that points to or identifies a noun, indicating its position relative to the speaker\n\nNote: Linguistic term: demonstrative",
+    "answer": "demonstrative",
     "info": {
       "task_type": "reverse_translation",
-      "rule_id": "grammar_p1_r4",
-      "rule_type": "phonology",
-      "english_text": "as in chin",
-      "special_chars": [
-        "ć"
-      ],
+      "rule_id": "term_p20_demonstrative",
+      "rule_type": "morphology",
+      "english_text": "A word that points to or identifies a noun, indicating its position relative to the speaker",
+      "special_chars": [],
       "difficulty": "advanced",
       "source_pages": [
-        31
+        20
       ],
-      "confidence": 1.0
+      "confidence": 0.8
+    }
+  },
+  {
+    "prompt": "Apply this Dakota grammar rule: A word that points to or identifies a noun, indicating its position relative to the speaker\n\nPattern: demonstrative\n\nContext: Linguistic term: demonstrative\n\nTransform or analyze: demonstrative",
+    "answer": "A word that points to or identifies a noun, indicating its position relative to the speaker",
+    "info": {
+      "task_type": "morphology",
+      "rule_id": "term_p20_demonstrative",
+      "rule_type": "morphology",
+      "base_form": "demonstrative",
+      "required_affixes": [],
+      "special_chars": [],
+      "difficulty": "medium",
+      "source_pages": [
+        20
+      ],
+      "confidence": 0.8
+    }
+  },
+  {
+    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nA word that points to or identifies a noun, indicating its position relative to the speaker\n\nExamples:\n  - demonstrative\n",
+    "answer": "demonstrative",
+    "info": {
+      "task_type": "identify_pattern",
+      "rule_id": "term_p20_demonstrative",
+      "rule_type": "morphology",
+      "pattern": "demonstrative",
+      "difficulty": "medium",
+      "source_pages": [
+        20
+      ],
+      "confidence": 0.8
+    }
+  },
+  {
+    "prompt": "Translate this Dakota sentence to English:\n\nagreement",
+    "answer": "Grammatical correspondence between words in a sentence",
+    "info": {
+      "task_type": "word_translation",
+      "rule_id": "term_p20_agreement",
+      "rule_type": "morphology",
+      "dakota_text": "agreement",
+      "special_chars": [],
+      "difficulty": "medium",
+      "source_pages": [
+        20
+      ],
+      "confidence": 0.8
+    }
+  },
+  {
+    "prompt": "Translate this English sentence to Dakota:\n\nGrammatical correspondence between words in a sentence\n\nNote: Linguistic term: agreement",
+    "answer": "agreement",
+    "info": {
+      "task_type": "reverse_translation",
+      "rule_id": "term_p20_agreement",
+      "rule_type": "morphology",
+      "english_text": "Grammatical correspondence between words in a sentence",
+      "special_chars": [],
+      "difficulty": "advanced",
+      "source_pages": [
+        20
+      ],
+      "confidence": 0.8
+    }
+  },
+  {
+    "prompt": "Apply this Dakota grammar rule: Grammatical correspondence between words in a sentence\n\nPattern: agreement\n\nContext: Linguistic term: agreement\n\nTransform or analyze: agreement",
+    "answer": "Grammatical correspondence between words in a sentence",
+    "info": {
+      "task_type": "morphology",
+      "rule_id": "term_p20_agreement",
+      "rule_type": "morphology",
+      "base_form": "agreement",
+      "required_affixes": [],
+      "special_chars": [],
+      "difficulty": "medium",
+      "source_pages": [
+        20
+      ],
+      "confidence": 0.8
+    }
+  },
+  {
+    "prompt": "Identify the grammatical pattern in this Dakota rule:\n\nGrammatical correspondence between words in a sentence\n\nExamples:\n  - agreement\n",
+    "answer": "agreement",
+    "info": {
+      "task_type": "identify_pattern",
+      "rule_id": "term_p20_agreement",
+      "rule_type": "morphology",
+      "pattern": "agreement",
+      "difficulty": "medium",
+      "source_pages": [
+        20
+      ],
+      "confidence": 0.8
     }
   }
 ]

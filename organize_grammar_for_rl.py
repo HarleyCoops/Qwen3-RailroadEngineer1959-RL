@@ -181,6 +181,72 @@ def extract_interlinear_examples(interlinear: dict, page_number: int) -> List[RL
     return rules
 
 
+def extract_linguistic_term_rules(linguistic_term: dict, page_number: int) -> List[RLTrainingRule]:
+    """Convert linguistic terms to RL training rules."""
+    rules = []
+    
+    term = linguistic_term.get('term', '')
+    definition = linguistic_term.get('definition', '')
+    examples = linguistic_term.get('dakota_examples', [])
+    
+    if not term or not definition:
+        return rules
+    
+    # Create a rule for this linguistic term
+    rule_id = f"term_p{page_number}_{term.replace(' ', '_').replace('-', '_')[:30]}"
+    
+    # Determine rule type from term content
+    rule_type = 'morphology'  # Default
+    if 'prefix' in term.lower() or 'suffix' in term.lower() or 'affix' in term.lower():
+        rule_type = 'morphology'
+    elif 'negative' in term.lower() or 'negation' in term.lower():
+        rule_type = 'syntax'
+    elif 'phonology' in term.lower() or 'sound' in term.lower():
+        rule_type = 'phonology'
+    elif 'translation' in term.lower() or 'translat' in term.lower():
+        rule_type = 'translation'
+    
+    # Extract examples
+    positive_examples = []
+    for ex in examples:
+        if ex:
+            positive_examples.append({
+                'dakota': ex,
+                'english': definition,
+                'gloss': '',
+                'notes': f"Example of {term}"
+            })
+    
+    # If no examples provided, use the term itself as an example
+    if not positive_examples and term:
+        positive_examples.append({
+            'dakota': term,
+            'english': definition,
+            'gloss': '',
+            'notes': f"Linguistic term: {term}"
+        })
+    
+    rule = RLTrainingRule(
+        rule_id=rule_id,
+        rule_type=rule_type,
+        rule_name=f"{term}",
+        rule_description=definition,
+        dakota_pattern=term if term else '',
+        english_explanation=definition,
+        positive_examples=positive_examples,
+        negative_examples=[],
+        verification_pattern=f"verify_{rule_type}: {term}",
+        source_pages=[page_number],
+        confidence=0.8,  # Linguistic terms are generally reliable
+        difficulty='medium',
+        constraints='',
+        linguistic_notes=f"Linguistic term extracted from page {page_number}"
+    )
+    
+    rules.append(rule)
+    return rules
+
+
 def organize_by_category(rl_rules: List[RLTrainingRule]) -> Dict[str, RLRuleSet]:
     """Organize rules by linguistic category."""
 
@@ -296,6 +362,11 @@ def main():
 
             interlinear_rules = extract_interlinear_examples(interlinear, page_num)
             all_rl_rules.extend(interlinear_rules)
+        
+        # Convert linguistic terms (NEW!)
+        for term in data.get('linguistic_terms', []):
+            term_rules = extract_linguistic_term_rules(term, page_num)
+            all_rl_rules.extend(term_rules)
 
     print(f"\nExtracted {len(all_rl_rules)} RL training rules")
     print(f"  Filtered out {stats['rules_filtered']} low-confidence rules")
