@@ -1,73 +1,46 @@
-# Dakota Dictionary Extraction Status
+# Dictionary Extraction Status
 
 ## Current Status
 
-**Full Dictionary Extraction**: Running in background
+**Extraction Stopped**: All Python processes killed
 
-**Command**: `python extract_dakota_dictionary_v2.py --all-dictionary`
+**Pages Extracted**: 21 pages (pages 95-128)
 
-**Pages to Extract**: 95-440 (346 pages total)
+**Progress**: ~6.1% of 346 pages
 
-**Estimated Time**: ~11.5 hours (2 minutes per page)
+## Target Goal
 
-**Estimated Cost**: ~$86.50 (~$0.25 per page)
+**Goal**: Extract 94% of dictionary before generating synthetic data
+- **94% of 346 pages** = **325 pages**
+- **Target range**: Pages 95-420 (approximately)
+- **Pages remaining**: ~304 pages to extract
 
-## Extraction Progress
+## Next Steps
 
-Check progress with:
-```powershell
-Get-ChildItem data\extracted\page_*.json | Measure-Object | Select-Object Count
-```
+When ready to continue extraction:
 
-## Output Location
+1. **Resume from page 129**:
+   ```bash
+   python extract_dakota_dictionary_v2.py --pages 129-420
+   ```
 
-- **Extracted Entries**: `data/extracted/page_095.json`, `page_096.json`, etc.
-- **Claude Responses**: `data/reasoning_traces/page_095_claude_response.txt`, etc.
-
-## What's Being Extracted
-
-Each page produces structured dictionary entries with:
-- `headword`: Dakota word (with special characters preserved)
-- `definition_primary`: Main English meaning
-- `definition_secondary`: Additional meanings
-- `part_of_speech`: v., n., adj., etc.
-- `inflected_forms`: Conjugations/variants
-- `derived_from`: Etymology/root words
-- `grammatical_notes`: Detailed grammar explanations
-- `see_also`: Cross-references
-- `compare_with`: Related words
-
-## Next Steps (After Extraction Completes)
-
-1. **Analyze extracted data**:
-   - Count total entries
-   - Identify polysemous words (same headword, different meanings)
-   - Map cross-references
-   - Extract morphological patterns
-
-2. **Enhance synthetic Q&A generation**:
-   - Leverage rich metadata (part of speech, inflections, etymology)
-   - Create sophisticated question types
-   - Generate grammar-aware answers
-   - Bridge dictionary ↔ grammar knowledge
-
-3. **Generate bidirectional Q&A pairs**:
-   - English → Dakota (translation + grammar)
-   - Dakota → English (meanings + usage)
-   - Part of speech classification
-   - Inflected forms
-   - Etymology & word formation
-   - Comparative questions
-
-## Files Created
-
-- `ENHANCED_SYNTHETIC_QA_PLAN.md`: Detailed plan for enhanced Q&A generation
-- `DICTIONARY_EXTRACTION_PIPELINE.md`: Complete pipeline documentation
+2. **Or continue incrementally**:
+   ```bash
+   # Process in batches
+   python extract_dakota_dictionary_v2.py --pages 129-200
+   python extract_dakota_dictionary_v2.py --pages 201-300
+   python extract_dakota_dictionary_v2.py --pages 301-420
+   ```
 
 ## Notes
 
-- Dictionary extraction uses **Claude Sonnet 4.5** (not Gemini)
-- Each entry preserves Dakota special characters (ć, š, ŋ, ḣ, ṡ, á, é, í, ó, ú, etc.)
-- The Dakota dictionary structure is more complex than Stoney Nakoda, with richer linguistic metadata
-- This richness enables sophisticated Q&A generation beyond simple translation pairs
+- Current extraction files are safe in `data/extracted/`
+- Extraction can be resumed from any page number
+- Once we reach ~325 pages (94%), we'll proceed with enhanced synthetic Q&A generation
+- Enhanced generator will use Gemini 2.5 Flash and leverage rich dictionary metadata
 
+## Files Ready
+
+- ✅ `generate_synthetic_dakota.py` - Updated to use Gemini 2.5 Flash
+- ✅ `ENHANCED_SYNTHETIC_QA_PLAN.md` - Plan for sophisticated Q&A generation
+- ⏳ Dictionary extraction paused at page 128

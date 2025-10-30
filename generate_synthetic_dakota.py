@@ -29,8 +29,8 @@ class DakotaQAGenerator:
             raise ValueError("GOOGLE_API_KEY not found in environment variables")
         
         genai.configure(api_key=api_key)
-        # Use latest Gemini model (can be overridden via env var)
-        model_name = os.getenv('GEMINI_MODEL', 'gemini-2.0-flash-exp')
+        # Use Gemini 2.5 Flash (can be overridden via env var)
+        model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
         self.model = genai.GenerativeModel(model_name)
         self.extracted_dict_dir = Path(extracted_dict_dir)
         
