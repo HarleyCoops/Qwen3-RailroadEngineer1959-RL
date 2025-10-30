@@ -11,7 +11,7 @@ from pathlib import Path
 
 import anthropic
 from dotenv import load_dotenv
-from blackfeet_extraction.tools.image_converter import ImageConverter
+from dakota_extraction.tools.image_converter import ImageConverter
 
 # Load environment
 load_dotenv()

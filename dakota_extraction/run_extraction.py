@@ -1,14 +1,14 @@
 """
-Complete Blackfeet Dictionary Extraction Pipeline
+Complete Dakota Dictionary Extraction Pipeline
 
 This script runs the full extraction pipeline:
 1. Convert JP2 files to JPEG (if needed)
-2. Process each page with Qwen3-VL Thinking
+2. Process each page with Claude Sonnet 4.5
 3. Extract structured linguistic data
 4. Build training datasets
 
 Usage:
-    python blackfeet_extraction/run_extraction.py --input data/dictionary_pages --output data/extracted
+    python dakota_extraction/run_extraction.py --input Dictionary/grammardictionar00riggrich_jp2 --output data/extracted
 """
 
 import argparse
@@ -18,17 +18,17 @@ import sys
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from blackfeet_extraction.tools.image_converter import ImageConverter
-from blackfeet_extraction.core.page_processor import PageProcessor
-from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
+from dakota_extraction.tools.image_converter import ImageConverter
+from dakota_extraction.core.page_processor import PageProcessor
+from dakota_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Extract Blackfeet dictionary data")
+    parser = argparse.ArgumentParser(description="Extract Dakota dictionary data")
     parser.add_argument(
         "--input",
         type=str,
-        default="data/dictionary_pages",
+        default="Dictionary/grammardictionar00riggrich_jp2",
         help="Input directory with JP2/JPG files",
     )
     parser.add_argument(

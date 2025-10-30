@@ -1,9 +1,14 @@
 """
-Image Format Converter for Blackfeet Dictionary Pages
+Image Format Converter for Dakota Dictionary Pages
 
 Handles JP2 (JPEG 2000) files and converts them to formats compatible with
 the vision models. JP2 is commonly used for archival scans due to superior
 compression and quality preservation.
+
+This is the START of the Dakota extraction pipeline:
+- Input: Dictionary/*.jp2 files (440 pages)
+- Output: Processed images ready for VLM extraction
+- Supports both grammar extraction (pages 1-88) and dictionary extraction (pages 89-440)
 """
 
 from pathlib import Path
@@ -18,7 +23,7 @@ class ImageConverter:
 
     def __init__(
         self,
-        input_dir: str = "data/dictionary_pages",
+        input_dir: str = "Dictionary/grammardictionar00riggrich_jp2",
         output_dir: str = "data/processed_images",
         output_format: str = "JPEG",
         quality: int = 95,
@@ -209,24 +214,21 @@ def main():
     """Example usage."""
     import sys
 
-    # Initialize converter
+    # Initialize converter pointing to Dictionary directory
     converter = ImageConverter(
-        input_dir="data/dictionary_pages",  # Where your JP2 files are
+        input_dir="Dictionary/grammardictionar00riggrich_jp2",  # Dakota JP2 files
         output_dir="data/processed_images",  # Where JPEGs will go
-        quality=95,  # High quality for OCR
+        quality=95,  # High quality for VLM extraction
     )
 
     # Check for JP2 files
-    jp2_files = list(Path("data/dictionary_pages").glob("*.jp2"))
+    jp2_files = list(Path("Dictionary/grammardictionar00riggrich_jp2").glob("*.jp2"))
 
     if not jp2_files:
-        print("No JP2 files found in data/dictionary_pages/")
-        print("\nPlease place your JP2 dictionary pages in:")
-        print("  data/dictionary_pages/")
-        print("\nExample:")
-        print("  data/dictionary_pages/page_001.jp2")
-        print("  data/dictionary_pages/page_002.jp2")
-        print("  etc.")
+        print("No JP2 files found in Dictionary/grammardictionar00riggrich_jp2/")
+        print("\nExpected location:")
+        print("  Dictionary/grammardictionar00riggrich_jp2/*.jp2")
+        print("\nThis directory should contain 440 JP2 files from the 1890 Dakota dictionary.")
         sys.exit(1)
 
     print(f"Found {len(jp2_files)} JP2 files")

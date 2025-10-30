@@ -1,0 +1,61 @@
+[project]
+name = "dakota-grammar-env"
+version = "0.1.0"
+description = "Dakota language grammar RL environment for PrimeIntellect - 1,085 rules from 1890 Riggs dictionary"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    {name = "HarleyCoops", email = "your-email@example.com"}
+]
+license = {text = "MIT"}
+keywords = ["dakota", "language", "rl", "reinforcement-learning", "grammar", "primeintellect", "verifiers"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "verifiers>=0.1.4",  # PrimeIntellect verifiers framework
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/HarleyCoops/Dakota1890"
+Documentation = "https://github.com/HarleyCoops/Dakota1890/blob/main/dakota-grammar-env/README.md"
+Repository = "https://github.com/HarleyCoops/Dakota1890"
+Issues = "https://github.com/HarleyCoops/Dakota1890/issues"
+
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"dakota_grammar_env" = ["data/rules/*.json"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+

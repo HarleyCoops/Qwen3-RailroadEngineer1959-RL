@@ -13,11 +13,11 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 import re
 
-from blackfeet_extraction.core.grammar_extraction_prompt import (
+from dakota_extraction.core.grammar_extraction_prompt import (
     build_grammar_extraction_prompt,
     build_focused_rule_extraction_prompt
 )
-from blackfeet_extraction.schemas.grammar_schema import (
+from dakota_extraction.schemas.grammar_schema import (
     GrammarPage,
     GrammarRule,
     InterlinearExample,

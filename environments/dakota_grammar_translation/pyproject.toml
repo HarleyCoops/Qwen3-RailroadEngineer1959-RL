@@ -1,0 +1,30 @@
+[project]
+name = "dakota-grammar-translation"
+description = "Verifiers-compatible environment for Dakota grammar and translation RL training."
+version = "0.1.0"
+requires-python = ">=3.10"
+authors = [
+    { name = "Dakota Language Lab", email = "language@dakota.example" },
+]
+readme = "README.md"
+license = { text = "Apache-2.0" }
+keywords = ["dakota", "translation", "rl", "verifiers", "prime-intellect", "grammar"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Education",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "verifiers>=0.1.5.dev1",
+    "datasets>=2.20.0",
+]
+
+[project.urls]
+Repository = "https://github.com/HarleyCoops/Dakota1890"
+
+[tool.hatch.build.targets.wheel]
+packages = ["dakota_grammar_translation"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+

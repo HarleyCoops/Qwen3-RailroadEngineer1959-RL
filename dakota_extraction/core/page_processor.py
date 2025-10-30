@@ -1,5 +1,5 @@
 """
-Blackfeet Dictionary Page Processor
+Dakota Dictionary Page Processor
 
 This module processes individual dictionary pages using Claude Sonnet 4.5
 to extract structured linguistic data with detailed responses.
@@ -145,12 +145,12 @@ class PageProcessor:
 
     def _build_extraction_prompt(self) -> str:
         """Build the extraction prompt for the model."""
-        return """Analyze this historical Blackfeet language dictionary page from 1890.
+        return """Analyze this historical Dakota language dictionary page from 1890.
 
 **Your Task:**
 Extract ALL dictionary entries in structured format. For each entry, identify:
 
-1. **Blackfeet Word** (headword in Blackfeet language)
+1. **Dakota Word** (headword in Dakota language)
 2. **English Translation** (meaning in English)
 3. **Part of Speech** (noun, verb, adjective, etc., if indicated)
 4. **Grammatical Info** (any notes about grammar, conjugation, etc.)
@@ -174,7 +174,7 @@ Return a JSON object with this structure:
   "entries": [
     {
       "entry_id": "unique_id",
-      "blackfeet": "the Blackfeet word",
+      "dakota": "the Dakota word",
       "english": "the English translation",
       "pos": "part of speech or null",
       "grammatical_notes": "any grammar info or null",
@@ -357,7 +357,7 @@ def main():
         if extraction.get('entries'):
             print("\nFirst entry:")
             first = extraction['entries'][0]
-            print(f"  Blackfeet: {first.get('blackfeet')}")
+            print(f"  Dakota: {first.get('dakota')}")
             print(f"  English: {first.get('english')}")
             print(f"  Confidence: {first.get('confidence')}")
 

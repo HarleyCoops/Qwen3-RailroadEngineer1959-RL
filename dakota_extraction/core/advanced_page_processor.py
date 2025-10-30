@@ -23,12 +23,12 @@ except ImportError:
     raise
 
 import base64
-from blackfeet_extraction.schemas.dictionary_schema import (
+from dakota_extraction.schemas.dictionary_schema import (
     DictionaryEntry,
     validate_entry,
     expand_pos,
 )
-from blackfeet_extraction.core.extraction_prompt import build_extraction_prompt
+from dakota_extraction.core.extraction_prompt import build_extraction_prompt
 
 
 class AdvancedPageProcessor:

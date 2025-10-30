@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from blackfeet_extraction.tools.image_converter import ImageConverter
+from dakota_extraction.tools.image_converter import ImageConverter
 
 
 def main():

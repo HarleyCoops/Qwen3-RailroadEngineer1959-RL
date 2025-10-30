@@ -30,9 +30,9 @@ load_dotenv()
 
 # Import processors
 try:
-    from blackfeet_extraction.tools.image_converter import ImageConverter
-    from blackfeet_extraction.core.advanced_page_processor import AdvancedPageProcessor
-    from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
+    from dakota_extraction.tools.image_converter import ImageConverter
+    from dakota_extraction.core.advanced_page_processor import AdvancedPageProcessor
+    from dakota_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 except ImportError as e:
     print(f"❌ Import error: {e}")
     print("\nPlease ensure you're in the project root and run:")

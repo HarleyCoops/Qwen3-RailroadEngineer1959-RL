@@ -40,7 +40,7 @@ def extract_affixes(rule: Dict) -> List[str]:
 
 
 def create_morphology_task(rule: Dict, example: Dict) -> Optional[Dict]:
-    """Create morphology task from rule and example"""
+    """Create basic morphology task from rule and example"""
 
     dakota_text = example.get('dakota', '')
     if not dakota_text:
@@ -71,6 +71,215 @@ def create_morphology_task(rule: Dict, example: Dict) -> Optional[Dict]:
             "required_affixes": extract_affixes(rule),
             "special_chars": extract_special_chars(dakota_text),
             "difficulty": rule['difficulty'],
+            "source_pages": rule.get('source_pages', []),
+            "confidence": rule.get('confidence', 0.0)
+        }
+    }
+
+
+def create_multi_step_morphology_task(rule: Dict, example: Dict) -> Optional[Dict]:
+    """
+    Create multi-step morphology task that requires progressive affix insertion.
+    
+    Example: Start with base form, then add possessive, then add plural, etc.
+    """
+    dakota_text = example.get('dakota', '')
+    if not dakota_text:
+        return None
+    
+    affixes = extract_affixes(rule)
+    if len(affixes) < 2:  # Need multiple affixes for multi-step
+        return None
+    
+    # Create multi-step prompt
+    prompt = f"Apply this Dakota grammar rule step-by-step: {rule['rule_description']}\n\n"
+    prompt += f"Pattern: {rule['dakota_pattern']}\n\n"
+    prompt += f"Start with: {dakota_text}\n\n"
+    prompt += "Task: Apply the affixes in order to create the complete form.\n"
+    prompt += "Show each intermediate step:\n"
+    prompt += "1. Base form\n"
+    prompt += "2. After first affix\n"
+    prompt += "3. Final form with all affixes\n"
+    
+    # Answer should show the progression
+    answer = f"Step 1: {dakota_text}\n"
+    # This is simplified - in practice, you'd derive intermediate forms
+    if example.get('english'):
+        answer += f"Step 2: [apply first affix]\n"
+        answer += f"Final: {dakota_text} [with all affixes applied]"
+    
+    return {
+        "prompt": prompt,
+        "answer": answer,
+        "info": {
+            "task_type": "multi_step_morphology",
+            "rule_id": rule['rule_id'],
+            "rule_type": rule['rule_type'],
+            "base_form": dakota_text,
+            "required_affixes": affixes,
+            "special_chars": extract_special_chars(dakota_text),
+            "difficulty": "hard",  # Multi-step is always harder
+            "source_pages": rule.get('source_pages', []),
+            "confidence": rule.get('confidence', 0.0),
+            "steps": len(affixes) + 1  # Number of transformation steps
+        }
+    }
+
+
+def create_positive_negative_evidence_task(rule: Dict) -> Optional[Dict]:
+    """
+    Create task that shows positive examples (correct) and negative examples (incorrect)
+    to help model learn the rule boundaries.
+    """
+    positive_examples = rule.get('positive_examples', [])
+    negative_examples = rule.get('negative_examples', [])
+    
+    if not positive_examples or not negative_examples:
+        return None
+    
+    # Pick one positive and one negative example
+    pos_ex = positive_examples[0]
+    neg_ex = negative_examples[0]
+    
+    prompt = f"Study this Dakota grammar rule: {rule['rule_description']}\n\n"
+    prompt += "Correct example (follows the rule):\n"
+    if pos_ex.get('dakota'):
+        prompt += f"  ✓ {pos_ex['dakota']}"
+        if pos_ex.get('english'):
+            prompt += f" - {pos_ex['english']}"
+        prompt += "\n\n"
+    
+    prompt += "Incorrect example (violates the rule):\n"
+    if neg_ex.get('dakota'):
+        prompt += f"  ✗ {neg_ex['dakota']}"
+        if neg_ex.get('english'):
+            prompt += f" - {neg_ex['english']}"
+        prompt += "\n\n"
+    
+    prompt += "Explain why the incorrect example is wrong and how to fix it."
+    
+    answer = f"The incorrect example violates the rule because: [explanation]. "
+    answer += f"The correct form should follow the pattern: {rule.get('dakota_pattern', 'N/A')}"
+    
+    return {
+        "prompt": prompt,
+        "answer": answer,
+        "info": {
+            "task_type": "positive_negative_evidence",
+            "rule_id": rule['rule_id'],
+            "rule_type": rule['rule_type'],
+            "positive_example": pos_ex.get('dakota', ''),
+            "negative_example": neg_ex.get('dakota', ''),
+            "special_chars": extract_special_chars(pos_ex.get('dakota', '') + neg_ex.get('dakota', '')),
+            "difficulty": "medium",
+            "source_pages": rule.get('source_pages', []),
+            "confidence": rule.get('confidence', 0.0)
+        }
+    }
+
+
+def create_affix_insertion_task(rule: Dict, example: Dict) -> Optional[Dict]:
+    """
+    Create task that tests affix insertion at specific positions.
+    
+    Example: "Insert the possessive suffix -ku into 'iŋhiŋ' at the correct position"
+    """
+    dakota_text = example.get('dakota', '')
+    if not dakota_text:
+        return None
+    
+    affixes = extract_affixes(rule)
+    if not affixes:
+        return None
+    
+    # Find base form (strip affixes if present)
+    base_form = dakota_text
+    for affix in affixes:
+        affix_clean = affix.strip("-")
+        if affix.startswith("-"):
+            # Suffix - remove it
+            base_form = re.sub(rf'{re.escape(affix_clean)}$', '', base_form)
+        elif affix.endswith("-"):
+            # Prefix - remove it
+            base_form = re.sub(rf'^{re.escape(affix_clean)}', '', base_form)
+    
+    if base_form == dakota_text:
+        return None  # No affixes to insert
+    
+    prompt = f"Insert the Dakota affix(es) into the base form:\n\n"
+    prompt += f"Base form: {base_form}\n"
+    prompt += f"Affix(es) to insert: {', '.join(affixes)}\n"
+    prompt += f"Rule: {rule['rule_description']}\n\n"
+    prompt += "Show where each affix should be inserted and write the complete form."
+    
+    answer = dakota_text
+    if example.get('english'):
+        answer += f" ({example['english']})"
+    
+    return {
+        "prompt": prompt,
+        "answer": answer,
+        "info": {
+            "task_type": "affix_insertion",
+            "rule_id": rule['rule_id'],
+            "rule_type": rule['rule_type'],
+            "base_form": base_form,
+            "target_form": dakota_text,
+            "required_affixes": affixes,
+            "special_chars": extract_special_chars(dakota_text),
+            "difficulty": "medium",
+            "source_pages": rule.get('source_pages', []),
+            "confidence": rule.get('confidence', 0.0)
+        }
+    }
+
+
+def create_exception_trigger_task(rule: Dict) -> Optional[Dict]:
+    """
+    Create task that tests knowledge of exceptions to the rule.
+    
+    Uses negative_examples or exceptions field to test when rule doesn't apply.
+    """
+    exceptions = rule.get('exceptions', [])
+    negative_examples = rule.get('negative_examples', [])
+    
+    if not exceptions and not negative_examples:
+        return None
+    
+    prompt = f"This Dakota grammar rule has exceptions: {rule['rule_description']}\n\n"
+    prompt += f"Pattern: {rule['dakota_pattern']}\n\n"
+    
+    if exceptions:
+        prompt += "Exceptions:\n"
+        for exc in exceptions[:3]:
+            prompt += f"  - {exc}\n"
+        prompt += "\n"
+    
+    if negative_examples:
+        prompt += "Words that DON'T follow this rule:\n"
+        for neg_ex in negative_examples[:2]:
+            if neg_ex.get('dakota'):
+                prompt += f"  - {neg_ex['dakota']}"
+                if neg_ex.get('english'):
+                    prompt += f" ({neg_ex['english']})"
+                prompt += "\n"
+        prompt += "\n"
+    
+    prompt += "Explain why these are exceptions and what rule they follow instead."
+    
+    answer = f"These words are exceptions because: [explanation]. "
+    if rule.get('constraints'):
+        answer += f"They don't meet the constraint: {rule['constraints']}"
+    
+    return {
+        "prompt": prompt,
+        "answer": answer,
+        "info": {
+            "task_type": "exception_trigger",
+            "rule_id": rule['rule_id'],
+            "rule_type": rule['rule_type'],
+            "exceptions": exceptions[:3] if exceptions else [],
+            "difficulty": "hard",  # Exceptions are always harder
             "source_pages": rule.get('source_pages', []),
             "confidence": rule.get('confidence', 0.0)
         }
@@ -243,9 +452,21 @@ def convert_rule_to_tasks(rule: Dict) -> List[Dict]:
 
         # Type-specific tasks
         if rule_type == 'morphology':
+            # Basic morphology task
             morph_task = create_morphology_task(rule, example)
             if morph_task:
                 tasks.append(morph_task)
+            
+            # Multi-step morphology (if multiple affixes)
+            if len(extract_affixes(rule)) >= 2:
+                multi_step_task = create_multi_step_morphology_task(rule, example)
+                if multi_step_task:
+                    tasks.append(multi_step_task)
+            
+            # Affix insertion task
+            affix_task = create_affix_insertion_task(rule, example)
+            if affix_task:
+                tasks.append(affix_task)
 
         elif rule_type == 'syntax':
             syntax_task = create_syntax_task(rule, example)
@@ -257,6 +478,18 @@ def convert_rule_to_tasks(rule: Dict) -> List[Dict]:
         pattern_task = create_pattern_identification_task(rule)
         if pattern_task:
             tasks.append(pattern_task)
+    
+    # Add positive/negative evidence task (once per rule, not per example)
+    if rule.get('positive_examples') and rule.get('negative_examples'):
+        evidence_task = create_positive_negative_evidence_task(rule)
+        if evidence_task:
+            tasks.append(evidence_task)
+    
+    # Add exception trigger task (once per rule)
+    if rule.get('exceptions') or rule.get('negative_examples'):
+        exception_task = create_exception_trigger_task(rule)
+        if exception_task:
+            tasks.append(exception_task)
 
     return tasks
 
@@ -284,6 +517,10 @@ def main():
     all_tasks = []
     stats = {
         'morphology': 0,
+        'multi_step_morphology': 0,
+        'affix_insertion': 0,
+        'positive_negative_evidence': 0,
+        'exception_trigger': 0,
         'syntax': 0,
         'translation': 0,
         'reverse_translation': 0,

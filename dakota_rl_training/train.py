@@ -1,105 +1,293 @@
 #!/usr/bin/env python3
 """
 Dakota Grammar RL Training Script
+Actual implementation using PrimeIntellect prime-rl framework.
 
-Launch RL training with PrimeIntellect framework
+Replaces the stub with real trainer wiring that loads the Dakota environment
+and runs GRPO training with curriculum learning.
 """
 
 import argparse
-import yaml
+import logging
+import sys
 from pathlib import Path
+from typing import Optional
+
+from dotenv import load_dotenv
+
+# Try to import prime_rl components
+try:
+    from prime_rl.rl import RLConfig, rl
+    from prime_rl.utils.pydantic_config import parse_argv
+    PRIME_RL_AVAILABLE = True
+except ImportError:
+    PRIME_RL_AVAILABLE = False
+    RLConfig = None
+    rl = None
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+
+def check_prerequisites() -> tuple[bool, list[str]]:
+    """Check if all prerequisites are met."""
+    issues = []
+    
+    if not PRIME_RL_AVAILABLE:
+        issues.append("prime_rl not installed. Install with: pip install git+https://github.com/PrimeIntellect-ai/prime-rl.git")
+    
+    try:
+        import verifiers as vf
+    except ImportError:
+        issues.append("verifiers not installed. Install with: pip install git+https://github.com/PrimeIntellect-ai/verifiers.git")
+    
+    # Check if environment package is installed
+    try:
+        from dakota_grammar_translation import load_environment
+    except ImportError:
+        issues.append(
+            "dakota_grammar_translation environment not installed. "
+            "Install with: pip install -e environments/dakota_grammar_translation"
+        )
+    
+    # Check if datasets exist
+    datasets_dir = Path("dakota_rl_training/datasets")
+    if not (datasets_dir / "grammar_tasks_complete.jsonl").exists():
+        issues.append(
+            f"Dataset not found: {datasets_dir}/grammar_tasks_complete.jsonl. "
+            "Run: python convert_rules_to_primeintellect.py"
+        )
+    
+    return len(issues) == 0, issues
+
+
+def create_rl_config(
+    config_path: Optional[Path] = None,
+    output_dir: Path = Path("dakota_rl_training/outputs"),
+    model_name: str = "Qwen/Qwen2.5-7B-Instruct",
+    max_steps: Optional[int] = None,
+    env_dataset_path: Optional[str] = None,
+    wandb_project: str = "dakota-rl-grammar",
+    wandb_name: Optional[str] = None,
+    local: bool = False,
+) -> RLConfig:
+    """
+    Create RLConfig for Dakota grammar training.
+    
+    Args:
+        config_path: Path to TOML config file (if None, uses defaults)
+        output_dir: Directory for outputs (checkpoints, logs, etc.)
+        model_name: HuggingFace model name
+        max_steps: Maximum training steps (None = unlimited)
+        env_dataset_path: Path to RL task dataset JSONL
+        wandb_project: Weights & Biases project name
+        wandb_name: Weights & Biases run name
+        local: If True, use single GPU local training
+    """
+    if not PRIME_RL_AVAILABLE:
+        raise ImportError("prime_rl not available. Install with: pip install git+https://github.com/PrimeIntellect-ai/prime-rl.git")
+    
+    # If config file provided, parse it
+    if config_path and config_path.exists():
+        logger.info(f"Loading config from {config_path}")
+        # Parse command line args as if they were from config file
+        sys.argv = ["train.py", "@", str(config_path)]
+        config = parse_argv(RLConfig)
+        return config
+    
+    # Otherwise create default config programmatically
+    from prime_rl.trainer.rl.config import RLTrainerConfig, LossConfig, AdamWConfig, ConstantSchedulerConfig
+    from prime_rl.trainer.config import ModelConfig, CheckpointConfig, WeightCheckpointConfig, LogConfig
+    from prime_rl.orchestrator.config import OrchestratorConfig, EnvironmentConfig, BufferConfig, ClientConfig
+    from prime_rl.inference.config import InferenceConfig, EngineConfig
+    from prime_rl.utils.config import WandbMonitorConfig
+    
+    # Default dataset path
+    if env_dataset_path is None:
+        env_dataset_path = str(Path("dakota_rl_training/datasets/grammar_tasks_complete.jsonl").resolve())
+    
+    # Trainer config
+    trainer_config = RLTrainerConfig(
+        model=ModelConfig(name=model_name),
+        output_dir=output_dir / "trainer",
+        max_steps=max_steps,
+        async_level=2,
+        loss=LossConfig(),
+        optim=AdamWConfig(lr=5.0e-6),
+        scheduler=ConstantSchedulerConfig(),
+        ckpt=CheckpointConfig(interval=50),
+        weights=WeightCheckpointConfig(),
+        log=LogConfig(),
+        wandb=WandbMonitorConfig(project=wandb_project, name=wandb_name) if wandb_project else None,
+    )
+    
+    # Orchestrator config (loads environment)
+    orchestrator_config = OrchestratorConfig(
+        environment=EnvironmentConfig(
+            id="dakota_grammar_translation",
+            args={
+                "dataset_path": env_dataset_path,
+                "max_examples": -1,
+                "eval_fraction": 0.1,
+                "difficulty_filter": None,  # Can filter: ["easy"], ["medium"], ["hard"]
+                "task_filter": None,  # Can filter: ["morphology"], ["translation"], etc.
+            }
+        ),
+        buffer=BufferConfig(),
+        model=ModelConfig(name=model_name),
+        client=ClientConfig(base_url="http://localhost:8000/v1"),
+        output_dir=output_dir / "orchestrator",
+        max_steps=max_steps,
+        async_level=2,
+        seed=42,
+        log=LogConfig(),
+        wandb=WandbMonitorConfig(project=wandb_project, name=wandb_name) if wandb_project else None,
+    )
+    
+    # Inference config (vLLM server)
+    inference_config = InferenceConfig(
+        model=ModelConfig(name=model_name),
+        engine=EngineConfig(
+            tensor_parallel_size=1 if local else 1,  # Adjust for multi-GPU
+            max_model_len=8192,
+        ),
+        server_port=8000,
+    )
+    
+    # Create RL config
+    config = RLConfig(
+        trainer=trainer_config,
+        orchestrator=orchestrator_config,
+        inference=inference_config,
+        output_dir=output_dir,
+        trainer_gpu_ids=[0] if local else [0],  # Adjust for multi-GPU
+        inference_gpu_ids=[0] if local else [0],
+        log=LogConfig(),
+        clean=False,  # Set True to clean output dir before starting
+    )
+    
+    return config
 
 
 def main():
+    """Main entry point for RL training."""
     parser = argparse.ArgumentParser(
-        description="Train Dakota grammar model with RL"
+        description="Train Dakota grammar model with RL using PrimeIntellect"
     )
     parser.add_argument(
         "--config",
         type=str,
-        default="configs/training_config.yaml",
-        help="Training configuration file"
+        default=None,
+        help="Path to TOML config file (if None, uses defaults)"
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="dakota_rl_training/outputs",
+        help="Output directory for checkpoints, logs, etc."
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="Qwen/Qwen2.5-7B-Instruct",
+        help="HuggingFace model name"
+    )
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=None,
+        help="Maximum training steps (None = unlimited)"
+    )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default=None,
+        help="Path to RL task dataset JSONL"
+    )
+    parser.add_argument(
+        "--wandb-project",
+        type=str,
+        default="dakota-rl-grammar",
+        help="Weights & Biases project name"
+    )
+    parser.add_argument(
+        "--wandb-name",
+        type=str,
+        default=None,
+        help="Weights & Biases run name"
     )
     parser.add_argument(
         "--local",
         action="store_true",
-        help="Run local training (not distributed)"
+        help="Run local training (single GPU)"
     )
     parser.add_argument(
-        "--test",
+        "--check-only",
         action="store_true",
-        help="Test mode (single batch)"
+        help="Only check prerequisites, don't train"
     )
-
+    
     args = parser.parse_args()
-
+    load_dotenv()
+    
     print("\n" + "="*70)
     print(" DAKOTA GRAMMAR RL TRAINING")
     print("="*70)
-
-    # Load config
-    config_path = Path(args.config)
-    if not config_path.exists():
-        print(f"\nERROR: Config file not found: {config_path}")
-        return
-
-    with open(config_path, 'r', encoding='utf-8') as f:
-        config = yaml.safe_load(f)
-
-    print(f"\nConfiguration: {config_path}")
-    print(f"Model: {config['model']['base']}")
-    print(f"Algorithm: {config['training']['algorithm']}")
-    print(f"Epochs: {config['training']['num_epochs']}")
-
-    # Check datasets
-    for env in config['environments']:
-        dataset = Path(env['dataset'])
-        if dataset.exists():
-            print(f"[OK] Dataset found: {dataset}")
-        else:
-            print(f"[ERROR] Dataset not found: {dataset}")
-            print("  Please run: python convert_rules_to_primeintellect.py")
-            return
-
-    print("\n" + "="*70)
-    print(" TRAINING LAUNCH")
-    print("="*70)
-
-    print("\nTo launch training:")
-    print("\n1. Install PrimeIntellect framework:")
-    print("   pip install git+https://github.com/PrimeIntellect-ai/verifiers.git")
-    print("   pip install git+https://github.com/PrimeIntellect-ai/prime-rl.git")
-
-    if args.local:
-        print("\n2. Run local training:")
-        print("   (Training implementation requires PrimeIntellect prime-rl)")
-        print("   prime-rl train --config configs/training_config.yaml --local")
-    else:
-        print("\n2. Run distributed training:")
-        print("   prime-rl train \\")
-        print(f"     --config {args.config} \\")
-        print("     --num-workers 4 \\")
-        print("     --use-toploc \\")
-        print("     --wandb-project dakota-rl-grammar")
-
-    print("\n3. Monitor training:")
-    print("   - Weights & Biases: https://wandb.ai")
-    print("   - Checkpoints: dakota_rl_training/checkpoints/")
-
-    print("\n4. Key metrics to track:")
-    print("   - reward/mean")
-    print("   - char_accuracy (Dakota special characters)")
-    print("   - affix_accuracy (morphology)")
-    print("   - semantic_accuracy (translation)")
-
-    print("\n" + "="*70)
-    print(" READY TO TRAIN")
-    print("="*70)
-    print("\nDataset: 5,657 tasks from 1,036 grammar rules")
-    print("Curriculum: Easy (1,998) -> Medium (2,155) -> Hard (398)")
-    print("Expected time: 8-12 hours on distributed workers")
-    print()
+    
+    # Check prerequisites
+    ready, issues = check_prerequisites()
+    if not ready:
+        print("\n⚠️  Prerequisites check failed:")
+        for issue in issues:
+            print(f"   - {issue}")
+        print("\nPlease install missing dependencies and try again.")
+        return 1
+    
+    if args.check_only:
+        print("\n✓ All prerequisites met!")
+        return 0
+    
+    print("\n✓ All prerequisites met!")
+    
+    # Create config
+    config_path = Path(args.config) if args.config else None
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    try:
+        config = create_rl_config(
+            config_path=config_path,
+            output_dir=output_dir,
+            model_name=args.model,
+            max_steps=args.max_steps,
+            env_dataset_path=args.dataset,
+            wandb_project=args.wandb_project,
+            wandb_name=args.wandb_name,
+            local=args.local,
+        )
+        
+        logger.info("Starting RL training...")
+        logger.info(f"Model: {args.model}")
+        logger.info(f"Output directory: {output_dir}")
+        logger.info(f"Dataset: {args.dataset or 'default'}")
+        logger.info(f"Max steps: {args.max_steps or 'unlimited'}")
+        
+        # Run training
+        rl(config)
+        
+        logger.info("Training completed!")
+        return 0
+        
+    except KeyboardInterrupt:
+        logger.info("Training interrupted by user")
+        return 1
+    except Exception as e:
+        logger.error(f"Training failed: {e}", exc_info=True)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    exit(main())
