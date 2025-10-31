@@ -18,54 +18,7 @@
 
 We take a 1890 grammar textbook and split it into two complementary components that feed into each other:
 
-```mermaid
-graph TB
-    subgraph Source["Historical Textbook Source"]
-        Book["Stephen Return Riggs<br/>Dakota Grammar & Dictionary (1890)<br/>665 pages, Internet Archive"]
-    end
-
-    subgraph Extraction["Phase 1: VLM Extraction"]
-        Grammar["Grammar Rules Extraction<br/>Images 31-92 (62 pages)<br/>Claude Sonnet 4.5<br/>1,036 rules identified"]
-        Dict["Dictionary Extraction<br/>Images 93-440 (348 pages)<br/>~10,000 {dakota:english} pairs"]
-    end
-
-    subgraph Processing["Phase 2: Data Processing"]
-        RLConvert["RL Task Generation<br/>1 rule → 5.5 tasks<br/>5,657 total tasks"]
-        Synthetic["Synthetic Data Generation<br/>Bi-directional pairs<br/>{english:dakota}<br/>Stoney Nakoda methodology"]
-    end
-
-    subgraph Training["Phase 3: RL Training Loop"]
-        Gym["Grammar Gym Environment<br/>PrimeIntellect GRPO<br/>Multi-turn verification<br/>TOPLOC character validation"]
-        Rewards["Compositional Rewards<br/>Character preservation (40%)<br/>Affix accuracy (40%)<br/>Semantic correctness (20%)"]
-        Curriculum["Curriculum Learning<br/>Easy (1,998 tasks) → 80%<br/>Medium (2,155 tasks) → 75%<br/>Hard (398 tasks) → 70%"]
-    end
-
-    subgraph Output["Phase 4: Trained Model"]
-        Model["Grammar-Aware Dakota Model<br/>Qwen2.5-7B-Instruct + LoRA<br/>Verified special character handling<br/>Morphologically accurate"]
-    end
-
-    Book --> Grammar
-    Book --> Dict
-    Grammar --> RLConvert
-    Dict --> Synthetic
-    RLConvert --> Gym
-    Synthetic --> Gym
-    Gym --> Rewards
-    Rewards --> Curriculum
-    Curriculum --> Model
-    Synthetic -.->|Validation| Gym
-    Grammar -.->|Verification Rules| Rewards
-
-    style Book fill:#e1f5ff
-    style Grammar fill:#fff4e1
-    style Dict fill:#fff4e1
-    style RLConvert fill:#f0e1ff
-    style Synthetic fill:#f0e1ff
-    style Gym fill:#e1ffe1
-    style Rewards fill:#e1ffe1
-    style Curriculum fill:#e1ffe1
-    style Model fill:#ffe1e1
-```
+![Dakota Grammar Gym Methodology](diagram.png)
 
 ### Why This Is Novel
 
