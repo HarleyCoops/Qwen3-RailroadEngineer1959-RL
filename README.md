@@ -8,6 +8,8 @@
 
 ---
 
+**Oct 30th update**: `/data` folder contains all extraction, processing, and reasoning traces from the RL build
+
 ## Novel Methodology: Closed-Loop Grammar Gym
 
 **This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
@@ -362,9 +364,6 @@ prime-rl train \
 - `CLAUDE.md` - Project instructions for AI assistants
 
 ### Output Directories
-
-**Oct 30th update**: `/data` folder contains all extraction, processing, and reasoning traces from the RL build
-
 - `data/processed_images/` - Converted JPEG images (440 files)
 - `data/grammar_extracted/` - Raw grammar rules (62 pages)
 - `data/rl_training_rules/` - Organized RL rules (1,036 rules)
