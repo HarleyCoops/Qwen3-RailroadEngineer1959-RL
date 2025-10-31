@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "Dakota Language Preservation via VLM Extraction and RL Training"
+title: "Grammar-to-RL: Training Language Models on Historical Texts via Compositional Rewards"
 message: "If you use this software or methodology, please cite as below."
 type: software
 authors:
