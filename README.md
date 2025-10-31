@@ -19,7 +19,7 @@
 
 We take a 1890 grammar textbook and split it into two complementary components that feed into each other:
 
-![Dakota Grammar Gym Methodology](diagram.png)
+![Dakota Grammar Gym Methodology](docs/diagram.png)
 
 ### Why This Is Novel
 
@@ -131,16 +131,16 @@ Man     a    son-his    two   : and   youngest  the  that father-his the said-to
 - **Pages 93-440**: Dictionary entries (~10,000 words)
 
 ### Step 2: Image Conversion
-**Script**: `convert_all_images.py`
+**Script**: `scripts/extraction/convert_all_images.py`
 ```bash
-python convert_all_images.py
+python scripts/extraction/convert_all_images.py
 ```
 **Output**: 440 JPEG images in `data/processed_images/`
 
 ### Step 3A: Grammar Extraction (RL Gym Foundation)
-**Script**: `extract_grammar_pages.py`
+**Script**: `scripts/extraction/extract_grammar_pages.py`
 ```bash
-python extract_grammar_pages.py --pages 31-92 --yes
+python scripts/extraction/extract_grammar_pages.py --pages 31-92 --yes
 ```
 **Process**:
 - Claude Sonnet 4.5 extracts linguistic rules
@@ -156,9 +156,9 @@ python extract_grammar_pages.py --pages 31-92 --yes
 **Key Innovation**: Each grammar rule becomes a verifiable constraint
 
 ### Step 3B: Dictionary Extraction (Vocabulary Source)
-**Script**: `extract_dakota_dictionary_v2.py`
+**Script**: `scripts/extraction/extract_dakota_dictionary_v2.py`
 ```bash
-python extract_dakota_dictionary_v2.py --pages 93-440
+python scripts/extraction/extract_dakota_dictionary_v2.py --pages 93-440
 ```
 **Output**: `data/dictionary_extracted/`
 - ~10,000 {dakota:english} pairs
@@ -166,9 +166,9 @@ python extract_dakota_dictionary_v2.py --pages 93-440
 - Part of speech tags
 
 ### Step 4: Grammar → RL Environment Conversion
-**Script**: `organize_grammar_for_rl.py`
+**Script**: `scripts/rl/organize_grammar_for_rl.py`
 ```bash
-python organize_grammar_for_rl.py --input data/grammar_extracted/
+python scripts/rl/organize_grammar_for_rl.py --input data/grammar_extracted/
 ```
 **Process**:
 - Rules → RL task format
@@ -182,9 +182,9 @@ python organize_grammar_for_rl.py --input data/grammar_extracted/
 - Source page tracking
 
 ### Step 5: RL Task Generation
-**Script**: `convert_rules_to_primeintellect.py`
+**Script**: `scripts/conversion/convert_rules_to_primeintellect.py`
 ```bash
-python convert_rules_to_primeintellect.py
+python scripts/conversion/convert_rules_to_primeintellect.py
 ```
 **Process**:
 - 1 rule → 5.5 tasks average
@@ -204,9 +204,9 @@ python convert_rules_to_primeintellect.py
   - Advanced: 1,106 tasks
 
 ### Step 6: Synthetic Dataset Generation
-**Script**: `generate_synthetic_dakota.py` (Stoney Nakoda methodology)
+**Script**: `scripts/conversion/generate_synthetic_dakota.py` (Stoney Nakoda methodology)
 ```bash
-python generate_synthetic_dakota.py --dictionary data/dictionary_extracted/
+python scripts/conversion/generate_synthetic_dakota.py --dictionary data/dictionary_extracted/
 ```
 **Process**:
 1. Load dictionary pairs: {dakota:english}
@@ -226,9 +226,9 @@ python generate_synthetic_dakota.py --dictionary data/dictionary_extracted/
 - Q&A format for fine-tuning
 
 ### Step 7: RL Environment Setup
-**Script**: `create_grammar_rl_environment.py`
+**Script**: `scripts/rl/create_grammar_rl_environment.py`
 ```bash
-python create_grammar_rl_environment.py --rules-dir data/rl_training_rules/
+python scripts/rl/create_grammar_rl_environment.py --rules-dir data/rl_training_rules/
 ```
 **Creates**:
 - `DakotaGrammarEnv`: Multi-turn verification
@@ -302,14 +302,25 @@ prime-rl train \
 ## Key Files & Documentation
 
 ### Core Scripts
+
+**Extraction Scripts** (`scripts/extraction/`):
 1. `convert_all_images.py` - JP2 → JPEG conversion
 2. `extract_grammar_pages.py` - Grammar rule extraction
 3. `extract_dakota_dictionary_v2.py` - Dictionary extraction
-4. `organize_grammar_for_rl.py` - Rules → RL format
-5. `convert_rules_to_primeintellect.py` - Generate RL tasks
-6. `generate_synthetic_dakota.py` - Synthetic data generation
-7. `create_grammar_rl_environment.py` - RL environment setup
-8. `dakota_rl_training/train.py` - Launch training
+
+**Conversion Scripts** (`scripts/conversion/`):
+4. `convert_rules_to_primeintellect.py` - Generate RL tasks
+5. `generate_synthetic_dakota.py` - Synthetic data generation
+6. `convert_extracted_to_chat.py` - Convert to chat format
+
+**RL Scripts** (`scripts/rl/`):
+7. `organize_grammar_for_rl.py` - Rules → RL format
+8. `create_grammar_rl_environment.py` - RL environment setup
+9. `publish_dakota_environment.py` - Publish to PrimeIntellect
+10. `run_complete_grammar_pipeline.py` - Run full pipeline
+
+**Training**:
+11. `dakota_rl_training/train.py` - Launch training
 
 ### Documentation
 - `GRAMMAR_RL_PIPELINE.md` - Complete grammar extraction guide
@@ -462,20 +473,20 @@ echo "ANTHROPIC_API_KEY=your_key_here" > .env
 
 ### 2. Convert Images
 ```bash
-python convert_all_images.py
+python scripts/extraction/convert_all_images.py
 # Output: 440 images in data/processed_images/
 ```
 
 ### 3. Extract Grammar
 ```bash
-python extract_grammar_pages.py --pages 31-92 --yes
+python scripts/extraction/extract_grammar_pages.py --pages 31-92 --yes
 # Output: 1,036 rules in data/grammar_extracted/
 ```
 
 ### 4. Generate RL Tasks
 ```bash
-python organize_grammar_for_rl.py --input data/grammar_extracted/
-python convert_rules_to_primeintellect.py
+python scripts/rl/organize_grammar_for_rl.py --input data/grammar_extracted/
+python scripts/conversion/convert_rules_to_primeintellect.py
 # Output: 5,657 tasks in dakota_rl_training/datasets/
 ```
 

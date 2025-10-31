@@ -6,7 +6,8 @@ Convert all JP2 files to JPEG for the entire Dakota dictionary
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
+# Add project root to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from dakota_extraction.tools.image_converter import ImageConverter
 
