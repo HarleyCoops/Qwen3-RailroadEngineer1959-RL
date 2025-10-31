@@ -16,6 +16,17 @@ logger = logging.getLogger(__name__)
 
 def check_prerequisites() -> bool:
     """Check if required tools are installed."""
+    # Check for uv-installed prime in .local/bin (common on Windows)
+    import platform
+    if platform.system() == "Windows":
+        user_home = Path.home()
+        uv_bin_path = user_home / ".local" / "bin"
+        if uv_bin_path.exists() and str(uv_bin_path) not in os.environ.get("PATH", ""):
+            # Add to PATH for this session
+            current_path = os.environ.get("PATH", "")
+            os.environ["PATH"] = f"{uv_bin_path}{os.pathsep}{current_path}"
+            logger.info(f"Added {uv_bin_path} to PATH for this session")
+    
     # Try local prime first
     try:
         result = subprocess.run(
@@ -44,7 +55,8 @@ def check_prerequisites() -> bool:
     except (subprocess.TimeoutExpired, FileNotFoundError):
         pass
     
-    logger.warning("PrimeIntellect CLI not found. Install with: pip install prime-intellect-cli or uv tool install prime")
+    logger.warning("PrimeIntellect CLI not found. Install with: uv tool install prime")
+    logger.warning("If installed via uv, add C:\\Users\\<user>\\.local\\bin to your PATH")
     return False
 
 
