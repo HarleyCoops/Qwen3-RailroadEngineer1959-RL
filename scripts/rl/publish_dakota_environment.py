@@ -4,11 +4,22 @@ Adapted from Stoney Nakoda publishing patterns.
 """
 
 import os
+import sys
 import subprocess
 import logging
 from pathlib import Path
 from typing import Optional, List
 from dotenv import load_dotenv
+
+# Fix Windows console encoding for Unicode characters
+if sys.platform == "win32":
+    # Set UTF-8 encoding for stdout/stderr
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    # Set environment variable for subprocesses
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -29,11 +40,19 @@ def check_prerequisites() -> bool:
     
     # Try local prime first
     try:
+        env = os.environ.copy()
+        if sys.platform == "win32":
+            env['PYTHONIOENCODING'] = 'utf-8'
+            env['PYTHONLEGACYWINDOWSSTDIO'] = '0'
+        
         result = subprocess.run(
             ["prime", "--version"],
             capture_output=True,
             text=True,
-            timeout=5
+            encoding='utf-8',
+            errors='replace',
+            timeout=5,
+            env=env
         )
         if result.returncode == 0:
             logger.info("PrimeIntellect CLI found (local)")
@@ -96,12 +115,20 @@ def build_package(package_dir: Path) -> bool:
     
     # Try python -m build
     try:
+        env = os.environ.copy()
+        if sys.platform == "win32":
+            env['PYTHONIOENCODING'] = 'utf-8'
+            env['PYTHONLEGACYWINDOWSSTDIO'] = '0'
+        
         result = subprocess.run(
             ["python", "-m", "build"],
             cwd=package_dir,
             check=True,
             capture_output=True,
-            text=True
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            env=env
         )
         logger.info("Package built successfully with python -m build")
         return True
@@ -192,12 +219,21 @@ def publish_environment(
     logger.info(f"Pushing {env_name} v{version} to PrimeIntellect...")
     logger.info(f"Running from: {work_dir}")
     try:
+        # Set UTF-8 encoding for subprocess on Windows
+        env = os.environ.copy()
+        if sys.platform == "win32":
+            env['PYTHONIOENCODING'] = 'utf-8'
+            env['PYTHONLEGACYWINDOWSSTDIO'] = '0'
+        
         result = subprocess.run(
             cmd,
             cwd=work_dir,
             check=True,
             capture_output=True,
-            text=True
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            env=env
         )
         logger.info("Environment pushed successfully!")
         logger.info(result.stdout)
