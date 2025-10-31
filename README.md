@@ -2,9 +2,25 @@
 
 ![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
 ![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)
-![Works Offline](https://img.shields.io/badge/smoke%20tests-offline-brightgreen)
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![Code style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)
+![Smoke Tests](https://img.shields.io/badge/smoke%20tests-offline-brightgreen)
+![Python Package](https://img.shields.io/badge/pypi-dakota--grammar--env-blue)
 
 ![Dakota Dictionary Sample](Public/Dictionary.jpeg)
+
+## CI Status
+
+**CI Badge**: Shows the status of our Continuous Integration pipeline:
+- ✅ **Passing**: All checks (lint, tests, packaging) are successful
+- ❌ **Failing**: One or more checks need attention (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml))
+
+**Smoke Tests**: "Offline" means our core tests run without requiring external API keys (Anthropic, OpenRouter, etc.). This ensures basic functionality works even when offline. Tests marked with API keywords are automatically skipped in CI to avoid dependency on external services.
+
+**Current CI Jobs**:
+1. **Ruff Lint** - Code quality and style checks
+2. **Offline Tests** - Core functionality tests (no API dependencies)
+3. **Packaging** - Build verification (conditional, runs only if root `pyproject.toml` exists)
 
 ---
 

@@ -57,6 +57,8 @@ jobs:
     name: Packaging
     runs-on: ubuntu-latest
     needs: tests
+    # Only build if pyproject.toml exists at root (skip for monorepo)
+    if: ${{ hashFiles('pyproject.toml') != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
