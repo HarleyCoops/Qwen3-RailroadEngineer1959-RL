@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Oct 30th update: /data folder contains all extraction, processing, and reasoning traces from the RL build
+# Note: The /data folder is now tracked with Git LFS (Large File Storage)
+
 *.so
 .Python
 build/
