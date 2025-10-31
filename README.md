@@ -1,4 +1,4 @@
-# Dakota Language Preservation Through Vision-Language Models
+# Dakota Language Preservation Through Vision-Language Models 
 
 ![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
 ![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)
