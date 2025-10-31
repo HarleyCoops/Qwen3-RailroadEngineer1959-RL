@@ -9,7 +9,11 @@
 ![Smoke Tests](https://img.shields.io/badge/smoke%20tests-offline-brightgreen)
 ![Python Package](https://img.shields.io/badge/pypi-dakota--grammar--env-blue)
 
+<div align="center">
+
 ![Dakota Dictionary Sample](Public/Dictionary.jpeg)
+
+</div>
 
 ## Novel Methodology: Closed-Loop Grammar Gym
 
