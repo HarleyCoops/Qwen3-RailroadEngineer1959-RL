@@ -1,7 +1,5 @@
 # Dakota Language Preservation Through Vision-Language Models
 
-**Oct 30 update**: `/data` now preserves every artifact of the Dakota Grammar RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
-
 ![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
 ![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
@@ -10,25 +8,6 @@
 ![Python Package](https://img.shields.io/badge/pypi-dakota--grammar--env-blue)
 
 ![Dakota Dictionary Sample](Public/Dictionary.jpeg)
-
-## CI Status
-
-**CI Badge**: Shows the status of our Continuous Integration pipeline:
-
-- ✅ **Passing**: All checks (lint, tests, packaging) are successful
-- ❌ **Failing**: One or more checks need attention (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml))
-
-**Smoke Tests**: "Offline" means our core tests run without requiring external API keys (Anthropic, OpenRouter, etc.). This ensures basic functionality works even when offline. Tests marked with API keywords are automatically skipped in CI to avoid dependency on external services.
-
-**Current CI Jobs**:
-
-1. **Ruff Lint** - Code quality and style checks
-2. **Offline Tests** - Core functionality tests (no API dependencies)
-3. **Packaging** - Build verification (conditional, runs only if root `pyproject.toml` exists)
-
----
-
-**Oct 30th update**: `/data` folder contains all extraction, processing, and reasoning traces from the RL build
 
 ## Novel Methodology: Closed-Loop Grammar Gym
 
