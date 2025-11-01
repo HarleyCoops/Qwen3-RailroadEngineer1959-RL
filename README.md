@@ -1,5 +1,11 @@
 # Grammar-to-RL: Training Language Models on Historical Texts via Compositional Rewards
 
+<div align="right">
+
+<sub>This README is optimized for dark mode. Enable dark mode in your GitHub settings for the best viewing experience.</sub>
+
+</div>
+
 **Oct 31 update**: `/data` now preserves every artifact of the Dakota Grammar RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
 
 ![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
@@ -19,7 +25,13 @@
 
 **This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
 
-### The Innovation
+<div align="center">
+
+<img src="Jsoncrack.jpg" alt="JSONCrack Visualization" style="filter: brightness(0.9) contrast(1.1);">
+
+</div>
+
+### The Process So Far
 
 We take a 1890 grammar textbook and split it into two complementary components that feed into each other:
 
