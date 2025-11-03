@@ -88,40 +88,46 @@ prime env eval <environment-name> `
 - Use `-r` or `--rollouts-per-example` for rollouts per example
 - The environment loads its own dataset (no `--dataset` flag needed)
 
-#### Example: Dakota Grammar Eval
+#### Example: Dakota Grammar Eval (Minimal Parameters)
+
+**Start with smallest model and minimal parameters for testing:**
 
 ```powershell
 # First, install the environment if not already installed
-prime env install HarleyCoops/dakota-grammar-env
+# Note: Use owner/name format for installation
+prime env install harleycooper/dakota1890
 
-# Using Claude Sonnet (via API)
-prime env eval dakota-grammar-env `
-  -m claude-3-5-sonnet `
-  -n 100 `
-  -r 3
+# Minimal test run with smallest model
+prime env eval dakota1890 `
+  -m openai/gpt-5-nano `
+  -n 5 `
+  -r 1 `
+  -t 256 `
+  -T 0.7
 
-# Using GPT-4 (via API)
-prime env eval dakota-grammar-env `
-  -m gpt-4 `
-  -n 100 `
-  -r 3
+# Slightly larger test with 7B model
+prime env eval dakota1890 `
+  -m mistralai/mistral-7b-instruct-v0.3 `
+  -n 10 `
+  -r 2 `
+  -t 512 `
+  -T 0.6
 
-# Using open-source model (e.g., Qwen via Prime Inference)
-prime env eval dakota-grammar-env `
-  -m Qwen/Qwen2.5-7B-Instruct `
-  -n 50 `
-  -r 3
-
-# With custom temperature and max tokens
-prime env eval dakota-grammar-env `
-  -m claude-3-5-sonnet `
+# Production run with more examples
+prime env eval dakota1890 `
+  -m meta-llama/llama-3.1-8b-instruct `
   -n 100 `
   -r 3 `
-  -T 0.7 `
-  -t 1024
+  -t 1024 `
+  -T 0.7
 ```
 
-**Note**: The environment name is just `dakota-grammar-env` (not `HarleyCoops/dakota-grammar-env`) after installation.
+**Parameter Guidelines**:
+- **Small test**: `-n 5`, `-r 1`, `-t 256` (fastest, cheapest)
+- **Medium test**: `-n 10`, `-r 2`, `-t 512` (balanced)
+- **Full eval**: `-n 100`, `-r 3`, `-t 1024` (comprehensive)
+
+**Note**: The environment name is just `dakota1890` (not `harleycooper/dakota1890`) after installation.
 
 ### Option 2: Via Environment Hub Web UI
 
@@ -148,18 +154,28 @@ prime env eval dakota-grammar-env `
 
 ## Available Models
 
-### API Models (No Setup Required)
-- `claude-3-5-sonnet` - Claude 3.5 Sonnet
-- `claude-3-opus` - Claude 3 Opus
-- `gpt-4` - GPT-4
-- `gpt-4-turbo` - GPT-4 Turbo
-- `gpt-3.5-turbo` - GPT-3.5 Turbo
+### Recommended: Small Open-Source Models for Testing
 
-### Open-Source Models (Requires Model Spec)
-- `Qwen/Qwen2.5-7B-Instruct`
-- `meta-llama/Llama-3-8B-Instruct`
-- `mistralai/Mistral-7B-Instruct-v0.2`
-- Custom models via HuggingFace or model path
+For initial testing, use the smallest available open-source models:
+
+**Smallest/Cheapest Options**:
+- `openai/gpt-5-nano` - Smallest, cheapest ($0.05/$0.4 per 1M tokens)
+- `openai/gpt-oss-20b` - Open-source 20B model ($0.07/$0.3 per 1M tokens)
+- `mistralai/mistral-7b-instruct-v0.3` - Mistral 7B ($0.1/$0.25 per 1M tokens)
+- `meta-llama/llama-3.1-8b-instruct` - Llama 3.1 8B ($0.9/$0.9 per 1M tokens)
+
+**Check Available Models**:
+```powershell
+# List all available models on Prime Inference
+prime inference models
+```
+
+### API Models (Require API Keys)
+
+These require separate API keys and may not be available:
+- `anthropic/claude-*` - Requires ANTHROPIC_API_KEY
+- `openai/gpt-*` - Requires OPENAI_API_KEY
+- `google/gemini-*` - Requires GOOGLE_API_KEY
 
 ---
 
@@ -221,7 +237,7 @@ After running an eval:
 
 ```bash
 # Check if environment exists
-prime env info HarleyCoops/dakota-grammar-env
+prime env info harleycooper/dakota1890
 ```
 
 If not published, see: `docs/guides/PRIMEINTELLECT_PUBLISHING_GUIDE.md`
@@ -230,46 +246,52 @@ If not published, see: `docs/guides/PRIMEINTELLECT_PUBLISHING_GUIDE.md`
 
 ```powershell
 # Install the Dakota grammar environment
-prime env install HarleyCoops/dakota-grammar-env
+prime env install harleycooper/dakota1890
 
 # Verify installation
-python -c "import dakota_grammar_env"
+python -c "import dakota1890"
 ```
 
 The environment includes its own dataset, so no separate dataset file is needed.
 
-### Step 3: Run Hosted Eval
+### Step 3: Run Hosted Eval (Minimal Parameters First)
+
+**Start with smallest model and minimal parameters**:
 
 ```powershell
-# Set API key (for API models like Claude/GPT-4)
+# Set API key (only needed for Prime Inference API access)
 $env:PI_API_KEY="your_key"
-# For OpenAI models, also set:
-$env:OPENAI_API_KEY="your_openai_key"
-# For Anthropic models, also set:
-$env:ANTHROPIC_API_KEY="your_anthropic_key"
 
 # Verify prime is accessible
 prime --version
 
 # Install the environment first if not already installed
-prime env install HarleyCoops/dakota-grammar-env
+prime env install harleycooper/dakota1890
 
-# Run eval on easy tasks with Claude
-prime env eval dakota-grammar-env `
-  -m claude-3-5-sonnet `
-  -n 100 `
-  -r 3 `
-  -T 0.7 `
-  -t 1024
+# MINIMAL TEST RUN - Smallest model, minimal parameters
+prime env eval dakota1890 `
+  -m openai/gpt-5-nano `
+  -n 5 `
+  -r 1 `
+  -t 256 `
+  -T 0.7
+
+# If successful, try slightly larger:
+prime env eval dakota1890 `
+  -m mistralai/mistral-7b-instruct-v0.3 `
+  -n 10 `
+  -r 2 `
+  -t 512 `
+  -T 0.6
 ```
 
-**Available Options**:
-- `-m, --model`: Model to use (default: meta-llama/llama-3.1-70b-instruct)
-- `-n, --num-examples`: Number of examples (default: 5)
-- `-r, --rollouts-per-example`: Rollouts per example (default: 3)
+**Parameter Guide**:
+- `-m, --model`: Model to use (start with `openai/gpt-5-nano` for smallest)
+- `-n, --num-examples`: Number of examples (start with `5` for testing)
+- `-r, --rollouts-per-example`: Rollouts per example (start with `1` for testing)
 - `-c, --max-concurrent`: Max concurrent requests (default: 32)
-- `-t, --max-tokens`: Max tokens to generate
-- `-T, --temperature`: Temperature for sampling
+- `-t, --max-tokens`: Max tokens to generate (start with `256` for testing)
+- `-T, --temperature`: Temperature for sampling (0.6-0.7 recommended)
 - `-s, --save-results`: Save results to disk (default: True)
 - `-v, --verbose`: Verbose output
 - `-P, --push-to-hub`: Push results to Prime Evals Hub
@@ -339,7 +361,7 @@ if ($currentPath -notlike "*$localBinPath*") {
 ### Environment Not Found
 
 If you get "environment not found":
-1. Verify environment is published: `prime env info HarleyCoops/dakota-grammar-env`
+1. Verify environment is published: `prime env info harleycooper/dakota1890`
 2. If not published, follow: `docs/guides/PRIMEINTELLECT_PUBLISHING_GUIDE.md`
 
 ### API Key Issues
@@ -366,8 +388,8 @@ If you need to use a custom dataset, you'll need to:
 To check what datasets are available in an environment:
 ```powershell
 # Install and inspect the environment
-prime env install HarleyCoops/dakota-grammar-env
-python -c "from dakota_grammar_env import DakotaGrammarEnv; env = DakotaGrammarEnv(); print(env.get_dataset())"
+prime env install harleycooper/dakota1890
+python -c "from dakota1890 import DakotaGrammarEnv; env = DakotaGrammarEnv(); print(env.get_dataset())"
 ```
 
 ---
