@@ -75,39 +75,53 @@ powershell -ExecutionPolicy Bypass -File scripts/setup_prime_cli.ps1
 
 ```powershell
 # PowerShell syntax (use backticks for line continuation)
-prime env eval `
-  --env <owner>/<env-name> `
-  --model <model-name> `
-  --dataset <path-to-dataset> `
-  --num-examples <count>
+prime env eval <environment-name> `
+  -m <model-name> `
+  -n <num-examples> `
+  -r <rollouts-per-example>
 ```
 
-**Note**: According to Prime Intellect docs, the command is `prime env eval` (not `prime eval run`)
+**Key Points**:
+- Environment name is a **positional argument** (not `--env`)
+- Use `-m` or `--model` for model selection
+- Use `-n` or `--num-examples` for number of examples
+- Use `-r` or `--rollouts-per-example` for rollouts per example
+- The environment loads its own dataset (no `--dataset` flag needed)
 
 #### Example: Dakota Grammar Eval
 
 ```powershell
-# Using Claude Sonnet
-prime env eval `
-  --env HarleyCoops/dakota-grammar-env `
-  --model claude-3-5-sonnet `
-  --dataset dakota_rl_training/datasets/grammar_tasks_easy.jsonl `
-  --num-examples 100
+# First, install the environment if not already installed
+prime env install HarleyCoops/dakota-grammar-env
 
-# Using GPT-4
-prime env eval `
-  --env HarleyCoops/dakota-grammar-env `
-  --model gpt-4 `
-  --dataset dakota_rl_training/datasets/grammar_tasks_medium.jsonl `
-  --num-examples 100
+# Using Claude Sonnet (via API)
+prime env eval dakota-grammar-env `
+  -m claude-3-5-sonnet `
+  -n 100 `
+  -r 3
 
-# Using open-source model (e.g., Qwen)
-prime env eval `
-  --env HarleyCoops/dakota-grammar-env `
-  --model Qwen/Qwen2.5-7B-Instruct `
-  --dataset dakota_rl_training/datasets/grammar_tasks_hard.jsonl `
-  --num-examples 50
+# Using GPT-4 (via API)
+prime env eval dakota-grammar-env `
+  -m gpt-4 `
+  -n 100 `
+  -r 3
+
+# Using open-source model (e.g., Qwen via Prime Inference)
+prime env eval dakota-grammar-env `
+  -m Qwen/Qwen2.5-7B-Instruct `
+  -n 50 `
+  -r 3
+
+# With custom temperature and max tokens
+prime env eval dakota-grammar-env `
+  -m claude-3-5-sonnet `
+  -n 100 `
+  -r 3 `
+  -T 0.7 `
+  -t 1024
 ```
+
+**Note**: The environment name is just `dakota-grammar-env` (not `HarleyCoops/dakota-grammar-env`) after installation.
 
 ### Option 2: Via Environment Hub Web UI
 
@@ -212,36 +226,68 @@ prime env info HarleyCoops/dakota-grammar-env
 
 If not published, see: `docs/guides/PRIMEINTELLECT_PUBLISHING_GUIDE.md`
 
-### Step 2: Prepare Dataset
+### Step 2: Install Environment
 
-Your datasets are ready:
-- `dakota_rl_training/datasets/grammar_tasks_easy.jsonl`
-- `dakota_rl_training/datasets/grammar_tasks_medium.jsonl`
-- `dakota_rl_training/datasets/grammar_tasks_hard.jsonl`
+```powershell
+# Install the Dakota grammar environment
+prime env install HarleyCoops/dakota-grammar-env
+
+# Verify installation
+python -c "import dakota_grammar_env"
+```
+
+The environment includes its own dataset, so no separate dataset file is needed.
 
 ### Step 3: Run Hosted Eval
 
 ```powershell
-# Set API key
+# Set API key (for API models like Claude/GPT-4)
 $env:PI_API_KEY="your_key"
+# For OpenAI models, also set:
+$env:OPENAI_API_KEY="your_openai_key"
+# For Anthropic models, also set:
+$env:ANTHROPIC_API_KEY="your_anthropic_key"
 
 # Verify prime is accessible
 prime --version
 
+# Install the environment first if not already installed
+prime env install HarleyCoops/dakota-grammar-env
+
 # Run eval on easy tasks with Claude
-prime env eval `
-  --env HarleyCoops/dakota-grammar-env `
-  --model claude-3-5-sonnet `
-  --dataset dakota_rl_training/datasets/grammar_tasks_easy.jsonl `
-  --num-examples 100 `
-  --output-dir eval_results
+prime env eval dakota-grammar-env `
+  -m claude-3-5-sonnet `
+  -n 100 `
+  -r 3 `
+  -T 0.7 `
+  -t 1024
 ```
+
+**Available Options**:
+- `-m, --model`: Model to use (default: meta-llama/llama-3.1-70b-instruct)
+- `-n, --num-examples`: Number of examples (default: 5)
+- `-r, --rollouts-per-example`: Rollouts per example (default: 3)
+- `-c, --max-concurrent`: Max concurrent requests (default: 32)
+- `-t, --max-tokens`: Max tokens to generate
+- `-T, --temperature`: Temperature for sampling
+- `-s, --save-results`: Save results to disk (default: True)
+- `-v, --verbose`: Verbose output
+- `-P, --push-to-hub`: Push results to Prime Evals Hub
 
 ### Step 4: Monitor Progress
 
 ```powershell
-# Check eval status (command may vary - check Prime docs)
-prime env eval status <eval-id>
+# View eval results (saved to disk by default)
+# Results are saved in the current directory
+
+# List recent evaluations
+prime eval list
+
+# Get specific evaluation details
+prime eval get <eval-id>
+
+# View samples from an evaluation
+prime eval samples <eval-id>
 
 # Or view in dashboard
 Start-Process "https://app.primeintellect.ai/dashboard/evals"
@@ -311,13 +357,18 @@ $env:PRIME_API_KEY="your_key_here"
 
 ### Dataset Format Issues
 
-Verify your JSONL format:
-```powershell
-# Check first few lines
-Get-Content dakota_rl_training/datasets/grammar_tasks_easy.jsonl -Head 3
-```
+**Note**: You don't specify a dataset file with `prime env eval`. The environment loads its own dataset.
 
-Each line should be valid JSON with `id`, `prompt`, and optional `expected` fields.
+If you need to use a custom dataset, you'll need to:
+1. Modify the environment to load your dataset, or
+2. Use the environment's dataset loading mechanism via environment args
+
+To check what datasets are available in an environment:
+```powershell
+# Install and inspect the environment
+prime env install HarleyCoops/dakota-grammar-env
+python -c "from dakota_grammar_env import DakotaGrammarEnv; env = DakotaGrammarEnv(); print(env.get_dataset())"
+```
 
 ---
 
