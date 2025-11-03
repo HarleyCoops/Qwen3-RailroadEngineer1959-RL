@@ -522,7 +522,7 @@ If you use this work, please cite:
 ```bibtex
 @software{dakota_rl_grammar_2025,
   title = {Dakota Language Preservation Through VLM-Based Grammar Extraction and RL Training},
-  author = {[Authors]},
+  author = {Cooper, Christian H.},
   year = {2025},
   url = {https://github.com/[repo]},
   note = {Novel closed-loop methodology for low-resource language training}
