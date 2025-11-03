@@ -97,35 +97,48 @@ prime env eval <environment-name> `
 # Note: Use owner/name format for installation
 prime env install harleycooper/dakota1890
 
+# Get the absolute path to your dataset
+$datasetPath = (Resolve-Path dakota_rl_training/datasets/grammar_tasks_complete.jsonl).Path -replace '\\', '/'
+
+# Create environment args JSON string
+$envArgs = '{\"dataset_path\": \"' + $datasetPath + '\", \"max_examples\": 10}'
+
 # Minimal test run with smallest model
 prime env eval dakota1890 `
   -m openai/gpt-5-nano `
   -n 5 `
   -r 1 `
   -t 256 `
-  -T 0.7
+  -T 0.7 `
+  --env-args $envArgs
 
 # Slightly larger test with 7B model
+$envArgs = '{\"dataset_path\": \"' + $datasetPath + '\", \"max_examples\": 20}'
 prime env eval dakota1890 `
   -m mistralai/mistral-7b-instruct-v0.3 `
   -n 10 `
   -r 2 `
   -t 512 `
-  -T 0.6
+  -T 0.6 `
+  --env-args $envArgs
 
 # Production run with more examples
+$envArgs = '{\"dataset_path\": \"' + $datasetPath + '\", \"max_examples\": 100}'
 prime env eval dakota1890 `
   -m meta-llama/llama-3.1-8b-instruct `
   -n 100 `
   -r 3 `
   -t 1024 `
-  -T 0.7
+  -T 0.7 `
+  --env-args $envArgs
 ```
 
 **Parameter Guidelines**:
 - **Small test**: `-n 5`, `-r 1`, `-t 256` (fastest, cheapest)
 - **Medium test**: `-n 10`, `-r 2`, `-t 512` (balanced)
 - **Full eval**: `-n 100`, `-r 3`, `-t 1024` (comprehensive)
+
+**Important**: You must provide the `dataset_path` via `--env-args` because the environment needs to know where to find your dataset file.
 
 **Note**: The environment name is just `dakota1890` (not `harleycooper/dakota1890`) after installation.
 
@@ -268,21 +281,30 @@ prime --version
 # Install the environment first if not already installed
 prime env install harleycooper/dakota1890
 
+# Get the absolute path to your dataset
+$datasetPath = (Resolve-Path dakota_rl_training/datasets/grammar_tasks_complete.jsonl).Path -replace '\\', '/'
+
+# Create environment args JSON string
+$envArgs = '{\"dataset_path\": \"' + $datasetPath + '\", \"max_examples\": 10}'
+
 # MINIMAL TEST RUN - Smallest model, minimal parameters
 prime env eval dakota1890 `
   -m openai/gpt-5-nano `
   -n 5 `
   -r 1 `
   -t 256 `
-  -T 0.7
+  -T 0.7 `
+  --env-args $envArgs
 
 # If successful, try slightly larger:
+$envArgs = '{\"dataset_path\": \"' + $datasetPath + '\", \"max_examples\": 20}'
 prime env eval dakota1890 `
   -m mistralai/mistral-7b-instruct-v0.3 `
   -n 10 `
   -r 2 `
   -t 512 `
-  -T 0.6
+  -T 0.6 `
+  --env-args $envArgs
 ```
 
 **Parameter Guide**:
@@ -292,6 +314,7 @@ prime env eval dakota1890 `
 - `-c, --max-concurrent`: Max concurrent requests (default: 32)
 - `-t, --max-tokens`: Max tokens to generate (start with `256` for testing)
 - `-T, --temperature`: Temperature for sampling (0.6-0.7 recommended)
+- `-a, --env-args`: Environment arguments as JSON (REQUIRED: must include `dataset_path`)
 - `-s, --save-results`: Save results to disk (default: True)
 - `-v, --verbose`: Verbose output
 - `-P, --push-to-hub`: Push results to Prime Evals Hub
@@ -379,17 +402,32 @@ $env:PRIME_API_KEY="your_key_here"
 
 ### Dataset Format Issues
 
-**Note**: You don't specify a dataset file with `prime env eval`. The environment loads its own dataset.
+**CRITICAL**: You must provide the dataset path via `--env-args` flag:
 
-If you need to use a custom dataset, you'll need to:
-1. Modify the environment to load your dataset, or
-2. Use the environment's dataset loading mechanism via environment args
-
-To check what datasets are available in an environment:
 ```powershell
-# Install and inspect the environment
-prime env install harleycooper/dakota1890
-python -c "from dakota1890 import DakotaGrammarEnv; env = DakotaGrammarEnv(); print(env.get_dataset())"
+# Get absolute path to dataset
+$datasetPath = (Resolve-Path dakota_rl_training/datasets/grammar_tasks_complete.jsonl).Path -replace '\\', '/'
+
+# Create environment args JSON
+$envArgs = '{\"dataset_path\": \"' + $datasetPath + '\", \"max_examples\": 10}'
+
+# Use in eval command
+prime env eval dakota1890 -m openai/gpt-5-nano -n 5 -r 1 --env-args $envArgs
+```
+
+**Available Environment Arguments**:
+- `dataset_path`: Path to JSONL file (REQUIRED)
+- `max_examples`: Limit number of examples (-1 for all)
+- `eval_examples`: Limit eval examples
+- `difficulty_filter`: Filter by difficulty `["easy"]`, `["medium"]`, `["hard"]`
+- `task_filter`: Filter by task type `["morphology"]`, `["translation"]`
+- `eval_fraction`: Fraction for eval split (default: 0.1)
+- `include_hints`: Include hint metadata (default: true)
+
+**Example with filters**:
+```powershell
+$envArgs = '{\"dataset_path\": \"' + $datasetPath + '\", \"difficulty_filter\": [\"easy\"], \"max_examples\": 50}'
+prime env eval dakota1890 -m openai/gpt-5-nano -n 5 -r 1 --env-args $envArgs
 ```
 
 ---
