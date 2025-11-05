@@ -13,6 +13,7 @@ from tqdm import tqdm
 import time
 from datetime import datetime
 import google.generativeai as genai
+import re
 
 # Set up our logging system to track what's happening
 logging.basicConfig(
@@ -36,6 +37,11 @@ class DakotaQAGenerator:
         
         if not self.extracted_dict_dir.exists():
             raise FileNotFoundError(f"Dictionary directory not found: {extracted_dict_dir}")
+        
+        # Rate limiting configuration
+        self.base_delay = 1.0  # Base delay between requests in seconds
+        self.max_retries = 5
+        self.max_retry_delay = 300  # Maximum retry delay (5 minutes)
 
     def load_dakota_entries(self) -> Generator[Dict, None, None]:
         """Load Dakota dictionary entries from extracted JSON files."""
@@ -105,8 +111,23 @@ class DakotaQAGenerator:
             
         return context
 
+    def _extract_retry_delay(self, error_message: str) -> float:
+        """Extract retry delay from 429 error message."""
+        # Look for "Please retry in X.XXXXXXs" pattern
+        match = re.search(r'Please retry in ([\d.]+)s', error_message)
+        if match:
+            return float(match.group(1))
+        
+        # Look for retry_delay { seconds: X } pattern
+        match = re.search(r'retry_delay.*?seconds[:\s]+(\d+)', error_message)
+        if match:
+            return float(match.group(1))
+        
+        # Default to exponential backoff if no delay found
+        return None
+
     def generate_qa_pairs(self, entries: List[Dict], is_english_perspective: bool, context_size: int = 5) -> Generator[Dict, None, None]:
-        """Generate Q&A pairs from Dakota dictionary entries."""
+        """Generate Q&A pairs from Dakota dictionary entries with retry logic."""
         
         if not entries:
             return
@@ -129,43 +150,86 @@ class DakotaQAGenerator:
         
         Important: Preserve Dakota orthography exactly (including special characters like ć, š, ŋ, etc.)"""
         
-        try:
-            logger.info(f"Sending request to Google API with {len(entries)} entries...")
-            response = self.model.generate_content(
-                contents=context + "\n" + prompt
-            )
-            logger.info("Received response from Google API.")
-            response_text = response.text.strip()
-            
-            # Extract JSON array from response
-            if not response_text.startswith('['):
-                start_idx = response_text.find('[')
-                if start_idx >= 0:
-                    response_text = response_text[start_idx:]
+        # Retry logic with exponential backoff
+        for attempt in range(self.max_retries):
+            try:
+                logger.info(f"Sending request to Google API with {len(entries)} entries... (attempt {attempt + 1}/{self.max_retries})")
+                response = self.model.generate_content(
+                    contents=context + "\n" + prompt
+                )
+                logger.info("Received response from Google API.")
+                response_text = response.text.strip()
+                
+                # Extract JSON array from response
+                if not response_text.startswith('['):
+                    start_idx = response_text.find('[')
+                    if start_idx >= 0:
+                        response_text = response_text[start_idx:]
+                    else:
+                        logger.warning("No JSON array found in response")
+                        return
+                
+                if not response_text.endswith(']'):
+                    end_idx = response_text.rfind(']')
+                    if end_idx >= 0:
+                        response_text = response_text[:end_idx+1]
+                    else:
+                        logger.warning("No closing bracket found in response")
+                        return
+                
+                qa_pairs = json.loads(response_text)
+                for qa_pair in qa_pairs:
+                    if isinstance(qa_pair, dict) and 'question' in qa_pair and 'answer' in qa_pair:
+                        qa_pair['source_language'] = 'english' if is_english_perspective else 'dakota'
+                        yield qa_pair
+                    else:
+                        logger.warning("Skipping invalid QA pair format")
+                
+                # Success - add small delay to avoid hitting rate limits
+                time.sleep(self.base_delay)
+                return
+                
+            except json.JSONDecodeError as e:
+                logger.warning(f"Error parsing JSON response: {str(e)}")
+                logger.debug(f"Response text: {response_text[:500]}")
+                # Don't retry JSON decode errors
+                return
+                
+            except Exception as e:
+                error_str = str(e)
+                
+                # Check for 429 rate limit error
+                if '429' in error_str or 'quota' in error_str.lower() or 'rate' in error_str.lower():
+                    retry_delay = self._extract_retry_delay(error_str)
+                    
+                    if retry_delay is None:
+                        # Use exponential backoff
+                        retry_delay = min(self.base_delay * (2 ** attempt), self.max_retry_delay)
+                    else:
+                        # Add a small buffer to the retry delay
+                        retry_delay = min(retry_delay + 2.0, self.max_retry_delay)
+                    
+                    if attempt < self.max_retries - 1:
+                        logger.warning(f"Rate limit exceeded. Waiting {retry_delay:.2f} seconds before retry...")
+                        time.sleep(retry_delay)
+                        continue
+                    else:
+                        logger.error(f"Rate limit exceeded after {self.max_retries} attempts. Please wait and try again later.")
+                        logger.error(f"Error details: {error_str[:500]}")
+                        return
                 else:
-                    logger.warning("No JSON array found in response")
-                    return
-            
-            if not response_text.endswith(']'):
-                end_idx = response_text.rfind(']')
-                if end_idx >= 0:
-                    response_text = response_text[:end_idx+1]
-                else:
-                    logger.warning("No closing bracket found in response")
-                    return
-            
-            qa_pairs = json.loads(response_text)
-            for qa_pair in qa_pairs:
-                if isinstance(qa_pair, dict) and 'question' in qa_pair and 'answer' in qa_pair:
-                    qa_pair['source_language'] = 'english' if is_english_perspective else 'dakota'
-                    yield qa_pair
-                else:
-                    logger.warning("Skipping invalid QA pair format")
-        except json.JSONDecodeError as e:
-            logger.warning(f"Error parsing JSON response: {str(e)}")
-            logger.debug(f"Response text: {response_text[:500]}")
-        except Exception as e:
-            logger.warning(f"Error generating Q&A pairs: {str(e)}")
+                    # Other errors - log and retry with exponential backoff
+                    if attempt < self.max_retries - 1:
+                        retry_delay = min(self.base_delay * (2 ** attempt), self.max_retry_delay)
+                        logger.warning(f"Error generating Q&A pairs (attempt {attempt + 1}/{self.max_retries}): {error_str[:200]}")
+                        logger.info(f"Retrying in {retry_delay:.2f} seconds...")
+                        time.sleep(retry_delay)
+                        continue
+                    else:
+                        logger.error(f"Failed to generate Q&A pairs after {self.max_retries} attempts: {error_str[:500]}")
+                        return
+        
+        logger.error("Failed to generate Q&A pairs after all retry attempts.")
 
     def generate_training_set(self, output_file: str, pairs_per_language: int = 75000, context_size: int = 5):
         """
@@ -209,7 +273,10 @@ class DakotaQAGenerator:
                 entries_buffer.append(entry)
                 
                 if len(entries_buffer) >= context_size:
+                    # Generate Q&A pairs - handle empty generator (rate limit or errors)
+                    qa_generated = False
                     for qa_pair in self.generate_qa_pairs(entries_buffer, is_english_perspective=True, context_size=context_size):
+                        qa_generated = True
                         if english_count >= pairs_per_language:
                             break
                         qa_pair['generated_at'] = datetime.now().isoformat()
@@ -221,6 +288,13 @@ class DakotaQAGenerator:
                         if pair_count % 1000 == 0:
                             self._create_checkpoint(checkpoint_dir, checkpoint_count, pair_count, total_pairs)
                             checkpoint_count += 1
+                    
+                    # If no Q&A pairs were generated (rate limit hit), wait longer before continuing
+                    if not qa_generated:
+                        logger.warning("No Q&A pairs generated for this batch. Waiting 30 seconds before continuing...")
+                        time.sleep(30)
+                        # Don't clear buffer - retry with same entries
+                        continue
                     
                     # Keep last 2 entries for context continuity
                     entries_buffer = entries_buffer[-2:]
@@ -237,7 +311,10 @@ class DakotaQAGenerator:
                 entries_buffer.append(entry)
                 
                 if len(entries_buffer) >= context_size:
+                    # Generate Q&A pairs - handle empty generator (rate limit or errors)
+                    qa_generated = False
                     for qa_pair in self.generate_qa_pairs(entries_buffer, is_english_perspective=False, context_size=context_size):
+                        qa_generated = True
                         if dakota_count >= pairs_per_language:
                             break
                         qa_pair['generated_at'] = datetime.now().isoformat()
@@ -249,6 +326,13 @@ class DakotaQAGenerator:
                         if pair_count % 1000 == 0:
                             self._create_checkpoint(checkpoint_dir, checkpoint_count, pair_count, total_pairs)
                             checkpoint_count += 1
+                    
+                    # If no Q&A pairs were generated (rate limit hit), wait longer before continuing
+                    if not qa_generated:
+                        logger.warning("No Q&A pairs generated for this batch. Waiting 30 seconds before continuing...")
+                        time.sleep(30)
+                        # Don't clear buffer - retry with same entries
+                        continue
                     
                     # Keep last 2 entries for context continuity
                     entries_buffer = entries_buffer[-2:]
