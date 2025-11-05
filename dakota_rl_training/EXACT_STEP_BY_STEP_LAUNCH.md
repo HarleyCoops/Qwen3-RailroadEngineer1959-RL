@@ -171,7 +171,7 @@ If the web UI doesn't work, you'll need to:
 3. **Upload files** via SCP or git
 4. **Run the command** manually
 
-See `EXACT_LAUNCH_COMMANDS.md` for SSH instructions.
+See `../docs/root/EXACT_LAUNCH_COMMANDS.md` for SSH instructions.
 
 ---
 

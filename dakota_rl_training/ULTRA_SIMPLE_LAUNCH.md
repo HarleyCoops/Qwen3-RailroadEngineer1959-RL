@@ -67,5 +67,5 @@ Monitor at: https://app.primeintellect.ai
 - Upload files there
 
 **Method 3: Use SSH Instead**
-- See `EXACT_LAUNCH_COMMANDS.md` for manual SSH method
+- See `../docs/root/EXACT_LAUNCH_COMMANDS.md` for manual SSH method
 

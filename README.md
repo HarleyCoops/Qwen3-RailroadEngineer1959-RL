@@ -339,10 +339,11 @@ prime-rl train \
 11. `dakota_rl_training/train.py` - Launch training
 
 ### Documentation
-- `GRAMMAR_RL_PIPELINE.md` - Complete grammar extraction guide
-- `PRIMEINTELLECT_INTEGRATION_COMPLETE.md` - RL integration details
-- `GRAMMAR_EXTRACTION_COMPLETE.md` - Final extraction results
-- `CLAUDE.md` - Project instructions for AI assistants
+- `docs/guides/GRAMMAR_RL_PIPELINE.md` - Complete grammar extraction guide
+- `docs/status/PRIMEINTELLECT_INTEGRATION_COMPLETE.md` - RL integration details
+- `docs/status/GRAMMAR_EXTRACTION_COMPLETE.md` - Final extraction results
+- `docs/root/CLAUDE.md` - Project instructions for AI assistants
+- `docs/root/` - Quick reference documentation previously at root
 
 ### Output Directories
 - `data/processed_images/` - Converted JPEG images (440 files)
