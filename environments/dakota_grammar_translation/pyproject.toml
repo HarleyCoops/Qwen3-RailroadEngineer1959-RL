@@ -1,7 +1,7 @@
 [project]
 name = "dakota1890"
 description = "Verifiers-compatible environment for Dakota grammar and translation RL training (Dakota1890 project)."
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.10"
 authors = [
     { name = "Dakota Language Lab", email = "language@dakota.example" },
@@ -28,7 +28,9 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["dakota_grammar_translation", "dakota1890"]
-only-include = ["dakota_grammar_translation", "dakota1890"]
+include = [
+    "dakota_grammar_translation/data/*.jsonl",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true

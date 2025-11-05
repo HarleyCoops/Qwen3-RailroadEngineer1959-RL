@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(test:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

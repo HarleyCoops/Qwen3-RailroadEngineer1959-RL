@@ -23,8 +23,13 @@ Usage:
 
 import os
 import sys
+import json
 from pathlib import Path
 from dotenv import load_dotenv
+
+# Add project root to Python path so we can import dakota_extraction
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
 
 # Load environment
 load_dotenv()
@@ -169,34 +174,92 @@ def process_range(start: int, end: int):
             print(f"\nCancelled. Use --pages {DICTIONARY_START_PAGE}-{end} for dictionary entries.")
             return
 
-    # Convert images
-    print("\nStep 1: Converting JP2 to JPEG...")
+    # Check what's already extracted
+    output_dir = Path("data/extracted")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    already_extracted = []
+    needs_extraction = []
+    
+    for page_num in range(start, end + 1):
+        output_file = output_dir / f"page_{page_num:03d}.json"
+        if output_file.exists():
+            # Verify it's a valid JSON with entries
+            try:
+                with open(output_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if data.get('entries') and len(data.get('entries', [])) > 0:
+                        already_extracted.append(page_num)
+                        continue
+            except (json.JSONDecodeError, Exception):
+                # File exists but is invalid, reprocess it
+                pass
+        
+        needs_extraction.append(page_num)
+    
+    print("\n" + "="*70)
+    print(" EXTRACTION STATUS CHECK")
+    print("="*70)
+    print(f"Total pages in range: {end-start+1}")
+    print(f"Already extracted: {len(already_extracted)}")
+    print(f"Needs extraction: {len(needs_extraction)}")
+    
+    if already_extracted:
+        print(f"\nSkipping already-extracted pages: {min(already_extracted)}-{max(already_extracted)}")
+        print(f"  (Sample: {', '.join(map(str, sorted(already_extracted)[:10]))}{'...' if len(already_extracted) > 10 else ''})")
+    
+    if not needs_extraction:
+        print("\n✅ All pages in this range have already been extracted!")
+        print(f"   Extracted files are in: {output_dir}")
+        return
+    
+    # Convert images (only for pages that need extraction)
+    print("\n" + "="*70)
+    print(" Step 1: Converting JP2 to JPEG (only missing images)...")
+    print("="*70)
     converter = ImageConverter(
         input_dir="Dictionary/grammardictionar00riggrich_jp2",
         output_dir="data/processed_images",
         quality=95,
     )
 
-    print(f"Converting {end-start+1} pages...")
-    for page_num in range(start, end + 1):
+    images_converted = 0
+    images_skipped = 0
+    
+    for page_num in needs_extraction:
         jp2_file = Path(f"Dictionary/grammardictionar00riggrich_jp2/grammardictionar00riggrich_{page_num:04d}.jp2")
+        image_path = Path(f"data/processed_images/grammardictionar00riggrich_{page_num:04d}.jpg")
+        
+        if image_path.exists():
+            images_skipped += 1
+            continue
+            
         if jp2_file.exists():
             converter.convert_jp2_to_jpeg(jp2_file)
+            images_converted += 1
         else:
-            print(f"  WARNING: Page {page_num} not found, skipping")
+            print(f"  WARNING: Page {page_num} JP2 not found, skipping")
 
-    # Extract entries
-    print("\nStep 2: Extracting dictionary entries...")
+    print(f"\nImage conversion: {images_converted} converted, {images_skipped} already existed")
+
+    # Extract entries (only for pages that need extraction)
+    print("\n" + "="*70)
+    print(f" Step 2: Extracting dictionary entries ({len(needs_extraction)} pages)...")
+    print("="*70)
     processor = AdvancedPageProcessor(
         output_dir="data/extracted",
         reasoning_dir="data/reasoning_traces",
     )
 
-    for page_num in range(start, end + 1):
+    extracted_count = 0
+    error_count = 0
+
+    for page_num in needs_extraction:
         image_path = Path(f"data/processed_images/grammardictionar00riggrich_{page_num:04d}.jpg")
 
         if not image_path.exists():
             print(f"WARNING: Skipping page {page_num} - image not found")
+            error_count += 1
             continue
 
         try:
@@ -206,8 +269,10 @@ def process_range(start: int, end: int):
                 page_number=page_num,
                 max_tokens=16000,
             )
+            extracted_count += 1
         except Exception as e:
             print(f"ERROR: Error on page {page_num}: {e}")
+            error_count += 1
             continue
 
     # Build datasets
@@ -227,7 +292,10 @@ def process_range(start: int, end: int):
     print(" EXTRACTION COMPLETE")
     print("="*70)
     print("\nStatistics:")
-    print(f"  Pages processed: {start}-{end} ({end-start+1} pages)")
+    print(f"  Page range requested: {start}-{end} ({end-start+1} pages)")
+    print(f"  Already extracted (skipped): {len(already_extracted)} pages")
+    print(f"  Newly extracted: {extracted_count} pages")
+    print(f"  Errors: {error_count} pages")
     print(f"  Total entries: {stats.get('total_entries', 0)}")
     print(f"  Avg entries/page: {stats.get('avg_entries_per_page', 0):.1f}")
     print("\nExtracted dictionary entries saved to:")

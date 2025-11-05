@@ -1,0 +1,9 @@
+[model]
+name = "qwen/qwen3-30b-a3b-instruct-2507"
+# Enforce eager mode to disable CUDA graphs (avoids custom all-reduce CUDA error)
+# This fixes: "Cuda error /workspace/csrc/custom_all_reduce.cuh:455 'invalid argument'"
+enforce_eager = true
+
+[parallel]
+dp = 2
+tp = 2

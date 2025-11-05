@@ -5,10 +5,12 @@ from __future__ import annotations
 import json
 import logging
 import re
+import tempfile
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
+from urllib.request import urlopen
 
 import verifiers as vf
 from datasets import Dataset
@@ -26,8 +28,14 @@ DEFAULT_SYSTEM_PROMPT = (
 )
 
 PACKAGE_ROOT = Path(__file__).resolve().parent
+# Default dataset packaged with environment
+DEFAULT_DATASET = PACKAGE_ROOT / "data" / "grammar_tasks_complete.jsonl"
+# Fallback sample dataset (for development/testing)
 FALLBACK_DATASET = PACKAGE_ROOT / "data" / "sample_tasks.jsonl"
+# Legacy repo path (for local development)
 REPO_DATASET = Path(__file__).resolve().parents[3] / "dakota_rl_training" / "datasets" / "grammar_tasks_complete.jsonl"
+# GitHub URL for hosted evals
+GITHUB_DATASET_URL = "https://raw.githubusercontent.com/HarleyCoops/Dakota1890/main/dakota_rl_training/datasets/grammar_tasks_complete.jsonl"
 
 
 def _normalize(text: str) -> str:
@@ -49,12 +57,37 @@ def _char_f1(prediction: str, target: str) -> float:
     return 2 * precision * recall / (precision + recall)
 
 
-def _load_jsonl(path: Path) -> list[dict[str, Any]]:
-    """Load entries from a JSONL file."""
-    if not path.exists() or path.stat().st_size == 0:
-        logger.info("Dataset file %s missing or empty.", path)
+def _load_jsonl(path: Path | str) -> list[dict[str, Any]]:
+    """Load entries from a JSONL file or URL."""
+    # Handle URL paths
+    if isinstance(path, str) and (path.startswith("http://") or path.startswith("https://")):
+        logger.info("Downloading dataset from URL: %s", path)
+        try:
+            with urlopen(path) as response:
+                content = response.read().decode("utf-8")
+                # Write to temp file for processing
+                with tempfile.NamedTemporaryFile(mode="w", suffix=".jsonl", delete=False, encoding="utf-8") as tmp:
+                    tmp.write(content)
+                    tmp_path = Path(tmp.name)
+                try:
+                    return _load_jsonl_from_file(tmp_path)
+                finally:
+                    tmp_path.unlink(missing_ok=True)
+        except Exception as e:
+            logger.error("Failed to download dataset from URL %s: %s", path, e)
+            return []
+    
+    # Handle Path objects
+    path_obj = Path(path) if isinstance(path, str) else path
+    if not path_obj.exists() or path_obj.stat().st_size == 0:
+        logger.info("Dataset file %s missing or empty.", path_obj)
         return []
+    
+    return _load_jsonl_from_file(path_obj)
 
+
+def _load_jsonl_from_file(path: Path) -> list[dict[str, Any]]:
+    """Load entries from a local JSONL file."""
     entries: list[dict[str, Any]] = []
     with path.open("r", encoding="utf-8") as handle:
         for line_no, raw_line in enumerate(handle, 1):
@@ -143,8 +176,8 @@ class DatasetBundle:
 
 
 def _build_dataset_bundle(
-    dataset_path: Optional[Path],
-    eval_path: Optional[Path],
+    dataset_path: Optional[Path | str],
+    eval_path: Optional[Path | str],
     max_examples: int,
     eval_examples: int,
     eval_fraction: float,
@@ -155,22 +188,50 @@ def _build_dataset_bundle(
 ) -> DatasetBundle:
     """Build train/eval dataset bundle from JSONL files."""
     candidates: list[dict[str, Any]] = []
-    explicit_path = dataset_path if dataset_path else REPO_DATASET
-    candidates.extend(_prepare_records(_load_jsonl(explicit_path), difficulty_filter, task_filter, include_hints))
-
+    
+    # Try multiple dataset sources in order:
+    # 1. Explicitly provided path (URL or local path)
+    # 2. Default packaged dataset
+    # 3. Legacy repo path (for local development)
+    # 4. GitHub URL (for hosted evals)
+    # 5. Fallback sample
+    
+    if dataset_path:
+        explicit_path = dataset_path
+        logger.info("Using provided dataset path: %s", explicit_path)
+        candidates.extend(_prepare_records(_load_jsonl(explicit_path), difficulty_filter, task_filter, include_hints))
+    
+    if not candidates:
+        if DEFAULT_DATASET.exists():
+            logger.info("Using packaged default dataset: %s", DEFAULT_DATASET)
+            candidates.extend(_prepare_records(_load_jsonl(DEFAULT_DATASET), difficulty_filter, task_filter, include_hints))
+    
+    if not candidates:
+        if REPO_DATASET.exists():
+            logger.info("Using repo dataset (local development): %s", REPO_DATASET)
+            candidates.extend(_prepare_records(_load_jsonl(REPO_DATASET), difficulty_filter, task_filter, include_hints))
+    
+    if not candidates:
+        logger.info("Attempting to download dataset from GitHub: %s", GITHUB_DATASET_URL)
+        github_entries = _load_jsonl(GITHUB_DATASET_URL)
+        if github_entries:
+            logger.info("Successfully downloaded dataset from GitHub")
+            candidates.extend(_prepare_records(github_entries, difficulty_filter, task_filter, include_hints))
+    
     if not candidates:
         fallback_entries = _load_jsonl(FALLBACK_DATASET)
         if fallback_entries:
             logger.warning(
-                "Using bundled fallback tasks because no generated dataset was found at %s.",
-                explicit_path,
+                "Using bundled fallback tasks because no generated dataset was found.",
             )
             candidates = _prepare_records(
                 fallback_entries, difficulty_filter, task_filter, include_hints
             )
+    
     if not candidates:
         raise ValueError(
-            f"Unable to locate any Dakota grammar tasks. Checked: {explicit_path} and fallback sample."
+            "Unable to locate any Dakota grammar tasks. "
+            "Please provide dataset_path or ensure the dataset is accessible."
         )
 
     if max_examples > 0:
@@ -368,8 +429,23 @@ def load_environment(
         A configured verifiers `Environment` instance.
     """
 
-    resolved_dataset = Path(dataset_path).expanduser().resolve() if dataset_path else None
-    resolved_eval = Path(eval_path).expanduser().resolve() if eval_path else None
+    # Handle string paths (including URLs) - don't convert to Path if it's a URL
+    if dataset_path:
+        if isinstance(dataset_path, str) and (dataset_path.startswith("http://") or dataset_path.startswith("https://")):
+            resolved_dataset = dataset_path  # Keep as string for URL
+        else:
+            resolved_dataset = Path(dataset_path).expanduser().resolve()
+    else:
+        resolved_dataset = None
+    
+    # Handle eval_path similarly
+    if eval_path:
+        if isinstance(eval_path, str) and (eval_path.startswith("http://") or eval_path.startswith("https://")):
+            resolved_eval = eval_path  # Keep as string for URL
+        else:
+            resolved_eval = Path(eval_path).expanduser().resolve()
+    else:
+        resolved_eval = None
 
     bundle = _build_dataset_bundle(
         dataset_path=resolved_dataset,

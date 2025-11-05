@@ -1,0 +1,15 @@
+batch_size = 256
+micro_batch_size = 2
+seq_len = 1536
+rollouts_per_example = 8
+mask_truncated_completions = false
+max_steps = 500
+
+[model]
+name = "qwen/qwen3-30b-a3b-instruct-2507"
+
+[sampling]
+max_tokens = 512
+
+[environment]
+id = "harleycooper/dakota1890"
