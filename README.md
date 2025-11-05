@@ -51,7 +51,7 @@ The modified reward function decomposes loss into interpretable components:
 # Traditional approach - one black box loss
 loss = CrossEntropy(generated, target)
 
-# Your approach - interpretable components
+# This approach: interpretable components
 loss = α * char_loss + β * morph_loss + γ * semantic_loss
 
 # But more importantly, you can now:
@@ -595,4 +595,5 @@ This methodology is designed to be reproducible and extensible. Contributions we
 - Evaluation frameworks
 
 See `CONTRIBUTING.md` for guidelines.
+
 
