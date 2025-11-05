@@ -6,6 +6,8 @@
 
 </div>
 
+**Nov 5th Update**: See [Why This Should Work](#why-this-should-work) below for the theoretical foundation behind grammar-as-reward-functions and composite rewards for RL on non-coding tasks.
+
 **Oct 31 update**: `/data` now preserves every artifact of the Dakota Grammar RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
 
 ![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
@@ -24,6 +26,42 @@
 ## Novel Methodology: Closed-Loop Grammar Gym
 
 **This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
+
+### Why This Should Work
+
+**Nov 5th Update**
+
+The fundamental insight driving this approach: **grammar rules can be reward functions, and rewards should decompose into linguistic primitives.** When you do this, syntax emerges naturally without an external verifier as judge. This is particularly powerful for RL on non-coding tasks where compositional structure matters.
+
+#### Grammar AS Reward Function
+
+Everyone else treats grammar as either:
+- **Preprocessing constraints** (rule-based systems)
+- **Post-hoc evaluation** (check grammar after generation)
+
+This project makes grammar rules directly differentiable through compositional rewards. Each rule becomes a gradient signal, not just a binary check.
+
+The key advantage: **interpretability**. You can actually see where in the latent space each linguistic level is being encoded. This makes debugging possible: "Oh, the model is failing on ć preservation because the character embedding gradient is being overwhelmed by the semantic gradient."
+
+#### Composite Rewards in Practice
+
+The modified reward function decomposes loss into interpretable components:
+
+```python
+# Traditional approach - one black box loss
+loss = CrossEntropy(generated, target)
+
+# Your approach - interpretable components
+loss = α * char_loss + β * morph_loss + γ * semantic_loss
+
+# But more importantly, you can now:
+if char_loss > threshold:
+    increase α  # Boost character learning
+if morph_loss plateaus:
+    adjust curriculum  # Change morphology examples
+```
+
+This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As we continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
 
 <div align="center">
 

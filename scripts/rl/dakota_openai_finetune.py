@@ -57,10 +57,12 @@ class DakotaOpenAIFineTuner:
         self.client = OpenAI(api_key=api_key)
         logger.info("OpenAI client initialized successfully")
 
-        # Define file paths using absolute paths
-        self.base_dir = Path(__file__).resolve().parent
-        self.train_file = self.base_dir / "OpenAIFineTune" / "dakota_train.jsonl"
-        self.valid_file = self.base_dir / "OpenAIFineTune" / "dakota_valid.jsonl"
+        # Define file paths - look in project root, not script directory
+        # Script is in scripts/rl/, but files are in root OpenAIFineTune/
+        script_dir = Path(__file__).resolve().parent
+        project_root = script_dir.parent.parent  # Go up from scripts/rl/ to project root
+        self.train_file = project_root / "OpenAIFineTune" / "dakota_train.jsonl"
+        self.valid_file = project_root / "OpenAIFineTune" / "dakota_valid.jsonl"
 
         # Ensure files exist
         if not self.train_file.exists():
@@ -72,9 +74,11 @@ class DakotaOpenAIFineTuner:
         logger.info(f"Found validation file: {self.valid_file}")
         
         # Model selection (can override via env vars)
+        # Default to gpt-3.5-turbo which is available for fine-tuning
+        # Other fine-tunable models: gpt-4o-mini-2024-07-18, gpt-4-0125-preview, etc.
         self.fine_tune_model = os.getenv(
             "OPENAI_FINETUNE_MODEL",
-            os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+            os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
         )
         logger.info("Using fine-tune base model: %s", self.fine_tune_model)
 

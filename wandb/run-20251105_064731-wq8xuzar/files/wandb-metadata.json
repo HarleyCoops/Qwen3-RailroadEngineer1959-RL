@@ -1,0 +1,28 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.6",
+  "startedAt": "2025-11-05T13:47:31.634931Z",
+  "program": "C:\\Users\\chris\\Dakota1890\\scripts\\rl\\dakota_openai_finetune.py",
+  "codePath": "scripts\\rl\\dakota_openai_finetune.py",
+  "codePathLocal": "scripts\\rl\\dakota_openai_finetune.py",
+  "git": {
+    "remote": "https://github.com/HarleyCoops/Dakota1890.git",
+    "commit": "f9c3107934885e582d977f53abd9e424bb09a3ae"
+  },
+  "email": "christian.cooper.us@gmail.com",
+  "root": "C:\\Users\\chris\\Dakota1890",
+  "host": "PC",
+  "executable": "C:\\Python312\\python.exe",
+  "cpu_count": 12,
+  "cpu_count_logical": 12,
+  "disk": {
+    "/": {
+      "total": "1004769636352",
+      "used": "927659982848"
+    }
+  },
+  "memory": {
+    "total": "16749838336"
+  },
+  "writerId": "stbbzajqj56u93tf7uoorv97cftdsbmz"
+}
