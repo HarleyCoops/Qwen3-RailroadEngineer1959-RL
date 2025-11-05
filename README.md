@@ -2,7 +2,7 @@
 
 <div align="right">
 
-<sub>This README is optimized for dark mode. Enable dark mode in your GitHub settings for the best viewing experience.</sub>
+
 
 </div>
 
@@ -595,3 +595,4 @@ This methodology is designed to be reproducible and extensible. Contributions we
 - Evaluation frameworks
 
 See `CONTRIBUTING.md` for guidelines.
+
