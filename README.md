@@ -61,7 +61,7 @@ if morph_loss plateaus:
     adjust curriculum  # Change morphology examples
 ```
 
-This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As we continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
+This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As I continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
 
 <div align="center">
 
@@ -595,5 +595,6 @@ This methodology is designed to be reproducible and extensible. Contributions we
 - Evaluation frameworks
 
 See `CONTRIBUTING.md` for guidelines.
+
 
 
