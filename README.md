@@ -8,7 +8,7 @@
 
 **Nov 5th Update**: See [Why This Should Work](#why-this-should-work) below for the theoretical foundation behind grammar-as-reward-functions and composite rewards for RL on non-coding tasks.
 
-**Oct 31 update**: `/data` now preserves every artifact of the Dakota Grammar RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
+`/data` now preserves every artifact of the Dakota Grammar preliminary RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
 
 ![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
 ![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)
@@ -51,7 +51,7 @@ The modified reward function decomposes loss into interpretable components:
 # Traditional approach - one black box loss
 loss = CrossEntropy(generated, target)
 
-# Your approach - interpretable components
+# This approach: interpretable components
 loss = α * char_loss + β * morph_loss + γ * semantic_loss
 
 # But more importantly, you can now:
@@ -61,7 +61,7 @@ if morph_loss plateaus:
     adjust curriculum  # Change morphology examples
 ```
 
-This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As we continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
+This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As I continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
 
 <div align="center">
 
@@ -595,4 +595,7 @@ This methodology is designed to be reproducible and extensible. Contributions we
 - Evaluation frameworks
 
 See `CONTRIBUTING.md` for guidelines.
+
+
+
 
