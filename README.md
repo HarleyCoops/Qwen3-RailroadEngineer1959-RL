@@ -1,11 +1,3 @@
-<div align="center">
-
-# Ask DeepWiki How This Works
-
-**[https://deepwiki.com/HarleyCoops/Dakota1890](https://deepwiki.com/HarleyCoops/Dakota1890)**
-
-</div>
-
 # Grammar-to-RL: Training Language Models on Historical Texts via Compositional Rewards
 
 <div align="right">
@@ -73,7 +65,15 @@ This gives you controllable, interpretable learning where you can diagnose exact
 
 <div align="center">
 
-<img src="Jsoncrack.jpg" alt="JSONCrack Visualization" style="filter: brightness(0.9) contrast(1.1);">
+![Overview](Public/overview.jpg)
+
+</div>
+
+<div align="center">
+
+# Ask DeepWiki How This Works
+
+**[https://deepwiki.com/HarleyCoops/Dakota1890](https://deepwiki.com/HarleyCoops/Dakota1890)**
 
 </div>
 
