@@ -1,0 +1,55 @@
+_wandb:
+    value:
+        cli_version: 0.22.3
+        e:
+            rp98ch2wezggy0wfjymxjcz6qen49vi0:
+                codePath: scripts\rl\dakota_openai_finetune.py
+                codePathLocal: scripts\rl\dakota_openai_finetune.py
+                cpu_count: 12
+                cpu_count_logical: 12
+                disk:
+                    /:
+                        total: "1004769636352"
+                        used: "927672565760"
+                email: christian.cooper.us@gmail.com
+                executable: C:\Python312\python.exe
+                git:
+                    commit: f9c3107934885e582d977f53abd9e424bb09a3ae
+                    remote: https://github.com/HarleyCoops/Dakota1890.git
+                host: PC
+                memory:
+                    total: "16749838336"
+                os: Windows-11-10.0.26100-SP0
+                program: C:\Users\chris\Dakota1890\scripts\rl\dakota_openai_finetune.py
+                python: CPython 3.12.6
+                root: C:\Users\chris\Dakota1890
+                startedAt: "2025-11-05T13:47:58.837956Z"
+                writerId: rp98ch2wezggy0wfjymxjcz6qen49vi0
+        m: []
+        python_version: 3.12.6
+        t:
+            "1":
+                - 49
+                - 95
+                - 105
+            "2":
+                - 49
+                - 95
+                - 105
+            "3":
+                - 2
+                - 13
+                - 16
+                - 62
+            "4": 3.12.6
+            "5": 0.22.3
+            "8":
+                - 3
+            "12": 0.22.3
+            "13": windows-arm64
+base_model:
+    value: gpt-3.5-turbo
+train_file:
+    value: C:\Users\chris\Dakota1890\OpenAIFineTune\dakota_train.jsonl
+valid_file:
+    value: C:\Users\chris\Dakota1890\OpenAIFineTune\dakota_valid.jsonl

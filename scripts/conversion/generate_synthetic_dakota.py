@@ -48,6 +48,11 @@ class DakotaQAGenerator:
         json_files = sorted(self.extracted_dict_dir.glob("page_*.json"))
         logger.info(f"Found {len(json_files)} dictionary JSON files")
         
+        if json_files:
+            first_file = json_files[0].name
+            last_file = json_files[-1].name
+            logger.info(f"Extraction source: {first_file} through {last_file} ({len(json_files)} files total)")
+        
         for json_file in json_files:
             try:
                 with open(json_file, 'r', encoding='utf-8') as f:
@@ -56,6 +61,8 @@ class DakotaQAGenerator:
                     for entry in entries:
                         # Ensure entry has required fields
                         if entry.get('headword') and entry.get('definition_primary'):
+                            # Add source file info to entry for tracking
+                            entry['_source_file'] = json_file.name
                             yield entry
             except json.JSONDecodeError as e:
                 logger.warning(f"Skipping invalid JSON file {json_file}: {e}")
@@ -231,6 +238,37 @@ class DakotaQAGenerator:
         
         logger.error("Failed to generate Q&A pairs after all retry attempts.")
 
+    def _load_existing_pairs(self, output_path: Path) -> tuple[int, int]:
+        """Load existing pairs from output file and return counts."""
+        english_count = 0
+        dakota_count = 0
+        
+        if not output_path.exists():
+            return english_count, dakota_count
+        
+        logger.info(f"Checking existing pairs in {output_path}...")
+        try:
+            with open(output_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        pair = json.loads(line)
+                        source_lang = pair.get('source_language', '')
+                        if source_lang == 'english':
+                            english_count += 1
+                        elif source_lang == 'dakota':
+                            dakota_count += 1
+                    except json.JSONDecodeError:
+                        continue
+        except Exception as e:
+            logger.warning(f"Error reading existing file: {e}. Starting fresh.")
+            return 0, 0
+        
+        logger.info(f"Found {english_count} English-perspective pairs and {dakota_count} Dakota-perspective pairs")
+        return english_count, dakota_count
+
     def generate_training_set(self, output_file: str, pairs_per_language: int = 75000, context_size: int = 5):
         """
         Generate Q&A pairs from Dakota dictionary entries.
@@ -245,6 +283,15 @@ class DakotaQAGenerator:
         checkpoint_dir = output_path.parent / "checkpoints"
         checkpoint_dir.mkdir(exist_ok=True)
         
+        # Check for existing pairs and resume
+        existing_english, existing_dakota = self._load_existing_pairs(output_path)
+        resume_mode = existing_english > 0 or existing_dakota > 0
+        
+        if resume_mode:
+            logger.info(f"Resuming generation: {existing_english} English pairs, {existing_dakota} Dakota pairs")
+            logger.info(f"Output file: {output_path}")
+            logger.info(f"New pairs will be appended to existing file")
+        
         # Load all entries into memory
         logger.info("Loading Dakota dictionary entries...")
         all_entries = list(self.load_dakota_entries())
@@ -254,88 +301,108 @@ class DakotaQAGenerator:
             raise ValueError("No dictionary entries found. Check that data/extracted/*.json files exist.")
         
         total_pairs = pairs_per_language * 2
-        pair_count = 0
-        checkpoint_count = 0
+        pair_count = existing_english + existing_dakota
+        checkpoint_count = pair_count // 1000
         start_time = time.time()
         
-        logger.info(f"Starting generation of {total_pairs} Q&A pairs ({pairs_per_language} per language)...")
+        logger.info(f"Target: {total_pairs} Q&A pairs ({pairs_per_language} per language)...")
+        logger.info(f"Current progress: {pair_count}/{total_pairs} ({pair_count/total_pairs*100:.2f}%)")
         
-        with open(output_path, 'w', encoding='utf-8') as f:
+        # Determine file mode
+        file_mode = 'a' if resume_mode else 'w'
+        
+        with open(output_path, file_mode, encoding='utf-8') as f:
             # Generate English-perspective Q&A pairs
-            logger.info("Generating English-perspective Q&A pairs...")
-            english_count = 0
-            entries_buffer = []
-            
-            for entry in tqdm(all_entries, desc="Processing entries for English perspective"):
-                if english_count >= pairs_per_language:
-                    break
+            english_count = existing_english
+            if english_count < pairs_per_language:
+                logger.info(f"Generating English-perspective Q&A pairs... ({english_count}/{pairs_per_language} complete)")
+                entries_buffer = []
                 
-                entries_buffer.append(entry)
-                
-                if len(entries_buffer) >= context_size:
-                    # Generate Q&A pairs - handle empty generator (rate limit or errors)
-                    qa_generated = False
-                    for qa_pair in self.generate_qa_pairs(entries_buffer, is_english_perspective=True, context_size=context_size):
-                        qa_generated = True
-                        if english_count >= pairs_per_language:
-                            break
-                        qa_pair['generated_at'] = datetime.now().isoformat()
-                        qa_pair['pair_id'] = pair_count + 1
-                        f.write(json.dumps(qa_pair, ensure_ascii=False) + '\n')
-                        pair_count += 1
-                        english_count += 1
+                for entry in tqdm(all_entries, desc="Processing entries for English perspective"):
+                    if english_count >= pairs_per_language:
+                        break
+                    
+                    entries_buffer.append(entry)
+                    
+                    if len(entries_buffer) >= context_size:
+                        # Generate Q&A pairs - handle empty generator (rate limit or errors)
+                        qa_generated = False
+                        for qa_pair in self.generate_qa_pairs(entries_buffer, is_english_perspective=True, context_size=context_size):
+                            qa_generated = True
+                            if english_count >= pairs_per_language:
+                                break
+                            qa_pair['generated_at'] = datetime.now().isoformat()
+                            qa_pair['pair_id'] = pair_count + 1
+                            # Add source page info from entries used
+                            source_pages = sorted(set(e.get('page_number', 'unknown') for e in entries_buffer if e.get('page_number')))
+                            qa_pair['source_pages'] = source_pages
+                            qa_pair['source_files'] = sorted(set(e.get('_source_file', 'unknown') for e in entries_buffer if e.get('_source_file')))
+                            f.write(json.dumps(qa_pair, ensure_ascii=False) + '\n')
+                            f.flush()  # Ensure data is written immediately
+                            pair_count += 1
+                            english_count += 1
+                            
+                            if pair_count % 1000 == 0:
+                                self._create_checkpoint(checkpoint_dir, checkpoint_count, pair_count, total_pairs)
+                                checkpoint_count += 1
                         
-                        if pair_count % 1000 == 0:
-                            self._create_checkpoint(checkpoint_dir, checkpoint_count, pair_count, total_pairs)
-                            checkpoint_count += 1
-                    
-                    # If no Q&A pairs were generated (rate limit hit), wait longer before continuing
-                    if not qa_generated:
-                        logger.warning("No Q&A pairs generated for this batch. Waiting 30 seconds before continuing...")
-                        time.sleep(30)
-                        # Don't clear buffer - retry with same entries
-                        continue
-                    
-                    # Keep last 2 entries for context continuity
-                    entries_buffer = entries_buffer[-2:]
+                        # If no Q&A pairs were generated (rate limit hit), wait longer before continuing
+                        if not qa_generated:
+                            logger.warning("No Q&A pairs generated for this batch. Waiting 30 seconds before continuing...")
+                            time.sleep(30)
+                            # Don't clear buffer - retry with same entries
+                            continue
+                        
+                        # Keep last 2 entries for context continuity
+                        entries_buffer = entries_buffer[-2:]
+            else:
+                logger.info(f"English-perspective pairs complete ({english_count}/{pairs_per_language})")
             
             # Generate Dakota-perspective Q&A pairs
-            logger.info("Generating Dakota-perspective Q&A pairs...")
-            dakota_count = 0
-            entries_buffer = []
-            
-            for entry in tqdm(all_entries, desc="Processing entries for Dakota perspective"):
-                if dakota_count >= pairs_per_language:
-                    break
+            dakota_count = existing_dakota
+            if dakota_count < pairs_per_language:
+                logger.info(f"Generating Dakota-perspective Q&A pairs... ({dakota_count}/{pairs_per_language} complete)")
+                entries_buffer = []
                 
-                entries_buffer.append(entry)
-                
-                if len(entries_buffer) >= context_size:
-                    # Generate Q&A pairs - handle empty generator (rate limit or errors)
-                    qa_generated = False
-                    for qa_pair in self.generate_qa_pairs(entries_buffer, is_english_perspective=False, context_size=context_size):
-                        qa_generated = True
-                        if dakota_count >= pairs_per_language:
-                            break
-                        qa_pair['generated_at'] = datetime.now().isoformat()
-                        qa_pair['pair_id'] = pair_count + 1
-                        f.write(json.dumps(qa_pair, ensure_ascii=False) + '\n')
-                        pair_count += 1
-                        dakota_count += 1
+                for entry in tqdm(all_entries, desc="Processing entries for Dakota perspective"):
+                    if dakota_count >= pairs_per_language:
+                        break
+                    
+                    entries_buffer.append(entry)
+                    
+                    if len(entries_buffer) >= context_size:
+                        # Generate Q&A pairs - handle empty generator (rate limit or errors)
+                        qa_generated = False
+                        for qa_pair in self.generate_qa_pairs(entries_buffer, is_english_perspective=False, context_size=context_size):
+                            qa_generated = True
+                            if dakota_count >= pairs_per_language:
+                                break
+                            qa_pair['generated_at'] = datetime.now().isoformat()
+                            qa_pair['pair_id'] = pair_count + 1
+                            # Add source page info from entries used
+                            source_pages = sorted(set(e.get('page_number', 'unknown') for e in entries_buffer if e.get('page_number')))
+                            qa_pair['source_pages'] = source_pages
+                            qa_pair['source_files'] = sorted(set(e.get('_source_file', 'unknown') for e in entries_buffer if e.get('_source_file')))
+                            f.write(json.dumps(qa_pair, ensure_ascii=False) + '\n')
+                            f.flush()  # Ensure data is written immediately
+                            pair_count += 1
+                            dakota_count += 1
+                            
+                            if pair_count % 1000 == 0:
+                                self._create_checkpoint(checkpoint_dir, checkpoint_count, pair_count, total_pairs)
+                                checkpoint_count += 1
                         
-                        if pair_count % 1000 == 0:
-                            self._create_checkpoint(checkpoint_dir, checkpoint_count, pair_count, total_pairs)
-                            checkpoint_count += 1
-                    
-                    # If no Q&A pairs were generated (rate limit hit), wait longer before continuing
-                    if not qa_generated:
-                        logger.warning("No Q&A pairs generated for this batch. Waiting 30 seconds before continuing...")
-                        time.sleep(30)
-                        # Don't clear buffer - retry with same entries
-                        continue
-                    
-                    # Keep last 2 entries for context continuity
-                    entries_buffer = entries_buffer[-2:]
+                        # If no Q&A pairs were generated (rate limit hit), wait longer before continuing
+                        if not qa_generated:
+                            logger.warning("No Q&A pairs generated for this batch. Waiting 30 seconds before continuing...")
+                            time.sleep(30)
+                            # Don't clear buffer - retry with same entries
+                            continue
+                        
+                        # Keep last 2 entries for context continuity
+                        entries_buffer = entries_buffer[-2:]
+            else:
+                logger.info(f"Dakota-perspective pairs complete ({dakota_count}/{pairs_per_language})")
         
         elapsed_time = time.time() - start_time
         logger.info(f"Generation completed. Total time: {elapsed_time:.2f} seconds")
@@ -354,17 +421,19 @@ class DakotaQAGenerator:
 
 def main():
     try:
-        # Set up file paths
-        extracted_dict_dir = "data/extracted"
-        output_path = "data/bilingual_training_set.jsonl"
+        # Find project root (assuming script is in scripts/conversion/)
+        script_dir = Path(__file__).parent
+        project_root = script_dir.parent.parent
+        extracted_dict_dir = project_root / "data" / "extracted"
+        output_path = project_root / "data" / "bilingual_training_set.jsonl"
         
         # Create the generator
-        generator = DakotaQAGenerator(extracted_dict_dir)
+        generator = DakotaQAGenerator(str(extracted_dict_dir))
         
         # Generate all the questions and answers
         logger.info("Starting full training set generation...")
         generator.generate_training_set(
-            output_path,
+            str(output_path),
             pairs_per_language=75000,  # Match Stoney Nakoda default
             context_size=5  # Number of entries per API call
         )
