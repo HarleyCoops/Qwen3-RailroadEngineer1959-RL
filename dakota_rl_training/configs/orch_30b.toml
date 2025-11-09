@@ -12,3 +12,11 @@ max_tokens = 512
 
 [[env]]
 id = "harleycooper/dakota1890"
+
+[ckpt]
+interval = 100
+keep = 3
+
+[wandb]
+project = "dakota-rl-grammar"
+offline = false

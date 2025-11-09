@@ -1,4 +1,5 @@
 max_steps = 1000
+output_dir = "/workspace_1/dakota_rl_outputs"
 
 [model]
 name = "Qwen/Qwen3-0.6B"
@@ -14,6 +15,7 @@ lr = 1e-6
 interval = 100
 keep = 3  # Only keep 3 most recent checkpoints
 
-[trainer]
-output_dir = "/workspace_1/dakota_rl_outputs"
+[wandb]
+project = "dakota-rl-grammar"
+offline = false
 

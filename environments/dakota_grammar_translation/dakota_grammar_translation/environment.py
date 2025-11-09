@@ -402,8 +402,10 @@ class DakotaGrammarRubric(Rubric):
             return 1.0
         else:
             # Exponential penalty for excessive length
-            # 3x length = 1.0, 6x = 0.5, 12x = 0.25, etc.
-            penalty = max_length_ratio / length_ratio
+            # 3x length = 1.0, 6x ≈ 0.25, 12x ≈ 0.06, etc.
+            # Uses exponential decay: penalty = (max_length_ratio / length_ratio) ** 2
+            excess_ratio = length_ratio / max_length_ratio
+            penalty = 1.0 / (excess_ratio ** 2)  # Exponential decay
             return max(0.1, penalty)  # Minimum 0.1 to allow recovery
 
 
