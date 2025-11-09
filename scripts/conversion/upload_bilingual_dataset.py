@@ -362,7 +362,7 @@ def upload_dataset_to_hf(
             private=private,
             exist_ok=True,
         )
-        logger.info(f"✓ Repository ready: https://huggingface.co/datasets/{repo_id}")
+        logger.info(f"[OK] Repository ready: https://huggingface.co/datasets/{repo_id}")
     except Exception as e:
         logger.error(f"Failed to create repo: {e}")
         raise
@@ -387,7 +387,7 @@ def upload_dataset_to_hf(
                 token=token,
                 commit_message=commit_message,
             )
-            logger.info(f"✓ Uploaded {local_path.name}")
+            logger.info(f"[OK] Uploaded {local_path.name}")
         except Exception as e:
             logger.error(f"Failed to upload {local_path.name}: {e}")
             raise
@@ -404,7 +404,7 @@ def upload_dataset_to_hf(
             token=token,
             commit_message=commit_message,
         )
-        logger.info("✓ Uploaded dataset card")
+        logger.info("[OK] Uploaded dataset card")
     except Exception as e:
         logger.warning(f"Failed to upload dataset card: {e}")
         # Not critical, continue
@@ -413,10 +413,10 @@ def upload_dataset_to_hf(
     logger.info("Cleaning up temporary files...")
     train_file.unlink()
     valid_file.unlink()
-    logger.info("✓ Cleaned up")
+    logger.info("[OK] Cleaned up")
     
     logger.info("="*70)
-    logger.info("✅ Dataset successfully uploaded to HuggingFace!")
+    logger.info("[SUCCESS] Dataset successfully uploaded to HuggingFace!")
     logger.info(f"   Repository: https://huggingface.co/datasets/{repo_id}")
     logger.info("="*70)
     

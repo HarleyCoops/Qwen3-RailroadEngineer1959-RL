@@ -22,7 +22,7 @@ training:
   batch_size: 16
   mini_batch_size: 4
   gradient_accumulation_steps: 4
-  learning_rate: 5.0e-6
+  learning_rate: 5.0e-7  # Reduced from 5e-6 to stabilize after collapse
   warmup_steps: 100
   max_grad_norm: 1.0
 
@@ -154,7 +154,7 @@ distributed:
 inference:
   temperature: 0.7
   top_p: 0.9
-  max_new_tokens: 128
+  max_new_tokens: 64  # Reduced from 128 to prevent length explosion (Dakota answers are concise)
   do_sample: true
 
 # Special character handling

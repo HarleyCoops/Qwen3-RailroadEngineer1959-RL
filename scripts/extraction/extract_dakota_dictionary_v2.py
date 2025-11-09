@@ -209,7 +209,7 @@ def process_range(start: int, end: int):
         print(f"  (Sample: {', '.join(map(str, sorted(already_extracted)[:10]))}{'...' if len(already_extracted) > 10 else ''})")
     
     if not needs_extraction:
-        print("\n✅ All pages in this range have already been extracted!")
+        print("\n[SUCCESS] All pages in this range have already been extracted!")
         print(f"   Extracted files are in: {output_dir}")
         return
     

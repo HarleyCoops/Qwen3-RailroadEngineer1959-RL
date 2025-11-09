@@ -34,7 +34,7 @@ try:
     from blackfeet_extraction.core.advanced_page_processor import AdvancedPageProcessor
     from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 except ImportError as e:
-    print(f"ERROR Import error: {e}")
+    print(f"[ERROR] Import error: {e}")
     print("\nPlease ensure you're in the project root and run:")
     print("  pip install -r requirements.txt")
     sys.exit(1)
@@ -52,7 +52,7 @@ def check_setup():
 
     # API key
     if not os.getenv("OPENROUTER_API_KEY"):
-        print("ERROR OPENROUTER_API_KEY not set")
+        print("[ERROR] OPENROUTER_API_KEY not set")
         print("\nAdd to your .env file:")
         print("  OPENROUTER_API_KEY=your_key_here")
         return False
@@ -60,13 +60,13 @@ def check_setup():
     # Dictionary files
     dict_dir = Path("dictionary/grammardictionar00riggrich_jp2")
     if not dict_dir.exists():
-        print(f"ERROR Dictionary directory not found: {dict_dir}")
+        print(f"[ERROR] Dictionary directory not found: {dict_dir}")
         return False
 
     jp2_count = len(list(dict_dir.glob("*.jp2")))
-    print(f"  OK Found {jp2_count} JP2 pages")
-    print(f"  OK Grammar pages: 1-{GRAMMAR_PAGES}")
-    print(f"  OK Dictionary pages: {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}")
+    print(f"  [OK] Found {jp2_count} JP2 pages")
+    print(f"  [OK] Grammar pages: 1-{GRAMMAR_PAGES}")
+    print(f"  [OK] Dictionary pages: {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}")
 
     # Test Pillow JP2 support
     try:
@@ -74,16 +74,16 @@ def check_setup():
         test_file = next(dict_dir.glob("*.jp2"))
         with Image.open(test_file):
             pass
-        print("  OK PIL can read JP2 files")
+        print("  [OK] PIL can read JP2 files")
     except Exception as e:
-        print(f"ERROR PIL cannot read JP2: {e}")
+        print(f"[ERROR] PIL cannot read JP2: {e}")
         print("\nInstall OpenJPEG:")
         print("  Windows: https://www.openjpeg.org/")
         print("  Linux: sudo apt-get install libopenjp2-7")
         print("  Mac: brew install openjpeg")
         return False
 
-    print("  OK Setup complete\n")
+    print("  [OK] Setup complete\n")
     return True
 
 
@@ -92,8 +92,8 @@ def test_extraction():
     print("\n" + "="*70)
     print(f" TEST MODE: Page {DICTIONARY_START_PAGE} (First Dictionary Page)")
     print("="*70)
-    print(f"\n📖 Pages 1-{GRAMMAR_PAGES}: Grammar rules (skipped)")
-    print(f"📚 Pages {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}: Dictionary entries (extracting)\n")
+    print(f"\n[INFO] Pages 1-{GRAMMAR_PAGES}: Grammar rules (skipped)")
+    print(f"[INFO] Pages {DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE}: Dictionary entries (extracting)\n")
 
     # Convert page 89
     converter = ImageConverter(
@@ -106,7 +106,7 @@ def test_extraction():
     page_file = Path(f"dictionary/grammardictionar00riggrich_jp2/grammardictionar00riggrich_{DICTIONARY_START_PAGE:04d}.jp2")
 
     if not page_file.exists():
-        print(f"ERROR Page {DICTIONARY_START_PAGE} not found: {page_file}")
+            print(f"[ERROR] Page {DICTIONARY_START_PAGE} not found: {page_file}")
 
         # Show what's available
         jp2_files = sorted(Path("dictionary/grammardictionar00riggrich_jp2").glob("*.jp2"))
@@ -142,10 +142,10 @@ def test_extraction():
     print("\n" + "="*70)
     print(" TEST COMPLETE")
     print("="*70)
-    print("\n📁 Review outputs:")
+    print("\n[INFO] Review outputs:")
     print(f"  - Extraction: data/extracted/page_{DICTIONARY_START_PAGE:03d}.json")
     print(f"  - Reasoning: data/reasoning_traces/page_{DICTIONARY_START_PAGE:03d}_reasoning.json")
-    print("\n✅ If results look good, process more pages:")
+    print("\n[SUCCESS] If results look good, process more pages:")
     print(f"  python {sys.argv[0]} --pages {DICTIONARY_START_PAGE}-{DICTIONARY_START_PAGE+11}  # 12 pages")
     print(f"  python {sys.argv[0]} --pages {DICTIONARY_START_PAGE}-150  # More pages")
     print()
@@ -159,9 +159,9 @@ def process_range(start: int, end: int):
 
     # Validate range
     if start < DICTIONARY_START_PAGE:
-        print(f"\nWARNING  WARNING: Pages 1-{GRAMMAR_PAGES} contain grammar rules!")
+        print(f"\n[WARNING] WARNING: Pages 1-{GRAMMAR_PAGES} contain grammar rules!")
         print(f"Dictionary entries start at page {DICTIONARY_START_PAGE}.")
-        print(f"\n💡 Recommended: --pages {DICTIONARY_START_PAGE}-{end}")
+        print(f"\n[INFO] Recommended: --pages {DICTIONARY_START_PAGE}-{end}")
 
         confirm = input(f"\nProcess pages {start}-{end} anyway? [y/N]: ")
         if confirm.lower() != 'y':
@@ -182,7 +182,7 @@ def process_range(start: int, end: int):
         if jp2_file.exists():
             converter.convert_jp2_to_jpeg(jp2_file)
         else:
-            print(f"  WARNING  Page {page_num} not found, skipping")
+            print(f"  [WARNING] Page {page_num} not found, skipping")
 
     # Extract entries
     print("\nStep 2: Extracting dictionary entries...")
@@ -195,7 +195,7 @@ def process_range(start: int, end: int):
         image_path = Path(f"data/processed_images/grammardictionar00riggrich_{page_num:04d}.jpg")
 
         if not image_path.exists():
-            print(f"WARNING  Skipping page {page_num} - image not found")
+            print(f"[WARNING] Skipping page {page_num} - image not found")
             continue
 
         try:
@@ -206,7 +206,7 @@ def process_range(start: int, end: int):
                 thinking_budget=6000,
             )
         except Exception as e:
-            print(f"ERROR Error on page {page_num}: {e}")
+            print(f"[ERROR] Error on page {page_num}: {e}")
             continue
 
     # Build datasets
@@ -225,11 +225,11 @@ def process_range(start: int, end: int):
     print("\n" + "="*70)
     print(" EXTRACTION COMPLETE")
     print("="*70)
-    print("\n📊 Statistics:")
+    print("\n[INFO] Statistics:")
     print(f"  Pages processed: {start}-{end} ({end-start+1} pages)")
     print(f"  Total entries: {stats.get('total_entries', 0)}")
     print(f"  Avg entries/page: {stats.get('avg_entries_per_page', 0):.1f}")
-    print("\n📁 Datasets created:")
+    print("\n[INFO] Datasets created:")
     print("  - Translation: data/training_datasets/translation_*.jsonl")
     print("  - Instructions: data/training_datasets/instruction_dataset.jsonl")
     print("  - Vocabulary: data/training_datasets/vocabulary.json")
@@ -285,27 +285,27 @@ Costs:
 
     elif args.pages:
         if "-" not in args.pages:
-            print("ERROR Pages must be a range (e.g., 89-100)")
+            print("[ERROR] Pages must be a range (e.g., 89-100)")
             sys.exit(1)
 
         start, end = map(int, args.pages.split("-"))
 
         if start < 1 or end > DICTIONARY_END_PAGE or start > end:
-            print(f"ERROR Invalid range. Must be 1-{DICTIONARY_END_PAGE} and start <= end")
+            print(f"[ERROR] Invalid range. Must be 1-{DICTIONARY_END_PAGE} and start <= end")
             sys.exit(1)
 
         # Helpful suggestions
         if start < DICTIONARY_START_PAGE:
-            print(f"\n💡 Note: Dictionary entries start at page {DICTIONARY_START_PAGE}")
+            print(f"\n[INFO] Note: Dictionary entries start at page {DICTIONARY_START_PAGE}")
             print(f"   Pages 1-{GRAMMAR_PAGES} contain grammar rules (different structure)")
 
         num_pages = end - start + 1
         estimated_cost = num_pages * 0.25
         estimated_time = num_pages * 2  # minutes
 
-        print(f"\n📊 Processing {num_pages} pages ({start}-{end})")
-        print(f"💰 Estimated cost: ${estimated_cost:.2f}")
-        print(f"TIME  Estimated time: {estimated_time} minutes")
+        print(f"\n[INFO] Processing {num_pages} pages ({start}-{end})")
+        print(f"[INFO] Estimated cost: ${estimated_cost:.2f}")
+        print(f"[INFO] Estimated time: {estimated_time} minutes")
 
         confirm = input("\nContinue? [y/N]: ")
         if confirm.lower() != "y":
@@ -319,10 +319,10 @@ Costs:
         estimated_cost = num_pages * 0.25
         estimated_hours = (num_pages * 2) / 60
 
-        print(f"\nWARNING  Processing ALL dictionary pages ({DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE})")
-        print(f"📊 Total pages: {num_pages}")
-        print(f"💰 Estimated cost: ${estimated_cost:.2f}")
-        print(f"TIME  Estimated time: {estimated_hours:.1f} hours")
+        print(f"\n[WARNING] Processing ALL dictionary pages ({DICTIONARY_START_PAGE}-{DICTIONARY_END_PAGE})")
+        print(f"[INFO] Total pages: {num_pages}")
+        print(f"[INFO] Estimated cost: ${estimated_cost:.2f}")
+        print(f"[INFO] Estimated time: {estimated_hours:.1f} hours")
         print("\nThis will:")
         print("  - Use significant API tokens")
         print("  - Take many hours to complete")

@@ -53,50 +53,50 @@ $exports = @()
 # WandB API Key (REQUIRED)
 if ($envVars.ContainsKey("WANDB_API_KEY")) {
     $exports += "export WANDB_API_KEY=`"$($envVars['WANDB_API_KEY'])`""
-    Write-Host "✓ WANDB_API_KEY found" -ForegroundColor Green
+    Write-Host "[OK] WANDB_API_KEY found" -ForegroundColor Green
 } else {
-    Write-Host "✗ WANDB_API_KEY missing (REQUIRED!)" -ForegroundColor Red
+    Write-Host "[ERROR] WANDB_API_KEY missing (REQUIRED!)" -ForegroundColor Red
     $exports += "# export WANDB_API_KEY=`"your_wandb_api_key_here`""
 }
 
 # WandB Project
 if ($envVars.ContainsKey("WANDB_PROJECT")) {
     $exports += "export WANDB_PROJECT=`"$($envVars['WANDB_PROJECT'])`""
-    Write-Host "✓ WANDB_PROJECT found" -ForegroundColor Green
+    Write-Host "[OK] WANDB_PROJECT found" -ForegroundColor Green
 } else {
     $exports += "export WANDB_PROJECT=`"dakota-rl-grammar`"  # Default"
-    Write-Host "⚠ WANDB_PROJECT not found, using default: dakota-rl-grammar" -ForegroundColor Yellow
+    Write-Host "[WARNING] WANDB_PROJECT not found, using default: dakota-rl-grammar" -ForegroundColor Yellow
 }
 
 # WandB Entity
 if ($envVars.ContainsKey("WANDB_ENTITY")) {
     $exports += "export WANDB_ENTITY=`"$($envVars['WANDB_ENTITY'])`""
-    Write-Host "✓ WANDB_ENTITY found" -ForegroundColor Green
+    Write-Host "[OK] WANDB_ENTITY found" -ForegroundColor Green
 } else {
-    Write-Host "ℹ WANDB_ENTITY not set (optional)" -ForegroundColor Gray
+    Write-Host "[INFO] WANDB_ENTITY not set (optional)" -ForegroundColor Gray
 }
 
 # Hugging Face Token
 if ($envVars.ContainsKey("HF_TOKEN")) {
     $exports += "export HF_TOKEN=`"$($envVars['HF_TOKEN'])`""
-    Write-Host "✓ HF_TOKEN found" -ForegroundColor Green
+    Write-Host "[OK] HF_TOKEN found" -ForegroundColor Green
 } elseif ($envVars.ContainsKey("HUGGINGFACE_TOKEN")) {
     $exports += "export HF_TOKEN=`"$($envVars['HUGGINGFACE_TOKEN'])`""
-    Write-Host "✓ HF_TOKEN found (from HUGGINGFACE_TOKEN)" -ForegroundColor Green
+    Write-Host "[OK] HF_TOKEN found (from HUGGINGFACE_TOKEN)" -ForegroundColor Green
 } else {
-    Write-Host "⚠ HF_TOKEN not found (optional but recommended)" -ForegroundColor Yellow
+    Write-Host "[WARNING] HF_TOKEN not found (optional but recommended)" -ForegroundColor Yellow
     $exports += "# export HF_TOKEN=`"your_hf_token_here`"  # Optional but recommended"
 }
 
 # Prime Intellect API Key
 if ($envVars.ContainsKey("PI_API_KEY")) {
     $exports += "export PI_API_KEY=`"$($envVars['PI_API_KEY'])`""
-    Write-Host "✓ PI_API_KEY found" -ForegroundColor Green
+    Write-Host "[OK] PI_API_KEY found" -ForegroundColor Green
 } elseif ($envVars.ContainsKey("PRIME_API_KEY")) {
     $exports += "export PI_API_KEY=`"$($envVars['PRIME_API_KEY'])`""
-    Write-Host "✓ PI_API_KEY found (from PRIME_API_KEY)" -ForegroundColor Green
+    Write-Host "[OK] PI_API_KEY found (from PRIME_API_KEY)" -ForegroundColor Green
 } else {
-    Write-Host "ℹ PI_API_KEY not set (optional)" -ForegroundColor Gray
+    Write-Host "[INFO] PI_API_KEY not set (optional)" -ForegroundColor Gray
 }
 
 # Output the export commands
@@ -126,7 +126,7 @@ Write-Host ""
 # Also save to file for easy copy-paste
 $outputFile = "remote_env_exports.sh"
 $exports | Out-File -FilePath $outputFile -Encoding utf8
-Write-Host "✓ Saved export commands to: $outputFile" -ForegroundColor Green
+Write-Host "[OK] Saved export commands to: $outputFile" -ForegroundColor Green
 Write-Host "  You can copy this file to the remote instance and source it:`n" -ForegroundColor Gray
 Write-Host "  scp $outputFile ubuntu@your-instance-ip:~/" -ForegroundColor Cyan
 Write-Host "  # Then on SSH: source ~/$outputFile`n" -ForegroundColor Cyan

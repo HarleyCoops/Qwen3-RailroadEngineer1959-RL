@@ -1,7 +1,7 @@
 [project]
 name = "dakota1890"
 description = "Verifiers-compatible environment for Dakota grammar and translation RL training (Dakota1890 project)."
-version = "0.1.1"
+version = "0.1.13"
 requires-python = ">=3.10"
 authors = [
     { name = "Dakota Language Lab", email = "language@dakota.example" },
@@ -13,10 +13,6 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Education",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-]
-dependencies = [
-    "verifiers>=0.1.5.dev1",
-    "datasets>=2.20.0",
 ]
 
 [project.urls]
@@ -30,8 +26,13 @@ build-backend = "hatchling.build"
 packages = ["dakota_grammar_translation", "dakota1890"]
 include = [
     "dakota_grammar_translation/data/*.jsonl",
+    "dakota_grammar_translation/configs/*.toml",
 ]
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.uv]
+no-build-isolation-package = []
+extra-build-dependencies = []
 

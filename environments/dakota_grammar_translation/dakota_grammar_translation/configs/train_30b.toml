@@ -17,3 +17,7 @@ keep = 3  # Only keep 3 most recent checkpoints
 [trainer]
 output_dir = "/workspace_1/dakota_rl_outputs"
 
+[wandb]
+project = "dakota-rl-grammar"
+offline = false
+

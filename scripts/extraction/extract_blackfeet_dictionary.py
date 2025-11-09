@@ -32,7 +32,7 @@ try:
     from blackfeet_extraction.core.page_processor import PageProcessor
     from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 except ImportError as e:
-    print(f"❌ Missing dependency: {e}")
+    print(f"[ERROR] Missing dependency: {e}")
     print("\nPlease install requirements:")
     print("  pip install -r requirements.txt")
     sys.exit(1)
@@ -48,24 +48,24 @@ def check_environment():
     # Check API key
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        print("❌ OPENROUTER_API_KEY not found in .env file")
+        print("[ERROR] OPENROUTER_API_KEY not found in .env file")
         print("\nPlease add your OpenRouter API key to .env:")
         print("  OPENROUTER_API_KEY=your_key_here")
         return False
 
-    print(f"  ✓ OpenRouter API key: {api_key[:20]}...")
+    print(f"  [OK] OpenRouter API key: {api_key[:20]}...")
 
     # Check dictionary files
     dict_dir = Path("dictionary/grammardictionar00riggrich_jp2")
     if not dict_dir.exists():
-        print(f"❌ Dictionary directory not found: {dict_dir}")
+        print(f"[ERROR] Dictionary directory not found: {dict_dir}")
         return False
 
     jp2_files = list(dict_dir.glob("*.jp2"))
-    print(f"  ✓ Found {len(jp2_files)} JP2 files in {dict_dir}")
+    print(f"  [OK] Found {len(jp2_files)} JP2 files in {dict_dir}")
 
     if len(jp2_files) == 0:
-        print("❌ No JP2 files found!")
+        print("[ERROR] No JP2 files found!")
         return False
 
     # Check Pillow JP2 support
@@ -74,9 +74,9 @@ def check_environment():
         # Test opening a JP2 file
         with Image.open(jp2_files[0]):
             pass
-        print("  ✓ Pillow can read JP2 files")
+        print("  [OK] Pillow can read JP2 files")
     except Exception as e:
-        print(f"❌ Pillow cannot read JP2 files: {e}")
+        print(f"[ERROR] Pillow cannot read JP2 files: {e}")
         print("\nYou may need to install OpenJPEG library:")
         print("  Windows: download from https://www.openjpeg.org/")
         print("  Linux: sudo apt-get install libopenjp2-7")
@@ -102,7 +102,7 @@ def test_single_page():
 
     jp2_files = sorted(Path("dictionary/grammardictionar00riggrich_jp2").glob("*.jp2"))
     first_page = converter.convert_jp2_to_jpeg(jp2_files[0])
-    print(f"  ✓ Converted: {first_page}")
+    print(f"  [OK] Converted: {first_page}")
 
     # Extract first page
     print("\nStep 2: Extracting dictionary entries...")
@@ -133,7 +133,7 @@ def test_single_page():
             print(f"    POS: {entry.get('pos')}")
             print(f"    Confidence: {entry.get('confidence')}")
 
-    print("\n✓ Test complete! Review the extraction in data/extracted/page_001.json")
+    print("\n[OK] Test complete! Review the extraction in data/extracted/page_001.json")
     print("\nIf results look good, run with --pages 1-10 to process more pages")
 
 
@@ -203,7 +203,7 @@ def build_datasets_only():
 
     extraction_files = list(Path("data/extracted").glob("page_*.json"))
     if not extraction_files:
-        print("❌ No extraction files found in data/extracted/")
+        print("[ERROR] No extraction files found in data/extracted/")
         print("\nRun extraction first with --test or --pages flags")
         return
 
@@ -256,14 +256,14 @@ def main():
             start = end = int(args.pages)
 
         if start < 1 or end > 440:
-            print("❌ Page range must be between 1 and 440")
+            print("[ERROR] Page range must be between 1 and 440")
             sys.exit(1)
 
         process_pages(start, end)
 
     elif args.all:
         confirm = input(
-            "\n⚠️  This will process all 440 pages. This may take several hours "
+            "\n[WARNING] This will process all 440 pages. This may take several hours "
             "and use significant API tokens.\n\nContinue? [y/N]: "
         )
         if confirm.lower() != "y":

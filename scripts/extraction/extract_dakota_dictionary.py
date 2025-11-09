@@ -35,7 +35,7 @@ try:
     from blackfeet_extraction.core.advanced_page_processor import AdvancedPageProcessor
     from blackfeet_extraction.datasets.training_dataset_builder import TrainingDatasetBuilder
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"[ERROR] Import error: {e}")
     print("\nPlease ensure you're in the project root and run:")
     print("  pip install -r requirements.txt")
     sys.exit(1)
@@ -47,7 +47,7 @@ def check_setup():
 
     # API key
     if not os.getenv("OPENROUTER_API_KEY"):
-        print("❌ OPENROUTER_API_KEY not set")
+        print("[ERROR] OPENROUTER_API_KEY not set")
         print("\nAdd to your .env file:")
         print("  OPENROUTER_API_KEY=your_key_here")
         return False
@@ -55,11 +55,11 @@ def check_setup():
     # Dictionary files
     dict_dir = Path("dictionary/grammardictionar00riggrich_jp2")
     if not dict_dir.exists():
-        print(f"❌ Dictionary directory not found: {dict_dir}")
+        print(f"[ERROR] Dictionary directory not found: {dict_dir}")
         return False
 
     jp2_count = len(list(dict_dir.glob("*.jp2")))
-    print(f"  ✓ Found {jp2_count} JP2 dictionary pages")
+    print(f"  [OK] Found {jp2_count} JP2 dictionary pages")
 
     # Test Pillow JP2 support
     try:
@@ -67,16 +67,16 @@ def check_setup():
         test_file = next(dict_dir.glob("*.jp2"))
         with Image.open(test_file):
             pass
-        print("  ✓ PIL can read JP2 files")
+        print("  [OK] PIL can read JP2 files")
     except Exception as e:
-        print(f"❌ PIL cannot read JP2: {e}")
+        print(f"[ERROR] PIL cannot read JP2: {e}")
         print("\nInstall OpenJPEG:")
         print("  Windows: https://www.openjpeg.org/")
         print("  Linux: sudo apt-get install libopenjp2-7")
         print("  Mac: brew install openjpeg")
         return False
 
-    print("  ✓ Setup complete\n")
+    print("  [OK] Setup complete\n")
     return True
 
 
@@ -159,7 +159,7 @@ def process_range(start: int, end: int):
         image_path = Path(f"data/processed_images/grammardictionar00riggrich_{page_num:04d}.jpg")
 
         if not image_path.exists():
-            print(f"⚠️  Skipping page {page_num} - image not found")
+            print(f"[WARNING] Skipping page {page_num} - image not found")
             continue
 
         try:
@@ -169,7 +169,7 @@ def process_range(start: int, end: int):
                 thinking_budget=6000,
             )
         except Exception as e:
-            print(f"❌ Error on page {page_num}: {e}")
+            print(f"[ERROR] Error on page {page_num}: {e}")
             continue
 
     # Build datasets
@@ -236,17 +236,17 @@ Output:
 
     elif args.pages:
         if "-" not in args.pages:
-            print("❌ Pages must be a range (e.g., 1-10)")
+            print("[ERROR] Pages must be a range (e.g., 1-10)")
             sys.exit(1)
 
         start, end = map(int, args.pages.split("-"))
 
         if start < 1 or end > 440 or start > end:
-            print("❌ Invalid range. Must be 1-440 and start <= end")
+            print("[ERROR] Invalid range. Must be 1-440 and start <= end")
             sys.exit(1)
 
         estimated_cost = (end - start + 1) * 0.25  # Rough estimate
-        print(f"\n⚠️  This will process {end-start+1} pages")
+        print(f"\n[WARNING] This will process {end-start+1} pages")
         print(f"Estimated API cost: ${estimated_cost:.2f}")
         print(f"Estimated time: {(end-start+1)*2} minutes")
 
@@ -258,7 +258,7 @@ Output:
         process_range(start, end)
 
     elif args.all:
-        print("\n⚠️  WARNING: Processing all 440 pages will:")
+        print("\n[WARNING] WARNING: Processing all 440 pages will:")
         print("  - Take 12-15 hours")
         print("  - Cost approximately $110 in API fees")
         print("  - Use significant thinking tokens")

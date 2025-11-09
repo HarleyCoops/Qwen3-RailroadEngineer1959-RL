@@ -6,10 +6,6 @@
 
 </div>
 
-**Nov 5th Update**: See [Why This Should Work](#why-this-should-work) below for the theoretical foundation behind grammar-as-reward-functions and composite rewards for RL on non-coding tasks.
-
-`/data` now preserves every artifact of the Dakota Grammar preliminary RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
-
 ![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
 ![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
@@ -28,8 +24,6 @@
 **This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
 
 ### Why This Should Work
-
-**Nov 5th Update**
 
 The fundamental insight driving this approach: **grammar rules can be reward functions, and rewards should decompose into linguistic primitives.** When you do this, syntax emerges naturally without an external verifier as judge. This is particularly powerful for RL on non-coding tasks where compositional structure matters.
 
@@ -68,6 +62,8 @@ This gives you controllable, interpretable learning where you can diagnose exact
 ![Overview](Public/overview.jpg)
 
 </div>
+
+`/data` now preserves every artifact of the Dakota Grammar preliminary RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
 
 <div align="center">
 

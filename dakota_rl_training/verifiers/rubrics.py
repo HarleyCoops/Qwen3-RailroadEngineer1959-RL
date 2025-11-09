@@ -143,6 +143,37 @@ class DakotaGrammarRubric(Rubric):
         # Only reward if very close (>90% similar)
         return max(0.0, similarity) if similarity > 0.9 else 0.0
 
+    def length_penalty(
+        self,
+        response: str,
+        expected: str,
+        max_length_ratio: float = 3.0,
+        **kwargs
+    ) -> float:
+        """
+        Penalize responses that are too long compared to expected answer
+
+        Dakota grammar responses should be concise (words/phrases, not essays)
+        Prevents degenerate policies that generate long repetitive outputs
+
+        Returns penalty multiplier: 1.0 (no penalty) to 0.0 (severe penalty)
+        """
+        response_len = len(response.split())
+        expected_len = max(len(expected.split()), 1)  # Avoid division by zero
+
+        # Allow some flexibility (e.g., "Dawid suŋkaku" vs "Dawid suŋkaku.")
+        # But penalize heavily if response is 3x+ longer than expected
+        length_ratio = response_len / expected_len
+
+        if length_ratio <= max_length_ratio:
+            # No penalty for reasonable lengths
+            return 1.0
+        else:
+            # Exponential penalty for excessive length
+            # 3x length = 1.0, 6x = 0.5, 12x = 0.25, etc.
+            penalty = max_length_ratio / length_ratio
+            return max(0.1, penalty)  # Minimum 0.1 to allow recovery
+
     def composite_reward(
         self,
         response: str,
@@ -157,6 +188,8 @@ class DakotaGrammarRubric(Rubric):
         - Morphology: 40% chars, 40% affixes, 20% semantic
         - Translation: 30% chars, 0% affixes, 70% semantic
         - Reverse translation: 50% chars, 0% affixes, 50% semantic
+
+        INCLUDES LENGTH PENALTY to prevent degenerate long outputs
         """
         task_type = task_info.get("task_type", "morphology")
         difficulty = task_info.get("difficulty", "intermediate")
@@ -196,10 +229,13 @@ class DakotaGrammarRubric(Rubric):
             weights["semantic"] * semantic_reward
         )
 
+        # Apply length penalty (prevents degenerate long outputs)
+        length_mult = self.length_penalty(response, expected)
+
         # Apply difficulty multiplier
         difficulty_mult = self.difficulty_weights.get(difficulty, 1.0)
 
-        return base_reward * difficulty_mult
+        return base_reward * length_mult * difficulty_mult
 
     def binary_reward(
         self,

@@ -30,7 +30,7 @@ if [ -z "$WANDB_API_KEY" ]; then
     exit 1
 else
     export WANDB_API_KEY="$WANDB_API_KEY"
-    echo -e "${GREEN}✓ WANDB_API_KEY is set${NC}"
+    echo -e "${GREEN}[OK] WANDB_API_KEY is set${NC}"
 fi
 
 # WandB Project (optional, defaults to dakota-rl-grammar)
@@ -39,13 +39,13 @@ if [ -z "$WANDB_PROJECT" ]; then
     echo -e "${YELLOW}WANDB_PROJECT not set, using default: dakota-rl-grammar${NC}"
 else
     export WANDB_PROJECT="$WANDB_PROJECT"
-    echo -e "${GREEN}✓ WANDB_PROJECT=$WANDB_PROJECT${NC}"
+    echo -e "${GREEN}[OK] WANDB_PROJECT=$WANDB_PROJECT${NC}"
 fi
 
 # WandB Entity (optional)
 if [ -n "$WANDB_ENTITY" ]; then
     export WANDB_ENTITY="$WANDB_ENTITY"
-    echo -e "${GREEN}✓ WANDB_ENTITY=$WANDB_ENTITY${NC}"
+    echo -e "${GREEN}[OK] WANDB_ENTITY=$WANDB_ENTITY${NC}"
 else
     echo -e "${YELLOW}WANDB_ENTITY not set (optional)${NC}"
 fi
@@ -58,11 +58,11 @@ else
     # Use HF_TOKEN if set, otherwise HUGGINGFACE_TOKEN
     if [ -n "$HF_TOKEN" ]; then
         export HF_TOKEN="$HF_TOKEN"
-        echo -e "${GREEN}✓ HF_TOKEN is set${NC}"
+        echo -e "${GREEN}[OK] HF_TOKEN is set${NC}"
     elif [ -n "$HUGGINGFACE_TOKEN" ]; then
         export HF_TOKEN="$HUGGINGFACE_TOKEN"
         export HUGGINGFACE_TOKEN="$HUGGINGFACE_TOKEN"
-        echo -e "${GREEN}✓ HF_TOKEN is set (from HUGGINGFACE_TOKEN)${NC}"
+        echo -e "${GREEN}[OK] HF_TOKEN is set (from HUGGINGFACE_TOKEN)${NC}"
     fi
 fi
 
@@ -73,7 +73,7 @@ if [ -n "$PI_API_KEY" ] || [ -n "$PRIME_API_KEY" ]; then
     else
         export PI_API_KEY="$PRIME_API_KEY"
     fi
-    echo -e "${GREEN}✓ PI_API_KEY is set${NC}"
+    echo -e "${GREEN}[OK] PI_API_KEY is set${NC}"
 fi
 
 echo -e "\n${GREEN}=== Environment variables set! ===${NC}"
