@@ -556,6 +556,25 @@ python train.py --config configs/training_config.yaml
 # Follow instructions to install PrimeIntellect and launch
 ```
 
+### Curriculum Section
+
+The repo ships with two trainer presets:
+
+- `dakota_rl_training/configs/train_30b.toml` – the lightweight config we use in the quick start above. It has no curriculum logic; every RL step samples uniformly from whatever dataset the environment serves.
+- `dakota_rl_training/configs/train.toml` (and the matching `training_config.yaml` used by `python train.py`) – these contain an explicit `[curriculum]` block with staged datasets (easy → medium → hard) plus target step ranges.
+
+To activate the curriculum when launching through the Prime RL CLI, point each component at the staged configs:
+
+```bash
+uv run rl \
+  --trainer @ ~/dakota-rl-training/configs/train.toml \
+  --orchestrator @ ~/dakota-rl-training/configs/orch.toml \
+  --inference @ ~/dakota-rl-training/configs/infer.toml \
+  ... # other flags (gpu ids, wandb, etc.)
+```
+
+The orchestrator/inference presets that accompany `train.toml` live in the same folder (`orch.toml`, `infer.toml`) and expect the staged datasets described in `training_config.yaml`. If you stick with the `*_30b.toml` files, no curriculum will trigger. In short: choose the config trio you pass to `uv run rl` based on whether you want uniform sampling (`*_30b.toml`) or curriculum-driven sampling (`train.toml` + `orch.toml` + `infer.toml`).
+
 ---
 
 ## Citation
