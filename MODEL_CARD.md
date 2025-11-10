@@ -18,6 +18,14 @@ pipeline_tag: text-generation
 
 # Qwen3-0.6B-Dakota-Grammar-RL
 
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/HarleyCoops/Dakota1890/main/Public/Prepositions.jpg" alt="Dakota Prepositions - High Detail Scan" style="width: 100%; max-width: 1200px; height: auto; border-radius: 8px;">
+
+*Exceptional level of detail preserved from the 1890 source material — every character, accent, and linguistic nuance captured with precision*
+
+</div>
+
 ## Model Description
 
 This model is a reinforcement learning (RL) fine-tuned version of `Qwen/Qwen3-0.6B`, trained specifically for Dakota language grammar and translation tasks using **compositional reward functions** on **non-coding tasks**. This represents a test of the RL pipeline's effectiveness for complex, multi-component reward structures in linguistic domains.
@@ -41,6 +49,22 @@ This model is a reinforcement learning (RL) fine-tuned version of `Qwen/Qwen3-0.
   - Syntax (sentence structure)
   - Pattern identification
 - **Difficulty Levels**: Easy (1,973), Medium (5,294), Hard (1,172), Advanced (2,137)
+
+<div align="center" style="margin: 2rem 0;">
+
+<img src="https://raw.githubusercontent.com/HarleyCoops/Dakota1890/main/Public/grammar.jpg" alt="Dakota Grammar - Historical Text Detail" style="width: 100%; max-width: 1200px; height: auto; border-radius: 8px;">
+
+*Grammar section from the 1890 Dakota-English Dictionary showing detailed linguistic rules and interlinear text*
+
+</div>
+
+<div align="center" style="margin: 2rem 0;">
+
+<img src="https://raw.githubusercontent.com/HarleyCoops/Dakota1890/main/Public/dictionary2.jpg" alt="Dakota Dictionary - Historical Text Detail" style="width: 100%; max-width: 1200px; height: auto; border-radius: 8px;">
+
+*Dictionary entries from the 1890 source material, preserving Dakota orthography and special characters*
+
+</div>
 
 ### Training Procedure
 
