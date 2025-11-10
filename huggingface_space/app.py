@@ -61,19 +61,20 @@ def infer(prompt, max_tokens, temperature, top_p):
         debug_mode = os.getenv("DEBUG_INFERENCE", "false").lower() == "true"
         debug_info = []  # Collect debug info to return
         
-        # Generate with parameters matching training
+        # Generate with improved parameters to reduce garbage output
         # Use torch.no_grad() for efficiency
         import torch
         with torch.no_grad():
             output = model.generate(
                 **inputs,
-                max_new_tokens=min(max_tokens, 64),  # Cap at 64 for concise responses
-                temperature=max(temperature, 0.3),  # Minimum 0.3 to avoid too deterministic
-                top_p=0.9,
+                max_new_tokens=min(max_tokens, 48),  # Shorter to reduce garbage
+                temperature=0.1,  # Very low temperature for deterministic output
+                top_p=0.8,  # Lower top_p for more focused sampling
                 do_sample=True,
                 pad_token_id=tok.eos_token_id,
                 eos_token_id=tok.eos_token_id,
-                repetition_penalty=1.1,  # Add repetition penalty to prevent loops
+                repetition_penalty=1.3,  # Higher repetition penalty to prevent loops
+                no_repeat_ngram_size=3,  # Prevent 3-gram repeats
             )
         
         if debug_mode:
@@ -147,9 +148,31 @@ def infer(prompt, max_tokens, temperature, top_p):
                 debug_info.append(f"Fallback extraction: {repr(generated_text[:200])}")
                 print(f"DEBUG - Fallback extraction: {repr(generated_text[:200])}")
         
-        # Clean up special tokens (less aggressive)
+        # Clean up special tokens and reasoning tags
         generated_text = generated_text.split("</s>")[0].strip()
         generated_text = generated_text.split("<|im_end|>")[0].strip()
+        
+        # Remove reasoning tags that the model might generate (more aggressive)
+        reasoning_tags = [
+            "<think>",
+            "</think>",
+            "<think>",
+            "</think>",
+            "<reasoning>",
+            "</reasoning>",
+        ]
+        for tag in reasoning_tags:
+            if tag in generated_text:
+                # Split on tag and take everything after the last occurrence
+                parts = generated_text.split(tag)
+                if len(parts) > 1:
+                    generated_text = parts[-1].strip()
+                else:
+                    generated_text = generated_text.replace(tag, "").strip()
+        
+        # Remove any remaining XML-like tags
+        import re
+        generated_text = re.sub(r'<[^>]+>', '', generated_text)
         
         # Don't remove too aggressively - keep Dakota special characters
         # Only remove if they're clearly artifacts
@@ -163,6 +186,31 @@ def infer(prompt, max_tokens, temperature, top_p):
             generated_text = generated_text[5:].strip()
         if generated_text.startswith("Assistant:"):
             generated_text = generated_text[10:].strip()
+        
+        # Filter out garbage Unicode characters (full-width, weird symbols)
+        # Keep valid Dakota characters but remove obvious garbage
+        import re
+        # Remove full-width characters that aren't Dakota
+        # Keep: ć, š, ŋ, ḣ, ṡ, á, é, í, ó, ú and normal ASCII
+        # Remove: full-width N (Ｎ), weird Chinese chars, etc.
+        # This is a heuristic - be careful not to remove valid Dakota
+        lines = generated_text.split('\n')
+        cleaned_lines = []
+        for line in lines:
+            # Skip lines that are mostly garbage characters
+            if line.strip():
+                # Count non-ASCII, non-Dakota characters
+                dakota_chars = set('ćšŋḣṡáéíóú')
+                ascii_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .,!?;:-')
+                valid_chars = ascii_chars | dakota_chars
+                char_count = len([c for c in line if c in valid_chars or c.isspace()])
+                total_chars = len([c for c in line if not c.isspace()])
+                if total_chars == 0 or char_count / max(total_chars, 1) > 0.5:  # At least 50% valid chars
+                    cleaned_lines.append(line)
+        generated_text = '\n'.join(cleaned_lines).strip()
+        
+        # Remove repeated single characters (like "ＮＮＮＮ")
+        generated_text = re.sub(r'(.)\1{4,}', '', generated_text)  # Remove 5+ repeats
         
         if debug_mode:
             debug_info.append(f"After cleanup: {repr(generated_text[:200])}")

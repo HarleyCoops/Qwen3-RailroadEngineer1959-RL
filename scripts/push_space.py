@@ -13,6 +13,14 @@ import argparse
 import os
 from pathlib import Path
 from typing import Optional
+
+# Load .env file if it exists
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, skip
+
 from huggingface_hub import HfApi, login
 from huggingface_hub.utils import HfHubHTTPError
 from huggingface_hub.errors import RepositoryNotFoundError
@@ -110,10 +118,23 @@ def push_to_space(
             print(f"   5. Then run this script again")
             return False
     
-    # Upload each file
+    # Upload all files and verify commits were created
     uploaded = []
     failed = []
+    actually_committed = []
     
+    # Get the latest commit before uploading to compare
+    try:
+        recent_commits = api.list_repo_commits(
+            repo_id=space_name,
+            repo_type="space",
+            token=token,
+        )
+        commit_before = recent_commits[0].commit_id if recent_commits else None
+    except Exception:
+        commit_before = None
+    
+    # Upload each file
     for filename in SPACE_FILES:
         file_path = source_dir / filename
         
@@ -130,44 +151,58 @@ def push_to_space(
                 repo_id=space_name,
                 repo_type="space",
                 token=token,
-                commit_message=f"Update {filename}"
+                commit_message=f"Update {filename}",
             )
-            print(f"Uploaded {filename}")
             uploaded.append(filename)
+            
+            # Check if a new commit was created
+            try:
+                recent_commits = api.list_repo_commits(
+                    repo_id=space_name,
+                    repo_type="space",
+                    token=token,
+                )
+                commit_after = recent_commits[0].commit_id if recent_commits else None
+                if commit_after != commit_before:
+                    print(f"  [COMMITTED] {filename}")
+                    actually_committed.append(filename)
+                    commit_before = commit_after  # Update for next file
+                else:
+                    print(f"  [SKIPPED] No changes to {filename}")
+            except Exception:
+                # Can't verify, assume it worked
+                print(f"  [UPLOADED] {filename}")
+                actually_committed.append(filename)
+                
         except RepositoryNotFoundError as e:
             error_msg = str(e)
-            print(f"Space not found: {error_msg}")
+            print(f"  [ERROR] Space not found: {error_msg}")
             failed.append(filename)
-        except HfHubHTTPError as e:
-            # Handle different error types - check if it's a "no changes" message
-            error_msg = getattr(e, 'message', str(e))
-            if "no files have been modified" in str(e).lower() or "skipping to prevent empty commit" in str(e).lower():
-                print(f"  (No changes to {filename}, skipping)")
-                uploaded.append(filename)  # Count as success since file is already up to date
-            else:
-                print(f"Failed to upload {filename}: {error_msg}")
-                failed.append(filename)
         except Exception as e:
             error_str = str(e)
-            if "no files have been modified" in error_str.lower() or "skipping to prevent empty commit" in error_str.lower():
-                print(f"  (No changes to {filename}, skipping)")
-                uploaded.append(filename)
+            if "no files have been modified" in error_str.lower() or "skipping" in error_str.lower():
+                print(f"  [SKIPPED] No changes to {filename}")
+                uploaded.append(filename)  # File is up to date
             else:
-                print(f"Error uploading {filename}: {e}")
+                print(f"  [ERROR] Failed: {e}")
                 failed.append(filename)
     
     # Summary
     print("\n" + "=" * 70)
     print("Upload Summary:")
-    print(f"   Uploaded: {len(uploaded)}")
+    print(f"   Files processed: {len(uploaded)}")
+    print(f"   Actually committed: {len(actually_committed)}")
     print(f"   Failed: {len(failed)}")
     
-    if uploaded:
-        print(f"\nSuccessfully pushed {len(uploaded)} file(s) to {space_name}")
-        print(f"   Space will automatically rebuild: https://huggingface.co/spaces/{space_name}")
+    if actually_committed:
+        print(f"\n[SUCCESS] Committed {len(actually_committed)} file(s): {', '.join(actually_committed)}")
+        print(f"   Space will rebuild: https://huggingface.co/spaces/{space_name}")
+    
+    if uploaded and not actually_committed:
+        print(f"\n[INFO] All files are already up to date (no changes to commit)")
     
     if failed:
-        print(f"\nFailed to upload {len(failed)} file(s): {', '.join(failed)}")
+        print(f"\n[ERROR] Failed to upload {len(failed)} file(s): {', '.join(failed)}")
         return False
     
     return True
