@@ -62,6 +62,12 @@ Everyone else treats grammar as either:
 
 This project makes grammar rules directly differentiable through compositional rewards. Each rule becomes a gradient signal, not just a binary check.
 
+<div align="center" style="margin: 3rem 0;">
+
+<img src="Public/grammar.jpg" alt="Dakota Grammar - Historical Text Detail" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+
+</div>
+
 The key advantage: **interpretability**. You can actually see where in the latent space each linguistic level is being encoded. This makes debugging possible: "Oh, the model is failing on ć preservation because the character embedding gradient is being overwhelmed by the semantic gradient."
 
 #### Composite Rewards in Practice
@@ -249,6 +255,12 @@ python scripts/extraction/extract_dakota_dictionary_v2.py --pages 93-440
 - ~10,000 {dakota:english} pairs
 - Etymology and usage notes
 - Part of speech tags
+
+<div align="center" style="margin: 3rem 0;">
+
+<img src="Public/dictionary2.jpg" alt="Dakota Dictionary - Historical Text Detail" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+
+</div>
 
 ### Step 4: Grammar → RL Environment Conversion
 **Script**: `scripts/rl/organize_grammar_for_rl.py`
