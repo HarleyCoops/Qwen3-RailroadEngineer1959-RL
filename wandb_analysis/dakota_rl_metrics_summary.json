@@ -1,0 +1,28 @@
+{
+  "run_id": "29hn8w98",
+  "total_steps": 1000,
+  "max_reward": 0.36570155209147553,
+  "final_reward": 0.3486319575958414,
+  "last100_reward_mean": 0.3390468044785762,
+  "max_char_reward": 0.5979369152869229,
+  "final_char_reward": 0.534869599977105,
+  "last100_char_reward_mean": 0.5049510712124,
+  "max_affix_reward": 1.0,
+  "min_affix_reward": 0.859375,
+  "final_affix_reward": 0.9791666666666666,
+  "last100_affix_reward_mean": 0.9733528645833333,
+  "final_length_penalty_reward": 0.958275806225025,
+  "last100_length_penalty_mean": 0.9381420251850859,
+  "final_throughput": 10250.25803683382,
+  "max_throughput": 29223.078071855838,
+  "summary_runtime_seconds": 5542.319975058,
+  "summary_throughput": 10250.25803683382,
+  "summary_reward": 0.3486319575958414,
+  "task_counts": {
+    "hard": 1172,
+    "medium": 5294,
+    "advanced": 2137,
+    "easy": 1973
+  },
+  "total_tasks": 10576
+}
