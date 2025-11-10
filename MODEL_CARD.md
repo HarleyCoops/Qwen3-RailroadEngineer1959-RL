@@ -140,9 +140,9 @@ This model is intended for:
 ```bibtex
 @misc{dakota1890-rl-2024,
   title={Qwen3-0.6B-Dakota-Grammar-RL: A Compositional Reward RL Test for Non-Coding Tasks},
-  author={Dakota Language Lab},
+  author={Christian H. Cooper},
   year={2024},
-  url={https://huggingface.co/HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL}
+  url={https://huggingface.co/harleycooper/Qwen3-0.6B-Dakota-Grammar-RL}
 }
 ```
 
@@ -155,5 +155,4 @@ This model is intended for:
 
 ## Model Card Contact
 
-For questions or issues, please contact: language@dakota.example
-
+For questions or issues, please contact: Raise an Issue in the Repo
