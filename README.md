@@ -13,6 +13,33 @@
 ![Smoke Tests](https://img.shields.io/badge/smoke%20tests-offline-brightgreen)
 ![Python Package](https://img.shields.io/badge/pypi-dakota--grammar--env-blue)
 
+---
+
+<div align="center">
+
+
+</div>
+
+<div align="center" style="margin: 2rem 0;">
+
+<img src="Public/Prepositions.jpg" alt="Dakota Prepositions - High Detail Scan" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+
+</div>
+
+<div align="center" style="margin-bottom: 2rem;">
+
+*Exceptional level of detail preserved from the 1890 source material — every character, accent, and linguistic nuance captured with precision*
+
+</div>
+
+<div align="center" style="margin-bottom: 2rem;">
+
+**All images, extractions, and datasets are freely available in this repository:** [data/processed_images](https://github.com/HarleyCoops/Dakota1890/tree/main/data/processed_images)
+
+</div>
+
+---
+
 <div align="center">
 
 ![Dakota Dictionary Sample](Public/Dictionary.jpeg)

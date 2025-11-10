@@ -1,0 +1,164 @@
+{
+  "run_id": "7nikv4vp",
+  "run_name": "dakota-0.6b-rl-trainer",
+  "state": "finished",
+  "url": "https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp",
+  "analysis": {
+    "loss": {
+      "loss/mean": {
+        "initial": 9.264922482543625e-06,
+        "final": -6.828611367382109e-05,
+        "mean": -6.413999029150119e-05,
+        "std": 0.00012681721161900042,
+        "min": -0.0008948909817263484,
+        "max": 0.0015044689644128084,
+        "trend": "decreasing"
+      },
+      "loss/std": {
+        "initial": 7.761239976389334e-05,
+        "final": 0.00047909250133670866,
+        "mean": 0.0007390473411651329,
+        "std": 0.0005472542192146464,
+        "min": 7.31421823729761e-05,
+        "max": 0.008522666990756989,
+        "trend": "increasing"
+      },
+      "loss/min": {
+        "initial": -0.0002901616389863193,
+        "final": -0.0014427799033001065,
+        "mean": -0.0020713379620865453,
+        "std": 0.0015952070773509533,
+        "min": -0.02272987924516201,
+        "max": -0.00020452802709769458,
+        "trend": "decreasing"
+      },
+      "loss/max": {
+        "initial": 0.00024968452635221183,
+        "final": 0.0011082232231274247,
+        "mean": 0.0016559682241058908,
+        "std": 0.002601549701947772,
+        "min": 0.00024968452635221183,
+        "max": 0.04490341246128082,
+        "trend": "increasing"
+      }
+    },
+    "entropy": {
+      "entropy/mean": {
+        "initial": 0.9309959411621094,
+        "final": 0.21058081090450287,
+        "mean": 0.36448660999536514,
+        "std": 0.15980750823086812,
+        "min": 0.14868947863578796,
+        "max": 0.9558125734329224,
+        "trend": "decreasing"
+      },
+      "entropy/std": {
+        "initial": 0.8895789384841919,
+        "final": 0.5265141725540161,
+        "mean": 0.6459794148802758,
+        "std": 0.13426151416785076,
+        "min": 0.3798484802246094,
+        "max": 1.173405408859253,
+        "trend": "decreasing"
+      }
+    },
+    "performance": {
+      "perf/throughput": {
+        "initial": 0.0,
+        "final": 8036.110348083031,
+        "mean": 8177.734853633857,
+        "std": 1407.709458793674,
+        "min": 0.0,
+        "max": 15420.222143103263,
+        "trend": "increasing"
+      },
+      "perf/mfu": {
+        "initial": 0.0,
+        "final": 2.633589137975095,
+        "mean": 2.6800022337806695,
+        "std": 0.461333677553119,
+        "min": 0.0,
+        "max": 5.053505711370328,
+        "trend": "increasing"
+      },
+      "perf/peak_memory": {
+        "initial": 5.4453125,
+        "final": 11.498046875,
+        "mean": 11.4755078125,
+        "std": 0.35682711614711415,
+        "min": 5.4453125,
+        "max": 11.498046875,
+        "trend": "increasing"
+      }
+    },
+    "optimization": {
+      "optim/lr": {
+        "initial": 1e-06,
+        "final": 1e-06,
+        "mean": 1e-06,
+        "std": 0.0,
+        "min": 1e-06,
+        "max": 1e-06,
+        "trend": "decreasing"
+      },
+      "optim/grad_norm": {
+        "initial": 0.004226722754538059,
+        "final": 0.12983207404613495,
+        "mean": 0.14723483453830705,
+        "std": 0.08494021807940323,
+        "min": 0.003737866645678878,
+        "max": 1.056274652481079,
+        "trend": "increasing"
+      }
+    },
+    "probabilities": {
+      "inference_probs/mean": {
+        "initial": 0.6342189311981201,
+        "final": 0.8634934425354004,
+        "mean": 0.8030136843919754,
+        "std": 0.057591679070399006,
+        "min": 0.6256430745124817,
+        "max": 0.9145410060882568,
+        "trend": "increasing"
+      },
+      "trainer_probs/mean": {
+        "initial": 0.6339759826660156,
+        "final": 0.6907302141189575,
+        "mean": 0.622524813234806,
+        "std": 0.07695630201345267,
+        "min": 0.4014301300048828,
+        "max": 0.7840409874916077,
+        "trend": "increasing"
+      }
+    },
+    "kl_divergence": {
+      "mismatch_kl/mean": {
+        "initial": 0.0010282046860083938,
+        "final": 2.3538050651550293,
+        "mean": 3.070315848409431,
+        "std": 1.7222355811547965,
+        "min": 0.0010282046860083938,
+        "max": 30.825349807739258,
+        "trend": "increasing"
+      },
+      "masked_mismatch_kl/mean": {
+        "initial": 0.0,
+        "final": 6.984246730804443,
+        "mean": 8.50886297263205,
+        "std": 3.668947304244584,
+        "min": 0.0,
+        "max": 69.09469604492188,
+        "trend": "increasing"
+      }
+    }
+  },
+  "insights": [
+    "\u2713 Training completed successfully",
+    "\u23f1 Training duration: 1.54 hours (5537 seconds)",
+    "\ud83d\udcca Steps completed: 998",
+    "\ud83d\udcc9 Loss decreased from 0.000009 to -0.000068",
+    "\u26a1 Average throughput: 8178 tokens/sec",
+    "\ud83d\udd27 Average MFU: 2.68%",
+    "\ud83c\udfaf Low entropy (0.2106) - model is confident"
+  ]
+}

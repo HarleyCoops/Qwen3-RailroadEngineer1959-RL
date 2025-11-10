@@ -91,3 +91,6 @@ ssh -i $env:USERPROFILE\.ssh\DakotaRL3.pem -p 1234 root@65.109.75.43
 If Prime Intellect gives you 2 files, only use the **private key** (the one without `.pub` extension).
 
 
+
+
+
