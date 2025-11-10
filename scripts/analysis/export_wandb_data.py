@@ -62,7 +62,7 @@ def export_wandb_run(
     try:
         wandb.login(key=api_key)
         api = wandb.Api()
-        print("✓ W&B API initialized")
+        print("[OK] W&B API initialized")
     except Exception as e:
         print(f"ERROR: Failed to login to W&B: {e}")
         print("Check your WANDB_API_KEY in .env file")
@@ -72,7 +72,7 @@ def export_wandb_run(
     print(f"\nFetching run data from: {run_path}...")
     try:
         run = api.run(run_path)
-        print(f"✓ Run found: {run.name}")
+        print(f"[OK] Run found: {run.name}")
     except Exception as e:
         print(f"ERROR: Failed to fetch run: {e}")
         print(f"Check that the run path is correct: {run_path}")
@@ -90,7 +90,7 @@ def export_wandb_run(
     print(f"\nFetching complete history (up to {max_samples} samples)...")
     try:
         history = run.history(samples=max_samples)
-        print(f"✓ Retrieved {len(history)} data points")
+        print(f"[OK] Retrieved {len(history)} data points")
     except Exception as e:
         print(f"ERROR: Failed to fetch history: {e}")
         sys.exit(1)
@@ -144,7 +144,7 @@ def export_wandb_run(
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(export_data, f, indent=2, default=str)
-        print(f"✓ JSON export saved")
+        print(f"[OK] JSON export saved")
     except Exception as e:
         print(f"ERROR: Failed to save JSON: {e}")
         sys.exit(1)
@@ -154,12 +154,12 @@ def export_wandb_run(
     print(f"Saving CSV to {csv_file}...")
     try:
         history.to_csv(csv_file, index=False)
-        print(f"✓ CSV export saved")
+        print(f"[OK] CSV export saved")
     except Exception as e:
         print(f"WARNING: Failed to save CSV: {e}")
     
     print(f"\n{'='*70}")
-    print("✅ Export complete!")
+    print("[SUCCESS] Export complete!")
     print(f"{'='*70}")
     print(f"\nFiles created:")
     print(f"  - {json_file}")
@@ -224,7 +224,7 @@ def export_wandb_run(
         print("  (No key metrics found - check available metrics above)")
     
     print(f"\n{'='*70}")
-    print("📊 Data export complete! You can now analyze the exported files.")
+    print("[INFO] Data export complete! You can now analyze the exported files.")
     print(f"{'='*70}")
     
     return export_data
@@ -283,7 +283,7 @@ Examples:
         print("\n\nExport cancelled by user")
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n[ERROR] Error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

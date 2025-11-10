@@ -61,20 +61,19 @@ def infer(prompt, max_tokens, temperature, top_p):
         debug_mode = os.getenv("DEBUG_INFERENCE", "false").lower() == "true"
         debug_info = []  # Collect debug info to return
         
-        # Generate with improved parameters to reduce garbage output
+        # Generate with parameters matching test_model_inference.py (the working version)
         # Use torch.no_grad() for efficiency
         import torch
         with torch.no_grad():
             output = model.generate(
                 **inputs,
-                max_new_tokens=min(max_tokens, 48),  # Shorter to reduce garbage
-                temperature=0.1,  # Very low temperature for deterministic output
-                top_p=0.8,  # Lower top_p for more focused sampling
+                max_new_tokens=min(max_tokens, 64),  # Match test_model_inference.py
+                temperature=0.3,  # Match test_model_inference.py (was 0.1 - too low!)
+                top_p=0.9,  # Match test_model_inference.py (was 0.8)
                 do_sample=True,
                 pad_token_id=tok.eos_token_id,
                 eos_token_id=tok.eos_token_id,
-                repetition_penalty=1.3,  # Higher repetition penalty to prevent loops
-                no_repeat_ngram_size=3,  # Prevent 3-gram repeats
+                # Removed repetition_penalty and no_repeat_ngram_size to match working version
             )
         
         if debug_mode:
