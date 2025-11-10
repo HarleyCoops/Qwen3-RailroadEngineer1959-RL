@@ -1,0 +1,411 @@
+#!/usr/bin/env python3
+"""
+Standalone inference script for Qwen3-0.6B-Dakota-Grammar-RL model
+using Hugging Face infrastructure (Inference API or Inference Endpoints).
+
+This script uses your HF login credentials to access the model on HF infrastructure.
+"""
+
+import os
+import argparse
+import json
+from typing import Optional, Dict, Any
+from huggingface_hub import InferenceClient, login
+from huggingface_hub.utils import HfHubHTTPError
+
+MODEL_ID = "HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL"
+
+DEFAULT_SYSTEM_PROMPT = (
+    "You are a Dakota language expert specializing in the 1890 Dakota-English Dictionary grammar. "
+    "Translate or explain each prompt concisely while preserving Dakota orthography exactly, "
+    "including special characters (ć, š, ŋ, ḣ, ṡ, á, é, í, ó, ú, etc.) and cultural/grammatical nuance."
+)
+
+
+def format_chat_messages(system_prompt: str, user_message: str) -> list:
+    """
+    Format messages in chat format for Qwen models.
+    
+    IMPORTANT: This matches the exact format used during RL training.
+    The verifiers framework (used during training) automatically uses the model's
+    built-in chat template via tokenizer.apply_chat_template(). This function
+    creates the same message structure that the chat template expects.
+    
+    The Qwen3 model has a built-in chat template that formats:
+    - system messages
+    - user messages  
+    - assistant responses
+    
+    During training, the environment used message_type="chat" which tells verifiers
+    to use this same template. So we use tokenizer.apply_chat_template() to ensure
+    inference matches training exactly.
+    """
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_message}
+    ]
+
+
+class DakotaInferenceClient:
+    """Client for running inference on Dakota Grammar RL model using HF infrastructure."""
+    
+    def __init__(
+        self,
+        model_id: str = MODEL_ID,
+        endpoint_url: Optional[str] = None,
+        token: Optional[str] = None
+    ):
+        """
+        Initialize the inference client.
+        
+        Args:
+            model_id: HuggingFace model ID
+            endpoint_url: Optional Inference Endpoint URL (if using dedicated endpoints)
+            token: Optional HF token (will use login if not provided)
+        """
+        self.model_id = model_id
+        self.endpoint_url = endpoint_url
+        
+        # Get token from environment or use login
+        if token:
+            self.token = token
+        elif os.getenv("HF_TOKEN"):
+            self.token = os.getenv("HF_TOKEN")
+        else:
+            # Try to login interactively
+            print("No HF token found. Attempting to login...")
+            try:
+                login()
+                self.token = None  # Will use cached token
+            except Exception as e:
+                print(f"Login failed: {e}")
+                print("Please set HF_TOKEN environment variable or run: huggingface-cli login")
+                raise
+        
+        # Initialize client
+        if endpoint_url:
+            # Using Inference Endpoint
+            self.client = InferenceClient(
+                endpoint_url=endpoint_url,
+                token=self.token
+            )
+            self.mode = "endpoint"
+        else:
+            # Using Inference API
+            # Note: Some models may not be available on Inference API
+            # and may require Inference Endpoints instead
+            try:
+                self.client = InferenceClient(
+                    model=model_id,
+                    token=self.token
+                )
+                self.mode = "api"
+            except Exception as e:
+                # If model isn't available on Inference API, provide helpful error
+                raise Exception(
+                    f"Model '{model_id}' is not available on Hugging Face Inference API.\n"
+                    f"This could mean:\n"
+                    f"  1. The model needs to be enabled for Inference API (check model settings)\n"
+                    f"  2. The model requires Inference Endpoints instead (use --endpoint-url)\n"
+                    f"  3. Use the HuggingFace Space instead (see huggingface_space/)\n"
+                    f"  4. Use local inference with test_model_inference.py (requires GPU)\n"
+                    f"\nOriginal error: {str(e)}"
+                ) from e
+    
+    def generate(
+        self,
+        prompt: str,
+        system_prompt: Optional[str] = None,
+        max_new_tokens: int = 64,
+        temperature: float = 0.3,
+        top_p: float = 0.9,
+        repetition_penalty: float = 1.1,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Generate a response from the model.
+        
+        Args:
+            prompt: User prompt
+            system_prompt: Optional system prompt (uses default if not provided)
+            max_new_tokens: Maximum tokens to generate
+            temperature: Sampling temperature
+            top_p: Nucleus sampling parameter
+            repetition_penalty: Repetition penalty
+            **kwargs: Additional generation parameters
+        
+        Returns:
+            Dictionary with response and metadata
+        """
+        if system_prompt is None:
+            system_prompt = DEFAULT_SYSTEM_PROMPT
+        
+        # Format messages
+        messages = format_chat_messages(system_prompt, prompt)
+        
+        # Prepare parameters
+        parameters = {
+            "max_new_tokens": max_new_tokens,
+            "temperature": temperature,
+            "top_p": top_p,
+            "repetition_penalty": repetition_penalty,
+            **kwargs
+        }
+        
+        try:
+            if self.mode == "endpoint":
+                # Inference Endpoint - try chat completion first, fall back to text generation
+                try:
+                    response = self.client.chat_completion(
+                        messages=messages,
+                        max_tokens=max_new_tokens,
+                        temperature=temperature,
+                        top_p=top_p,
+                        repetition_penalty=repetition_penalty,
+                        **kwargs
+                    )
+                    # Extract text from response
+                    if isinstance(response, dict):
+                        generated_text = response.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    else:
+                        generated_text = str(response)
+                except (AttributeError, TypeError):
+                    # Fall back to text generation with formatted prompt
+                    from transformers import AutoTokenizer
+                    tokenizer = AutoTokenizer.from_pretrained(self.model_id, token=self.token)
+                    formatted_prompt = tokenizer.apply_chat_template(
+                        messages,
+                        tokenize=False,
+                        add_generation_prompt=True
+                    )
+                    response = self.client.text_generation(
+                        formatted_prompt,
+                        max_new_tokens=max_new_tokens,
+                        temperature=temperature,
+                        top_p=top_p,
+                        repetition_penalty=repetition_penalty,
+                        return_full_text=False,
+                        **kwargs
+                    )
+                    generated_text = response
+            else:
+                # Inference API - use text generation with chat template
+                # Note: Most models on Inference API use text_generation, not chat_completion
+                # CRITICAL: This uses the model's built-in chat template, which is
+                # the SAME template used during RL training by the verifiers framework.
+                # The verifiers framework automatically calls apply_chat_template()
+                # when message_type="chat" is set (as it was in DakotaGrammarEnv).
+                from transformers import AutoTokenizer
+                tokenizer = AutoTokenizer.from_pretrained(self.model_id, token=self.token)
+                formatted_prompt = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True
+                )
+                
+                # Call Inference API
+                try:
+                    response = self.client.text_generation(
+                        formatted_prompt,
+                        max_new_tokens=max_new_tokens,
+                        temperature=temperature,
+                        top_p=top_p,
+                        repetition_penalty=repetition_penalty,
+                        return_full_text=False,
+                        **kwargs
+                    )
+                    generated_text = response
+                except Exception as api_error:
+                    # Re-raise with more context
+                    raise Exception(
+                        f"Inference API call failed: {str(api_error)}\n"
+                        f"Model: {self.model_id}\n"
+                        f"Note: The model may not be available on Inference API yet, "
+                        f"or may require Inference Endpoints instead."
+                    ) from api_error
+            
+            return {
+                "response": generated_text.strip(),
+                "prompt": prompt,
+                "parameters": parameters,
+                "mode": self.mode
+            }
+        
+        except HfHubHTTPError as e:
+            error_msg = f"HTTP Error: {e.message}"
+            if hasattr(e, 'response') and e.response is not None:
+                try:
+                    error_detail = e.response.json()
+                    error_msg += f" | Details: {error_detail}"
+                except:
+                    error_msg += f" | Response: {e.response.text[:200]}"
+            return {
+                "error": error_msg,
+                "status_code": e.status_code,
+                "prompt": prompt
+            }
+        except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
+            return {
+                "error": f"Generation failed: {str(e)}",
+                "error_type": type(e).__name__,
+                "traceback": error_details,
+                "prompt": prompt
+            }
+
+
+def main():
+    """Main CLI interface."""
+    parser = argparse.ArgumentParser(
+        description="Run inference on Dakota Grammar RL model using HF infrastructure"
+    )
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        required=True,
+        help="Input prompt for the model"
+    )
+    parser.add_argument(
+        "--model-id",
+        type=str,
+        default=MODEL_ID,
+        help=f"Model ID (default: {MODEL_ID})"
+    )
+    parser.add_argument(
+        "--endpoint-url",
+        type=str,
+        default=None,
+        help="Inference Endpoint URL (optional, uses Inference API if not provided)"
+    )
+    parser.add_argument(
+        "--token",
+        type=str,
+        default=None,
+        help="HuggingFace token (optional, uses login if not provided)"
+    )
+    parser.add_argument(
+        "--system-prompt",
+        type=str,
+        default=None,
+        help="Custom system prompt (optional)"
+    )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=64,
+        help="Maximum tokens to generate (default: 64)"
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.3,
+        help="Sampling temperature (default: 0.3)"
+    )
+    parser.add_argument(
+        "--top-p",
+        type=float,
+        default=0.9,
+        help="Top-p sampling parameter (default: 0.9)"
+    )
+    parser.add_argument(
+        "--repetition-penalty",
+        type=float,
+        default=1.1,
+        help="Repetition penalty (default: 1.1)"
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output as JSON"
+    )
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        help="Run in interactive mode"
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Show detailed error messages and tracebacks"
+    )
+    
+    args = parser.parse_args()
+    
+    # Initialize client
+    try:
+        client = DakotaInferenceClient(
+            model_id=args.model_id,
+            endpoint_url=args.endpoint_url,
+            token=args.token
+        )
+    except Exception as e:
+        print(f"Failed to initialize client: {e}")
+        return 1
+    
+    if args.interactive:
+        # Interactive mode
+        print(f"🚀 Dakota Grammar RL Inference ({client.mode} mode)")
+        print(f"Model: {args.model_id}")
+        print("Enter prompts (type 'quit' to exit, 'clear' to clear history)")
+        print("=" * 70)
+        
+        while True:
+            try:
+                prompt = input("\nPrompt: ").strip()
+                if prompt.lower() in ['quit', 'exit', 'q']:
+                    break
+                if not prompt:
+                    continue
+                
+                result = client.generate(
+                    prompt=prompt,
+                    system_prompt=args.system_prompt,
+                    max_new_tokens=args.max_tokens,
+                    temperature=args.temperature,
+                    top_p=args.top_p,
+                    repetition_penalty=args.repetition_penalty
+                )
+                
+                if "error" in result:
+                    print(f"❌ Error: {result['error']}")
+                else:
+                    print(f"\nResponse: {result['response']}")
+            
+            except KeyboardInterrupt:
+                print("\n\nExiting...")
+                break
+            except Exception as e:
+                print(f"❌ Error: {e}")
+        
+        return 0
+    
+    # Single prompt mode
+    result = client.generate(
+        prompt=args.prompt,
+        system_prompt=args.system_prompt,
+        max_new_tokens=args.max_tokens,
+        temperature=args.temperature,
+        top_p=args.top_p,
+        repetition_penalty=args.repetition_penalty
+    )
+    
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        if "error" in result:
+            print(f"❌ Error: {result['error']}")
+            if "error_type" in result:
+                print(f"   Error Type: {result['error_type']}")
+            if "traceback" in result and args.verbose:
+                print(f"\nTraceback:\n{result['traceback']}")
+            return 1
+        else:
+            print(result['response'])
+    
+    return 0
+
+
+if __name__ == "__main__":
+    exit(main())
+

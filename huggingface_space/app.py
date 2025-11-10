@@ -3,7 +3,7 @@
 import os
 import gradio as gr
 import spaces
-from transformers import AutoTokenizer, AutoModelForCausalLM, StoppingCriteria, StoppingCriteriaList
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 # Fix OMP_NUM_THREADS warning
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -11,34 +11,18 @@ os.environ["OMP_NUM_THREADS"] = "1"
 MODEL_ID = "HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL"
 
 SYSTEM_PROMPT = (
-    "You are a Dakota language expert who answers in concise Dakota sentences, "
-    "preserving orthography and explaining grammar when asked."
+    "You are a Dakota language expert specializing in the 1890 Dakota-English Dictionary grammar. "
+    "Translate or explain each prompt concisely while preserving Dakota orthography exactly, "
+    "including special characters (ć, š, ŋ, ḣ, ṡ, á, é, í, ó, ú, etc.) and cultural/grammatical nuance."
 )
 
 
-def build_prompt(user_text: str) -> str:
-    """Build the full prompt with system message and User/Assistant formatting."""
-    return f"{SYSTEM_PROMPT}\n\nUser: {user_text.strip()}\nAssistant:"
-
-
-class StopSequenceCriteria(StoppingCriteria):
-    """Stop generation when specific sequences are detected."""
-    def __init__(self, tokenizer, stop_sequences):
-        self.tokenizer = tokenizer
-        self.stop_sequences = stop_sequences
-        self.stop_ids = []
-        for seq in stop_sequences:
-            ids = tokenizer.encode(seq, add_special_tokens=False)
-            if ids:
-                self.stop_ids.append(ids)
-    
-    def __call__(self, input_ids, scores, **kwargs):
-        # Check if any stop sequence appears in the generated text
-        generated_text = self.tokenizer.decode(input_ids[0], skip_special_tokens=False)
-        for stop_seq in self.stop_sequences:
-            if stop_seq in generated_text:
-                return True
-        return False
+def format_chat_messages(system_prompt: str, user_message: str) -> list:
+    """Format messages in chat format for Qwen models - matches training format."""
+    return [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_message}
+    ]
 
 
 @spaces.GPU(duration=60)
@@ -60,39 +44,155 @@ def infer(prompt, max_tokens, temperature, top_p):
         return "Please provide a prompt."
     
     try:
-        # Build the full prompt internally before sending to model
-        full_prompt = build_prompt(prompt)
-        inputs = tok(full_prompt, return_tensors="pt").to(model.device)
+        # Format as chat messages (matches training format)
+        messages = format_chat_messages(SYSTEM_PROMPT, prompt)
         
-        # Add stopping criteria to prevent "Answer:" loops
-        stopping_criteria = StoppingCriteriaList([
-            StopSequenceCriteria(tok, ["Assistant:", "Answer:"])
-        ])
-        
-        # Use more conservative generation parameters to match training
-        output = model.generate(
-            **inputs,
-            max_new_tokens=min(max_tokens, 60),  # Cap at 60 for concise responses
-            temperature=max(temperature, 0.3),  # Minimum 0.3 to avoid too deterministic
-            top_p=0.9,
-            do_sample=True,
-            pad_token_id=tok.eos_token_id,
-            eos_token_id=tok.eos_token_id,
-            stopping_criteria=stopping_criteria,
+        # Apply chat template (CRITICAL: This matches the format used during RL training)
+        formatted_prompt = tok.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True
         )
         
-        # Decode only the assistant response
+        # Tokenize
+        inputs = tok(formatted_prompt, return_tensors="pt").to(model.device)
+        
+        # Check debug mode early
+        debug_mode = os.getenv("DEBUG_INFERENCE", "false").lower() == "true"
+        debug_info = []  # Collect debug info to return
+        
+        # Generate with parameters matching training
+        # Use torch.no_grad() for efficiency
+        import torch
+        with torch.no_grad():
+            output = model.generate(
+                **inputs,
+                max_new_tokens=min(max_tokens, 64),  # Cap at 64 for concise responses
+                temperature=max(temperature, 0.3),  # Minimum 0.3 to avoid too deterministic
+                top_p=0.9,
+                do_sample=True,
+                pad_token_id=tok.eos_token_id,
+                eos_token_id=tok.eos_token_id,
+                repetition_penalty=1.1,  # Add repetition penalty to prevent loops
+            )
+        
+        if debug_mode:
+            debug_info.append("=== DEBUG MODE ENABLED ===")
+            debug_info.append("Generation completed")
+            debug_info.append(f"Output tensor shape: {output.shape}")
+            print("DEBUG - Generation completed")
+            print(f"DEBUG - Output tensor shape: {output.shape}")
+            print(f"DEBUG - Output dtype: {output.dtype}")
+        
+        # Decode full response
+        decoded_full = tok.decode(output[0], skip_special_tokens=False)
         decoded = tok.decode(output[0], skip_special_tokens=True)
         
-        if "Assistant:" in decoded:
-            decoded = decoded.split("Assistant:")[-1]
+        if debug_mode:
+            debug_info.append("=== DEBUG MODE ENABLED ===")
+            debug_info.append(f"Formatted prompt length: {len(formatted_prompt)}")
+            debug_info.append(f"Output shape: {output.shape}")
+            debug_info.append(f"Input length: {inputs['input_ids'].shape[1]}")
+            debug_info.append(f"Output length: {output.shape[1]}")
+            print(f"DEBUG - Formatted prompt length: {len(formatted_prompt)}")
+            print(f"DEBUG - Full decoded (with special tokens): {decoded_full[:200]}")
+            print(f"DEBUG - Decoded (no special tokens): {decoded[:200]}")
+            print(f"DEBUG - Output shape: {output.shape}")
+            print(f"DEBUG - Input length: {inputs['input_ids'].shape[1]}")
+            print(f"DEBUG - Output length: {output.shape[1]}")
         
-        decoded = decoded.strip() or "[Model returned an empty string]"
+        # Extract only the generated part (after the prompt)
+        # Use the same method as test_model_inference.py which works
+        prompt_tokens = inputs['input_ids'][0]
+        generated_tokens = output[0][len(prompt_tokens):]
         
-        return decoded
+        if debug_mode:
+            debug_info.append(f"Prompt tokens: {len(prompt_tokens)}")
+            debug_info.append(f"Generated tokens: {len(generated_tokens)}")
+            if len(generated_tokens) > 0:
+                debug_info.append(f"First 10 generated token IDs: {generated_tokens[:10].tolist()}")
+            print(f"DEBUG - Prompt tokens: {len(prompt_tokens)}")
+            print(f"DEBUG - Generated tokens: {len(generated_tokens)}")
+            if len(generated_tokens) > 0:
+                print(f"DEBUG - First 10 generated token IDs: {generated_tokens[:10].tolist()}")
+        
+        # Method 1: Extract tokens directly (most reliable)
+        if len(generated_tokens) > 0:
+            generated_text = tok.decode(generated_tokens, skip_special_tokens=True)
+            if debug_mode:
+                debug_info.append(f"Decoded from tokens: {repr(generated_text[:200])}")
+                print(f"DEBUG - Decoded from tokens: {repr(generated_text[:200])}")
+        else:
+            # No new tokens - model didn't generate anything
+            if debug_mode:
+                debug_info.append("WARNING: No new tokens generated!")
+                print("DEBUG - WARNING: No new tokens generated!")
+            generated_text = ""
+        
+        # Method 2: Fallback to string slicing (like test_model_inference.py)
+        if not generated_text or len(generated_text.strip()) == 0:
+            # Try the method from test_model_inference.py
+            if "assistant" in decoded.lower() or "</s>" in decoded:
+                parts = decoded.split("assistant")
+                if len(parts) > 1:
+                    generated_text = parts[-1].strip()
+                else:
+                    # Fallback: extract after the prompt text
+                    generated_text = decoded[len(formatted_prompt):].strip()
+            else:
+                # Simple slice after prompt
+                generated_text = decoded[len(formatted_prompt):].strip()
+            
+            if debug_mode:
+                debug_info.append(f"Fallback extraction: {repr(generated_text[:200])}")
+                print(f"DEBUG - Fallback extraction: {repr(generated_text[:200])}")
+        
+        # Clean up special tokens (less aggressive)
+        generated_text = generated_text.split("</s>")[0].strip()
+        generated_text = generated_text.split("<|im_end|>")[0].strip()
+        
+        # Don't remove too aggressively - keep Dakota special characters
+        # Only remove if they're clearly artifacts
+        if generated_text.startswith("<|im_start|>"):
+            generated_text = generated_text[13:].strip()
+        if generated_text.startswith("<|endoftext|>"):
+            generated_text = generated_text[13:].strip()
+        
+        # Remove prompt artifacts but be careful
+        if generated_text.startswith("User:"):
+            generated_text = generated_text[5:].strip()
+        if generated_text.startswith("Assistant:"):
+            generated_text = generated_text[10:].strip()
+        
+        if debug_mode:
+            debug_info.append(f"After cleanup: {repr(generated_text[:200])}")
+            debug_info.append(f"Final length: {len(generated_text)}")
+            debug_info.append(f"Full decoded (first 500 chars): {decoded[:500]}")
+            print(f"DEBUG - After cleanup: {repr(generated_text[:200])}")
+            print(f"DEBUG - Final length: {len(generated_text)}")
+        
+        # Return result
+        if not generated_text or len(generated_text.strip()) == 0:
+            # Return debug info if enabled
+            if debug_mode:
+                debug_output = "\n".join(debug_info)
+                return f"[DEBUG: Empty result]\n\n{debug_output}\n\nFull decoded text:\n{decoded[:1000]}"
+            return "[Model returned an empty string - enable DEBUG_INFERENCE=true to diagnose]"
+        
+        # If debug mode, prepend debug info to response
+        if debug_mode:
+            debug_output = "\n".join(debug_info)
+            return f"[DEBUG INFO]\n{debug_output}\n\n[RESPONSE]\n{generated_text}"
+        
+        return generated_text
     
     except Exception as e:
-        return f"Error during generation: {str(e)}"
+        import traceback
+        error_details = traceback.format_exc()
+        # Always log errors for debugging
+        print(f"ERROR during generation: {str(e)}")
+        print(f"Traceback: {error_details}")
+        return f"Error during generation: {str(e)}\n\nEnable DEBUG_INFERENCE=true for more details."
 
 
 demo = gr.Interface(
