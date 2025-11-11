@@ -178,7 +178,7 @@ If you hit rate limits:
 
 ## Chat Format Matching
 
-**Important**: The chat format is automatically matched to training. The script uses the model's built-in chat template (via `tokenizer.apply_chat_template()`), which is the same template used during RL training by the verifiers framework. See `CHAT_FORMAT_EXPLANATION.md` for details.
+**Important**: The chat format is automatically matched to training. The script uses the model's built-in chat template (via `tokenizer.apply_chat_template()`), which is the same template used during RL training by the verifiers framework. See `docs/CHAT_FORMAT_EXPLANATION.md` for details.
 
 ## Model Details
 

@@ -33,8 +33,8 @@ Completion reports and status updates from development/code review sessions:
 ## Quick Links
 
 - **Main README**: [`../README.md`](../README.md) - Project overview and getting started
-- **Developer Guide**: [`../CLAUDE.md`](../CLAUDE.md) - Guidance for developers working with the codebase
-- **Contributing**: [`../CONTRIBUTING.md`](../CONTRIBUTING.md) - How to contribute to the project
+- **Developer Guide**: [`root/CLAUDE.md`](root/CLAUDE.md) - Guidance for developers working with the codebase
+- **Contributing**: [`CONTRIBUTING.md`](CONTRIBUTING.md) - How to contribute to the project
 
 ## Finding Documentation
 

@@ -656,7 +656,7 @@ This methodology is designed to be reproducible and extensible. Contributions we
 - Enhanced verification functions
 - Evaluation frameworks
 
-See `CONTRIBUTING.md` for guidelines.
+See `docs/CONTRIBUTING.md` for guidelines.
 
 
 
