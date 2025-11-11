@@ -99,11 +99,19 @@ def extract_reward_components(history: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     # Find reward columns
     reward_cols = [col for col in history.columns if 'reward' in col.lower()]
     
-    # Overall reward
-    overall_cols = [col for col in reward_cols if 'total' in col.lower() or 'overall' in col.lower() or col.lower() == 'reward']
-    if not overall_cols:
-        # Use first reward column as overall
-        overall_cols = [reward_cols[0]] if reward_cols else []
+    # Overall reward - prioritize reward/mean over metrics/pattern_reward
+    overall_cols = []
+    if 'reward/mean' in reward_cols:
+        overall_cols = ['reward/mean']
+    elif any('total' in col.lower() or 'overall' in col.lower() for col in reward_cols):
+        overall_cols = [col for col in reward_cols if 'total' in col.lower() or 'overall' in col.lower()]
+    elif reward_cols:
+        # Skip pattern_reward if it's all zeros, prefer other reward metrics
+        non_pattern = [col for col in reward_cols if 'pattern' not in col.lower()]
+        if non_pattern:
+            overall_cols = [non_pattern[0]]
+        else:
+            overall_cols = [reward_cols[0]]
     
     # Character reward (char, character, orthography)
     char_cols = [col for col in reward_cols if any(term in col.lower() for term in ['char', 'character', 'orthography', 'ortho'])]
@@ -172,11 +180,16 @@ def analyze_accuracy_by_difficulty(history: pd.DataFrame) -> Dict[str, Any]:
 def calculate_sample_efficiency(history: pd.DataFrame, reward_col: str = None) -> Dict[str, Any]:
     """Calculate how quickly rewards improved."""
     if reward_col is None:
-        # Find first reward column
+        # Find best reward column (prefer reward/mean)
         reward_cols = [col for col in history.columns if 'reward' in col.lower()]
         if not reward_cols:
             return {"error": "No reward column found"}
-        reward_col = reward_cols[0]
+        # Prefer reward/mean, then non-pattern rewards
+        if 'reward/mean' in reward_cols:
+            reward_col = 'reward/mean'
+        else:
+            non_pattern = [col for col in reward_cols if 'pattern' not in col.lower()]
+            reward_col = non_pattern[0] if non_pattern else reward_cols[0]
     
     if reward_col not in history.columns:
         return {"error": f"Reward column {reward_col} not found"}

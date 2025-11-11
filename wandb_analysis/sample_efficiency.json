@@ -1,0 +1,27 @@
+{
+  "initial_value": 0.12016018782975002,
+  "final_value": 0.3486319575958414,
+  "max_value": 0.36570155209147553,
+  "total_improvement": 0.2284717697660914,
+  "improvement_pct": 190.139324756885,
+  "learning_rate": 0.00022870047023632774,
+  "milestones": {
+    "25%_improvement": {
+      "step": 49,
+      "value": 0.17727813027127287
+    },
+    "50%_improvement": {
+      "step": 71,
+      "value": 0.23439607271279572
+    },
+    "75%_improvement": {
+      "step": 109,
+      "value": 0.2915140151543186
+    },
+    "90%_improvement": {
+      "step": 160,
+      "value": 0.32578478061923233
+    }
+  },
+  "total_steps": 1000
+}
