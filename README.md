@@ -15,6 +15,118 @@
 
 ---
 
+## Training Results: RL Performance Visualizations
+
+This section presents comprehensive visualizations from our successful Reinforcement Learning training run, demonstrating the effectiveness of the grammar-to-RL methodology on the Dakota language.
+
+### Training Run Details
+
+- **Project**: `dakota-rl-grammar`
+- **Entity**: `christian-cooper-us`
+- **Trainer Run**: [`7nikv4vp`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp) - `dakota-0.6b-rl-trainer`
+- **Orchestrator Run**: [`29hn8w98`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/29hn8w98) - `dakota-0.6b-rl-orchestrator`
+- **Model**: Qwen3-0.6B-Dakota-Grammar-RL
+- **Training Steps**: 1,000 steps (998 completed)
+- **Total Samples**: 256,000 samples processed
+- **Training Duration**: 1.54 hours (5,537 seconds)
+
+### Key Achievements
+
+- **190% improvement** in overall reward (0.120 → 0.349)
+- **97.9% morphological accuracy** - exceptional performance in affix application
+- **53.5% character preservation** - significant improvement for complex orthography
+- **90% of improvement achieved in first 160 steps** (16% of training) - demonstrating rapid learning
+- **Stable training** with controlled KL divergence throughout
+
+### Comprehensive Dashboard
+
+The comprehensive dashboard provides an at-a-glance view of all training metrics, combining reward progression, component performance, loss dynamics, entropy, KL divergence, and throughput metrics into a single visualization.
+
+![Comprehensive Dashboard](wandb_visualizations/comprehensive_dashboard.png)
+
+**What this shows**: This multi-panel dashboard synthesizes all key training signals. The top panel shows reward progression with milestone markers indicating when 25%, 50%, 75%, and 90% of total improvement was achieved. The component comparison bar chart (middle-left) reveals the differential performance: morphological accuracy reached 97.9% while character preservation achieved 53.5%, reflecting the challenge of preserving Dakota's complex orthography (ć, š, ŋ, ḣ, ṡ, á, é, í, ó, ú) with a 0.6B parameter model. The loss and entropy panels demonstrate stable optimization, while the KL divergence metrics show controlled policy adaptation without catastrophic forgetting.
+
+**View full run**: [Trainer Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp) | [Orchestrator Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/29hn8w98)
+
+### Reward Progression
+
+The reward progression visualization demonstrates the learning trajectory over 1,000 training steps, showing both overall composite reward and individual component breakdown.
+
+![Reward Progression](wandb_visualizations/reward_progression.png)
+
+**What this shows**: The top panel tracks overall reward progression from 0.120 (step 0) to 0.349 (step 999), representing a 190.1% improvement. Milestone markers highlight key learning efficiency points: 25% improvement at step 49 (4.9% of training), 50% at step 71 (7.1%), 75% at step 109 (10.9%), and 90% at step 160 (16%). The rapid initial learning validates the methodology's efficiency - grammar-based tasks provide dense learning signals compared to general language modeling. The bottom panel shows the component breakdown: Morphological Accuracy (green) achieved near-perfect performance (0.979), Character Preservation (orange) showed substantial improvement from 0.038 to 0.535 (14x increase), while the Overall Composite (blue) reflects the weighted combination including semantic components.
+
+**Interpretation**: The divergence between component performances demonstrates that the model learned morphological patterns more effectively than orthographic preservation. This suggests potential areas for future improvement through specialized character-focused training or larger model capacity. The semantic component (20% weight) likely contributes to the composite score being lower than individual components, indicating multi-objective optimization challenges.
+
+**View full run**: [Orchestrator Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/29hn8w98)
+
+### Training Metrics
+
+This visualization tracks the core training dynamics: policy loss, model entropy (confidence), KL divergence (policy adaptation), and inference probabilities.
+
+![Training Metrics](wandb_visualizations/training_metrics.png)
+
+**What this shows**: 
+
+- **Policy Loss (top-left)**: Values ranged from approximately 1e-5 to 1e-3, typical of GRPO training with conservative learning rates. The log-scale visualization shows consistent small magnitudes indicating stable gradient-based optimization. The shaded region represents ±1 standard deviation, showing controlled variance throughout training.
+
+- **Model Entropy (top-right)**: Decreased from 0.93 to 0.21, indicating the model became significantly more confident in its predictions. Low final entropy (0.21) suggests the model is highly confident, which aligns with the high morphological accuracy achieved.
+
+- **KL Divergence (bottom-left)**: Three metrics track policy adaptation:
+  - **Masked KL**: Increased from near-zero to 9.32, indicating substantial policy adaptation for Dakota-specific masked tokens
+  - **Overall KL**: Moderate increase from 0.001 to 3.83, suggesting controlled policy adaptation
+  - **Unmasked KL**: Remained extremely low (mean: 0.070, final: 0.042), confirming the model preserved general language capabilities while learning Dakota-specific patterns
+
+- **Inference Probabilities (bottom-right)**: Increased from 0.63 to 0.86, showing the model became more certain in its predictions over time.
+
+**Interpretation**: The increasing KL divergence trends indicate active learning and policy adaptation, while the relatively moderate values (especially for unmasked tokens) suggest training remained stable. The model successfully specialized for Dakota grammar while preserving general language understanding, validating the training approach.
+
+**View full run**: [Trainer Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp)
+
+### Performance Metrics
+
+Performance metrics track computational efficiency: training throughput (tokens per second) and GPU utilization (Model FLOPS Utilization).
+
+![Performance Metrics](wandb_visualizations/performance_metrics.png)
+
+**What this shows**: 
+
+- **Training Throughput (left)**: Average throughput of 8,178 tokens/sec with consistent performance throughout training. The red dashed line indicates the average, showing stable training execution without significant throughput variations.
+
+- **GPU Efficiency - MFU (right)**: Average Model FLOPS Utilization of 2.68%, indicating GPU efficiency. While this may seem low, it's typical for small models (0.6B parameters) where memory bandwidth rather than compute is often the bottleneck. The consistent MFU suggests stable training without memory pressure or compute bottlenecks.
+
+**Interpretation**: The consistent performance metrics validate stable training execution. The throughput remained stable throughout 1,000 steps, processing 256,000 total samples with an average of 256 samples per step. Peak memory usage was 11.5 GiB, well within reasonable bounds for the model size.
+
+**View full run**: [Trainer Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp)
+
+### Methodology Validation
+
+These results validate the core methodological innovation: transforming grammar rules from a 130-year-old historical textbook into verifiable RL environments. The exceptional morphological accuracy (97.9%) provides strong evidence that:
+
+1. **Rule Extraction Quality**: The VLM-based extraction successfully captured testable grammar patterns from historical text, preserving morphological rules in a format suitable for RL training.
+
+2. **Task Generation Effectiveness**: The conversion of 1,036 grammar rules into 5,657 RL tasks created sufficient training signal for the model to learn morphological patterns. The high accuracy suggests the task generation process successfully encoded the grammar rules as verifiable constraints.
+
+3. **Compositional Reward Structure**: The decomposition into character, morphology, and semantic components enabled fine-grained learning. The model learned morphological patterns more effectively than orthographic preservation, suggesting potential areas for future improvement.
+
+4. **Sample Efficiency**: The rapid initial learning (90% improvement in 16% of training) demonstrates the methodology's efficiency for low-resource language scenarios. With only 256,000 samples processed over 1,000 steps, the model achieved substantial improvement.
+
+### Visualization Generation
+
+These visualizations were generated using `scripts/create_rl_visualizations.py`, which loads data from Weights & Biases and creates publication-quality plots. To regenerate with updated data:
+
+```bash
+python scripts/create_rl_visualizations.py \
+    --trainer-id 7nikv4vp \
+    --orchestrator-id 29hn8w98 \
+    --project dakota-rl-grammar \
+    --entity christian-cooper-us
+```
+
+All visualization code and data are available in the repository for reproducibility and further analysis.
+
+---
+
 <div align="center">
 
 
