@@ -290,6 +290,7 @@ class DakotaGrammarRubric(Rubric):
         weights = [0.4, 0.2, 0.15, 0.1, 0.15]  # Added length penalty weight
         super().__init__(funcs=funcs, weights=weights, parser=parser, parallelize_scoring=False)
         self.special_chars = set("ćšŋḣṡáéíóúķśṅźėčžʼ")
+        self._last_ledger: Optional[Dict[str, float]] = None
 
     def _prediction(self, completion: vf.types.Messages, parser: Parser) -> str:
         """Extract prediction from completion."""
@@ -406,6 +407,128 @@ class DakotaGrammarRubric(Rubric):
             penalty = max_length_ratio / length_ratio
             return max(0.1, penalty)  # Minimum 0.1 to allow recovery
 
+    def score(
+        self,
+        completion: Messages,
+        answer: str,
+        info: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> float:
+        """
+        Compute reward score and build detailed ledger.
+        
+        Overrides parent to compute all components explicitly and build ledger.
+        Returns the scalar reward (same as parent behavior).
+        """
+        info = info or {}
+        parser = self.parser
+        
+        # Extract prediction once
+        prediction = self._prediction(completion, parser)
+        
+        # Compute raw component scores
+        exact_match_raw = float(self.exact_match_reward(completion, answer, parser, **kwargs))
+        char_overlap_raw = float(self.char_overlap_reward(completion, answer, parser, **kwargs))
+        pattern_raw = float(self.pattern_reward(completion, answer, parser, info=info, **kwargs))
+        affix_raw = float(self.affix_reward(completion, answer, parser, info=info, **kwargs))
+        length_penalty_raw = float(self.length_penalty_reward(completion, answer, parser, **kwargs))
+        
+        # Normalized values (identity for now, but can add transforms)
+        exact_match_norm = exact_match_raw
+        char_overlap_norm = char_overlap_raw
+        pattern_norm = pattern_raw
+        affix_norm = affix_raw
+        length_penalty_norm = length_penalty_raw
+        
+        # Weights from __init__
+        weights = [0.4, 0.2, 0.15, 0.1, 0.15]
+        w_exact = weights[0]
+        w_char = weights[1]
+        w_pattern = weights[2]
+        w_affix = weights[3]
+        w_length = weights[4]
+        
+        # Difficulty multiplier (from info if available)
+        difficulty = info.get("difficulty", "intermediate")
+        difficulty_multipliers = {
+            "easy": 1.0,
+            "basic": 1.0,
+            "medium": 1.2,
+            "intermediate": 1.2,
+            "advanced": 1.5,
+            "hard": 1.5,
+            "expert": 2.0,
+        }
+        difficulty_mult = difficulty_multipliers.get(difficulty.lower(), 1.0)
+        
+        # Compute composite (weighted sum)
+        # Note: length_penalty_reward returns a multiplier (1.0 = no penalty, <1.0 = penalty)
+        # So we multiply the composite by it, not add/subtract
+        composite_pre = (
+            w_exact * exact_match_norm +
+            w_char * char_overlap_norm +
+            w_pattern * pattern_norm +
+            w_affix * affix_norm
+        )
+        
+        # Apply length penalty as multiplier
+        composite_with_length = composite_pre * length_penalty_norm
+        
+        # Apply difficulty multiplier
+        composite_with_diff = composite_with_length * difficulty_mult
+        
+        # Final reward scalar
+        reward_scalar = composite_with_diff
+        
+        # Build ledger
+        ledger = {
+            # Raw components
+            "exact_match_raw": exact_match_raw,
+            "char_overlap_raw": char_overlap_raw,
+            "pattern_raw": pattern_raw,
+            "affix_raw": affix_raw,
+            "length_penalty_raw": length_penalty_raw,
+            
+            # Normalized components (identity for now)
+            "exact_match_norm": exact_match_norm,
+            "char_overlap_norm": char_overlap_norm,
+            "pattern_norm": pattern_norm,
+            "affix_norm": affix_norm,
+            "length_penalty_norm": length_penalty_norm,
+            
+            # Weights
+            "w_exact": w_exact,
+            "w_char": w_char,
+            "w_pattern": w_pattern,
+            "w_affix": w_affix,
+            "w_length": w_length,
+            
+            # Difficulty
+            "difficulty_multiplier": difficulty_mult,
+            
+            # Composites
+            "composite_pre": composite_pre,
+            "composite_with_length": composite_with_length,
+            "composite_predicted": composite_with_diff,
+            
+            # Final reward
+            "reward_scalar": reward_scalar,
+        }
+        
+        # Consistency check
+        diff = abs(reward_scalar - composite_with_diff)
+        if diff > 1e-6:
+            ledger["composite_diff"] = float(diff)
+        
+        # Store ledger for retrieval
+        self._last_ledger = ledger
+        
+        return reward_scalar
+    
+    def get_last_ledger(self) -> Optional[Dict[str, float]]:
+        """Get the ledger from the last score() call."""
+        return self._last_ledger
+
 
 class DakotaGrammarEnv(SingleTurnEnv):
     """Single-turn chat environment for Dakota grammar and translation tasks."""
@@ -429,6 +552,13 @@ class DakotaGrammarEnv(SingleTurnEnv):
             message_type="chat",
             **kwargs,
         )
+        self.rubric = rubric  # Store reference for ledger access
+    
+    def get_reward_ledger(self) -> Optional[Dict[str, float]]:
+        """Get the reward ledger from the last scoring operation."""
+        if isinstance(self.rubric, DakotaGrammarRubric):
+            return self.rubric.get_last_ledger()
+        return None
 
 
 def load_environment(

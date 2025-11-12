@@ -67,7 +67,7 @@ def check_prerequisites() -> tuple[bool, list[str]]:
 def create_rl_config(
     config_path: Optional[Path] = None,
     output_dir: Path = Path("dakota_rl_training/outputs"),
-    model_name: str = "Qwen/Qwen2.5-7B-Instruct",
+    model_name: str = "Qwen/Qwen3-0.6B",
     max_steps: Optional[int] = None,
     env_dataset_path: Optional[str] = None,
     wandb_project: str = "dakota-rl-grammar",
@@ -192,7 +192,7 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default="Qwen/Qwen2.5-7B-Instruct",
+        default="Qwen/Qwen3-0.6B",
         help="HuggingFace model name"
     )
     parser.add_argument(
