@@ -13,11 +13,56 @@
 ![Smoke Tests](https://img.shields.io/badge/smoke%20tests-offline-brightgreen)
 ![Python Package](https://img.shields.io/badge/pypi-dakota--grammar--env-blue)
 
----
+
+
+## Novel Methodology: Closed-Loop Grammar Gym
+
+**This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
+
+### Why This Is Now Working
+
+The fundamental insight driving this approach: **grammar rules can be reward functions, and rewards should decompose into linguistic primitives.** When you do this, syntax emerges naturally without an external verifier as judge. This is particularly powerful for RL on non-coding tasks where compositional structure matters.
+
+#### Grammar AS Reward Function
+
+Everyone else treats grammar as either:
+- **Preprocessing constraints** (rule-based systems)
+- **Post-hoc evaluation** (check grammar after generation)
+
+This project makes grammar rules directly differentiable through compositional rewards. Each rule becomes a gradient signal, not just a binary check.
+
+<div align="center" style="margin: 3rem 0;">
+
+<img src="Public/grammar.jpg" alt="Dakota Grammar - Historical Text Detail" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+
+</div>
+
+The key advantage: **interpretability**. You can actually see where in the latent space each linguistic level is being encoded. This makes debugging possible: "Oh, the model is failing on ć preservation because the character embedding gradient is being overwhelmed by the semantic gradient."
+
+#### Composite Rewards in Practice
+
+The modified reward function decomposes loss into interpretable components:
+
+```python
+# Traditional approach - one black box loss
+loss = CrossEntropy(generated, target)
+
+# This approach: interpretable components
+loss = α * char_loss + β * morph_loss + γ * semantic_loss
+
+# But more importantly, you can now:
+if char_loss > threshold:
+    increase α  # Boost character learning
+if morph_loss plateaus:
+    adjust curriculum  # Change morphology examples
+```
+
+This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As I continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
+
 
 ## Training Results: RL Performance Visualizations
 
-This section presents comprehensive visualizations from our successful Reinforcement Learning training run, demonstrating the effectiveness of the grammar-to-RL methodology on the Dakota language.
+This section presents comprehensive visualizations from our successful Reinforcement Learning training run, demonstrating the effectiveness of the grammar-to-RL methodology on the Dakota language. There have been two successful runs. One at 1000 steps and one at 400. 
 
 ### Training Run Details
 
@@ -180,7 +225,7 @@ The visualization validates that the logged components correctly reconstruct the
 
 </div>
 
----
+
 
 <div align="center">
 
@@ -188,49 +233,7 @@ The visualization validates that the logged components correctly reconstruct the
 
 </div>
 
-## Novel Methodology: Closed-Loop Grammar Gym
 
-**This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
-
-### Why This Is Now Working
-
-The fundamental insight driving this approach: **grammar rules can be reward functions, and rewards should decompose into linguistic primitives.** When you do this, syntax emerges naturally without an external verifier as judge. This is particularly powerful for RL on non-coding tasks where compositional structure matters.
-
-#### Grammar AS Reward Function
-
-Everyone else treats grammar as either:
-- **Preprocessing constraints** (rule-based systems)
-- **Post-hoc evaluation** (check grammar after generation)
-
-This project makes grammar rules directly differentiable through compositional rewards. Each rule becomes a gradient signal, not just a binary check.
-
-<div align="center" style="margin: 3rem 0;">
-
-<img src="Public/grammar.jpg" alt="Dakota Grammar - Historical Text Detail" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
-
-</div>
-
-The key advantage: **interpretability**. You can actually see where in the latent space each linguistic level is being encoded. This makes debugging possible: "Oh, the model is failing on ć preservation because the character embedding gradient is being overwhelmed by the semantic gradient."
-
-#### Composite Rewards in Practice
-
-The modified reward function decomposes loss into interpretable components:
-
-```python
-# Traditional approach - one black box loss
-loss = CrossEntropy(generated, target)
-
-# This approach: interpretable components
-loss = α * char_loss + β * morph_loss + γ * semantic_loss
-
-# But more importantly, you can now:
-if char_loss > threshold:
-    increase α  # Boost character learning
-if morph_loss plateaus:
-    adjust curriculum  # Change morphology examples
-```
-
-This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As I continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
 
 <div align="center">
 
@@ -799,6 +802,7 @@ This methodology is designed to be reproducible and extensible. Contributions we
 - Evaluation frameworks
 
 See `docs/CONTRIBUTING.md` for guidelines.
+
 
 
 
