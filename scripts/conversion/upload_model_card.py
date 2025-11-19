@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 def upload_model_card_to_hf(
     model_card_path: str = "MODEL_CARD.md",
-    repo_id: str = "HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL",
+    repo_id: str = "HarleyCooper/Qwen3-30B-ThinkingMachines-Dakota1890",
     token: Optional[str] = None,
 ) -> bool:
     """
@@ -44,8 +44,12 @@ def upload_model_card_to_hf(
     env_token = os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_TOKEN") or os.getenv("HF_API_TOKEN")
     
     # Try to get cached token from huggingface-cli login
-    from huggingface_hub.utils import HfFolder
-    cached_token = HfFolder.get_token()
+    try:
+        from huggingface_hub.utils import HfFolder
+        cached_token = HfFolder.get_token()
+    except (ImportError, AttributeError):
+        # HfFolder might not be available in all versions
+        cached_token = None
     
     # Validate tokens and choose the best one
     # If token passed as argument, use it (skip validation for now)
@@ -75,9 +79,20 @@ def upload_model_card_to_hf(
         logger.info("No valid token found. Attempting interactive login...")
         try:
             login()
-            token = HfFolder.get_token()
+            # After login, try to get token
+            try:
+                from huggingface_hub.utils import HfFolder
+                token = HfFolder.get_token()
+            except (ImportError, AttributeError):
+                # If HfFolder not available, token should be cached by login()
+                # Try to validate by creating API instance
+                api_test = HfApi()
+                api_test.whoami()  # This will use cached token
+                token = None  # Token is cached, API will use it automatically
             if not token:
-                raise ValueError("Token not found after login")
+                # Token is cached, API will use it automatically
+                logger.info("[OK] Login successful - token cached")
+                return None  # Return None to indicate use cached token
             logger.info("[OK] Login successful")
         except Exception as e:
             logger.error(f"Login failed: {e}")
@@ -124,8 +139,12 @@ def upload_model_card_to_hf(
     with open(card_path, 'r', encoding='utf-8') as f:
         model_card_content = f.read()
     
-    # Initialize API
-    api = HfApi(token=token)
+    # Initialize API (use None if token is cached)
+    if token:
+        api = HfApi(token=token)
+    else:
+        # Use cached token
+        api = HfApi()
     
     # Check if repo exists, create only if needed
     logger.info(f"Checking HuggingFace model repo: {repo_id}")
@@ -151,7 +170,7 @@ def upload_model_card_to_hf(
     # Upload model card as README.md
     from datetime import datetime
     timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
-    commit_message = f"Update model card with images ({timestamp} UTC)"
+    commit_message = f"Update model card ({timestamp} UTC)"
     
     logger.info("Uploading model card (README.md)...")
     try:
@@ -167,6 +186,26 @@ def upload_model_card_to_hf(
     except Exception as e:
         logger.error(f"Failed to upload model card: {e}")
         raise
+
+    # Upload visualizations if they exist
+    viz_dir = Path("wandb_visualizations")
+    if viz_dir.exists():
+        logger.info(f"Found visualizations directory: {viz_dir}")
+        for img_file in viz_dir.glob("*"):
+            if img_file.suffix.lower() in ['.png', '.jpg', '.jpeg', '.svg']:
+                logger.info(f"Uploading {img_file.name}...")
+                try:
+                    api.upload_file(
+                        path_or_fileobj=str(img_file),
+                        path_in_repo=f"visualizations/{img_file.name}",
+                        repo_id=repo_id,
+                        repo_type="model",
+                        token=token,
+                        commit_message=f"Upload visualization {img_file.name}",
+                    )
+                    logger.info(f"[OK] {img_file.name} uploaded")
+                except Exception as e:
+                    logger.error(f"Failed to upload {img_file.name}: {e}")
     
     logger.info("="*70)
     logger.info("[SUCCESS] Model card successfully uploaded to HuggingFace!")
@@ -205,7 +244,7 @@ Examples:
     parser.add_argument(
         "--repo-id",
         type=str,
-        default="HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL",
+        default="HarleyCooper/Qwen3-30B-ThinkingMachines-Dakota1890",
         help="HuggingFace model repo ID (e.g., 'username/model-name')"
     )
     parser.add_argument(

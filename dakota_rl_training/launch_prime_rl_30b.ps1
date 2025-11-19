@@ -42,6 +42,9 @@ Write-Host "  Trainer GPUs: 4,5,6,7"
 Write-Host "  Output Directory: ../dakota_rl_training/outputs/grpo_30b"
 Write-Host ""
 
+# Set W&B API Key
+$env:WANDB_API_KEY = "cee32d77c7edb39a3857ede1c44fa2c7d7f89bb1"
+
 # Launch Prime-RL training
 uv run rl `
     --trainer @ ../dakota_rl_training/configs/train_30b.toml `

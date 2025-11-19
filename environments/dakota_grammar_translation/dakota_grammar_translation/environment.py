@@ -262,6 +262,32 @@ def _build_dataset_bundle(
     return DatasetBundle(train=train_dataset, eval=eval_dataset)
 
 
+def build_dataset_bundle(
+    dataset_path: Optional[Path | str] = None,
+    eval_path: Optional[Path | str] = None,
+    max_examples: int = -1,
+    eval_examples: int = -1,
+    eval_fraction: float = 0.1,
+    seed: Optional[int] = None,
+    difficulty_filter: Optional[Sequence[str]] = None,
+    task_filter: Optional[Sequence[str]] = None,
+    include_hints: bool = True,
+) -> DatasetBundle:
+    """Public wrapper for constructing Dakota grammar datasets."""
+
+    return _build_dataset_bundle(
+        dataset_path=dataset_path,
+        eval_path=eval_path,
+        max_examples=max_examples,
+        eval_examples=eval_examples,
+        eval_fraction=eval_fraction,
+        seed=seed,
+        difficulty_filter=difficulty_filter,
+        task_filter=task_filter,
+        include_hints=include_hints,
+    )
+
+
 class DakotaTranslationParser(Parser):
     """Parser that preserves Dakota orthography while normalizing whitespace."""
 
@@ -639,4 +665,3 @@ def load_environment(
         len(env.eval_dataset) if env.eval_dataset else 0,
     )
     return env
-

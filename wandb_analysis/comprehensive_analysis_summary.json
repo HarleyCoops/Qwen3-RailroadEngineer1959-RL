@@ -1,7 +1,7 @@
 {
-  "exported_at": "2025-11-11T16:12:54.223993",
-  "orchestrator_run": "29hn8w98",
-  "trainer_run": "7nikv4vp",
+  "exported_at": "2025-11-12T16:27:06.440466",
+  "orchestrator_run": "1y33h9zr",
+  "trainer_run": "yut26kcm",
   "reward_curves": {
     "overall": {
       "file": "wandb_analysis\\reward_curve_overall.csv",
@@ -9,7 +9,7 @@
         "_step",
         "reward/mean"
       ],
-      "steps": 1000
+      "steps": 400
     },
     "character": {
       "file": "wandb_analysis\\reward_curve_character.csv",
@@ -17,7 +17,7 @@
         "_step",
         "metrics/char_overlap_reward"
       ],
-      "steps": 1000
+      "steps": 400
     },
     "morphology": {
       "file": "wandb_analysis\\reward_curve_morphology.csv",
@@ -25,171 +25,171 @@
         "_step",
         "metrics/affix_reward"
       ],
-      "steps": 1000
+      "steps": 400
     }
   },
   "accuracy_by_difficulty": {},
   "sample_efficiency": {
-    "initial_value": 0.12016018782975002,
-    "final_value": 0.3486319575958414,
-    "max_value": 0.36570155209147553,
-    "total_improvement": 0.2284717697660914,
-    "improvement_pct": 190.139324756885,
-    "learning_rate": 0.00022870047023632774,
+    "initial_value": 0.12833384445308177,
+    "final_value": 0.32116677066837596,
+    "max_value": 0.3454245750341344,
+    "total_improvement": 0.1928329262152942,
+    "improvement_pct": 150.25882458137764,
+    "learning_rate": 0.0004832905418929679,
     "milestones": {
       "25%_improvement": {
         "step": 49,
-        "value": 0.17727813027127287
+        "value": 0.1765420760069053
       },
       "50%_improvement": {
-        "step": 71,
-        "value": 0.23439607271279572
+        "step": 62,
+        "value": 0.22475030756072886
       },
       "75%_improvement": {
-        "step": 109,
-        "value": 0.2915140151543186
+        "step": 75,
+        "value": 0.2729585391145524
       },
       "90%_improvement": {
-        "step": 160,
-        "value": 0.32578478061923233
+        "step": 85,
+        "value": 0.30188347804684657
       }
     },
-    "total_steps": 1000
+    "total_steps": 400
   },
   "kl_divergence": {
+    "unmasked_mismatch_kl/std": {
+      "mean": 0.09967693852740922,
+      "median": 0.11013130843639374,
+      "std": 0.039809131986659495,
+      "min": 0.00022272055502980947,
+      "max": 0.22207733988761902,
+      "final": 0.12335259467363358,
+      "trend": "increasing"
+    },
     "masked_mismatch_kl/mean": {
-      "mean": 8.423292382921092,
-      "median": 8.623668193817139,
-      "std": 3.215422274909656,
+      "mean": 8.001028908409644,
+      "median": 8.769107818603516,
+      "std": 3.437609280220821,
       "min": 0.0,
-      "max": 69.09469604492188,
-      "final": 9.321700096130371,
+      "max": 16.09048843383789,
+      "final": 11.958903312683105,
       "trend": "increasing"
-    },
-    "mismatch_kl/median": {
-      "mean": 2.3354382347611247,
-      "median": 2.176425337791443,
-      "std": 1.1507706480149682,
-      "min": 0.0010151254246011376,
-      "max": 6.152125358581543,
-      "final": 1.2661404609680176,
-      "trend": "increasing"
-    },
-    "mismatch_kl/mean": {
-      "mean": 3.0257507478885817,
-      "median": 3.1104848384857178,
-      "std": 1.4768304734910178,
-      "min": 0.001024736906401813,
-      "max": 30.825349807739258,
-      "final": 3.8255505561828613,
-      "trend": "increasing"
-    },
-    "masked_mismatch_kl/median": {
-      "mean": 8.211662906765937,
-      "median": 8.556830406188965,
-      "std": 2.5610844745644252,
-      "min": 0.0,
-      "max": 14.004585266113281,
-      "final": 6.198946475982666,
-      "trend": "increasing"
-    },
-    "unmasked_mismatch_kl/mean": {
-      "mean": 0.0701924342570128,
-      "median": 0.06585486978292465,
-      "std": 0.025742915542139522,
-      "min": 0.001024736906401813,
-      "max": 0.16909582912921906,
-      "final": 0.04183230549097061,
-      "trend": "increasing"
-    },
-    "mismatch_kl/std": {
-      "mean": 3.833613802062086,
-      "median": 2.8243054151535034,
-      "std": 15.011153448177566,
-      "min": 0.00022028815874364227,
-      "max": 459.6686096191406,
-      "final": 31.012723922729492,
-      "trend": "increasing"
-    },
-    "mismatch_kl/min": {
-      "mean": 0.0,
-      "median": 0.0,
-      "std": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "final": 0.0,
-      "trend": "decreasing"
     },
     "unmasked_mismatch_kl/min": {
-      "mean": -3.607500209668046e-10,
+      "mean": 0.0007020883320570625,
       "median": 0.0,
-      "std": 2.1170624259477733e-09,
-      "min": -1.4901161193847656e-08,
-      "max": 0.0,
-      "final": 0.0,
-      "trend": "decreasing"
-    },
-    "unmasked_mismatch_kl/max": {
-      "mean": 0.5965561976694734,
-      "median": 0.605924516916275,
-      "std": 0.19405323114435383,
-      "min": 0.0017100012628361583,
-      "max": 1.9802417755126953,
-      "final": 0.28223955631256104,
-      "trend": "increasing"
-    },
-    "mismatch_kl/max": {
-      "mean": 37.416147271852125,
-      "median": 13.891658306121826,
-      "std": 252.72163097265738,
-      "min": 0.0017100012628361583,
-      "max": 7694.8779296875,
-      "final": 516.247314453125,
-      "trend": "increasing"
-    },
-    "unmasked_mismatch_kl/std": {
-      "mean": 0.09149034897651291,
-      "median": 0.0944918729364872,
-      "std": 0.024811105269105016,
-      "min": 0.00022028815874364227,
-      "max": 0.15233810245990753,
-      "final": 0.057423125952482224,
+      "std": 0.004058375017790042,
+      "min": 0.0,
+      "max": 0.04089780151844025,
+      "final": 4.410743713378906e-06,
       "trend": "increasing"
     },
     "unmasked_mismatch_kl/median": {
-      "mean": 0.03581228919746354,
-      "median": 0.027797071263194084,
-      "std": 0.029497178246357617,
-      "min": 0.0010151254246011376,
-      "max": 0.14643427729606628,
-      "final": 0.013814985752105713,
+      "mean": 0.06474589427409227,
+      "median": 0.05579083040356636,
+      "std": 0.040234082590224415,
+      "min": 0.0010297866538167,
+      "max": 0.1741589903831482,
+      "final": 0.046790700405836105,
       "trend": "increasing"
     },
-    "masked_mismatch_kl/max": {
-      "mean": 104.39294119524956,
-      "median": 32.32949638366699,
-      "std": 580.6070512950317,
+    "masked_mismatch_kl/median": {
+      "mean": 7.972065760493279,
+      "median": 8.695913791656494,
+      "std": 3.6519537453108675,
       "min": 0.0,
-      "max": 16928.73046875,
-      "final": 825.9236450195312,
+      "max": 14.166193008422852,
+      "final": 12.969223976135254,
       "trend": "increasing"
     },
     "masked_mismatch_kl/min": {
-      "mean": 0.0,
+      "mean": 0.003266419768333435,
       "median": 0.0,
-      "std": 0.0,
+      "std": 0.0653283953666687,
       "min": 0.0,
-      "max": 0.0,
+      "max": 1.306567907333374,
       "final": 0.0,
       "trend": "decreasing"
     },
+    "unmasked_mismatch_kl/mean": {
+      "mean": 0.09435558071068954,
+      "median": 0.09237631782889366,
+      "std": 0.040790075952658426,
+      "min": 0.0010455669835209846,
+      "max": 0.19318698346614838,
+      "final": 0.09151554107666016,
+      "trend": "increasing"
+    },
     "masked_mismatch_kl/std": {
-      "mean": 9.167776514090598,
-      "median": 5.926023244857788,
-      "std": 34.450026164287536,
+      "mean": 7.4199906963855025,
+      "median": 5.324646472930908,
+      "std": 9.31148995048639,
       "min": 0.0,
-      "max": 1011.1827392578125,
-      "final": 49.65372085571289,
+      "max": 92.16021728515625,
+      "final": 5.503368854522705,
+      "trend": "increasing"
+    },
+    "mismatch_kl/max": {
+      "mean": 29.953741966429806,
+      "median": 14.45679759979248,
+      "std": 54.72966076996659,
+      "min": 0.0016793044051155448,
+      "max": 370.6795349121094,
+      "final": 17.55344009399414,
+      "trend": "increasing"
+    },
+    "masked_mismatch_kl/max": {
+      "mean": 86.5293781375885,
+      "median": 35.59061622619629,
+      "std": 156.83688047010384,
+      "min": 0.0,
+      "max": 1494.4019775390625,
+      "final": 24.5742130279541,
+      "trend": "increasing"
+    },
+    "mismatch_kl/min": {
+      "mean": 0.0039062954229393656,
+      "median": 0.0,
+      "std": 0.019096548585420873,
+      "min": 0.0,
+      "max": 0.2860395014286041,
+      "final": 0.001300762058235705,
+      "trend": "increasing"
+    },
+    "mismatch_kl/median": {
+      "mean": 2.863035094263032,
+      "median": 3.143499970436096,
+      "std": 1.5235933998416977,
+      "min": 0.0010297866538167,
+      "max": 6.23212194442749,
+      "final": 3.797600746154785,
+      "trend": "increasing"
+    },
+    "unmasked_mismatch_kl/max": {
+      "mean": 0.6320060156050021,
+      "median": 0.6752955615520477,
+      "std": 0.28912826386914225,
+      "min": 0.0016793044051155448,
+      "max": 2.999898910522461,
+      "final": 0.7024879455566406,
+      "trend": "increasing"
+    },
+    "mismatch_kl/mean": {
+      "mean": 3.245478720777901,
+      "median": 3.563795328140259,
+      "std": 1.6882781266684437,
+      "min": 0.0010455669835209846,
+      "max": 6.70290994644165,
+      "final": 5.029574394226074,
+      "trend": "increasing"
+    },
+    "mismatch_kl/std": {
+      "mean": 3.226542263598676,
+      "median": 2.7995837926864624,
+      "std": 3.284871231476215,
+      "min": 0.00022272055502980947,
+      "max": 22.524248123168945,
+      "final": 4.059392929077148,
       "trend": "increasing"
     }
   },
@@ -201,13 +201,13 @@
     "file": "wandb_analysis\\loss_curves.csv",
     "columns": [
       "_step",
-      "loss/median",
       "loss/max",
       "loss/min",
       "loss/mean",
+      "loss/median",
       "loss/std"
     ],
-    "steps": 1000
+    "steps": 400
   },
   "example_generations": [
     {
@@ -218,37 +218,37 @@
       }
     },
     {
-      "step": 250,
+      "step": 100,
       "generations": {
         "progress/samples": "256.0",
-        "progress/total_samples": "64256.0"
+        "progress/total_samples": "25856.0"
       }
     },
     {
-      "step": 500,
+      "step": 200,
       "generations": {
         "progress/samples": "256.0",
-        "progress/total_samples": "128256.0"
+        "progress/total_samples": "51456.0"
       }
     },
     {
-      "step": 750,
+      "step": 300,
       "generations": {
         "progress/samples": "256.0",
-        "progress/total_samples": "192256.0"
+        "progress/total_samples": "77056.0"
       }
     },
     {
-      "step": 999,
+      "step": 399,
       "generations": {
         "progress/samples": "256.0",
-        "progress/total_samples": "256000.0"
+        "progress/total_samples": "102400.0"
       }
     },
     {
       "source": "file",
       "filename": "output.log",
-      "url": "https://api.wandb.ai/files/christian-cooper-us/dakota-rl-grammar/29hn8w98/output.log"
+      "url": "https://api.wandb.ai/files/christian-cooper-us/dakota-rl-grammar/1y33h9zr/output.log"
     }
   ]
 }

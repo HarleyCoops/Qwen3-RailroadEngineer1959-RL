@@ -1,27 +1,27 @@
 {
-  "initial_value": 0.12016018782975002,
-  "final_value": 0.3486319575958414,
-  "max_value": 0.36570155209147553,
-  "total_improvement": 0.2284717697660914,
-  "improvement_pct": 190.139324756885,
-  "learning_rate": 0.00022870047023632774,
+  "initial_value": 0.12833384445308177,
+  "final_value": 0.32116677066837596,
+  "max_value": 0.3454245750341344,
+  "total_improvement": 0.1928329262152942,
+  "improvement_pct": 150.25882458137764,
+  "learning_rate": 0.0004832905418929679,
   "milestones": {
     "25%_improvement": {
       "step": 49,
-      "value": 0.17727813027127287
+      "value": 0.1765420760069053
     },
     "50%_improvement": {
-      "step": 71,
-      "value": 0.23439607271279572
+      "step": 62,
+      "value": 0.22475030756072886
     },
     "75%_improvement": {
-      "step": 109,
-      "value": 0.2915140151543186
+      "step": 75,
+      "value": 0.2729585391145524
     },
     "90%_improvement": {
-      "step": 160,
-      "value": 0.32578478061923233
+      "step": 85,
+      "value": 0.30188347804684657
     }
   },
-  "total_steps": 1000
+  "total_steps": 400
 }

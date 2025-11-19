@@ -1,0 +1,59 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            piv357aanw221fdfvbeoim366wktr4uf:
+                args:
+                    - --log-path
+                    - dakota_rl_training/outputs/tinker_smoke
+                    - --checkpoint-name
+                    - latest
+                    - --artifact-name
+                    - Qwen3-30B-ThinkingMachines-Dakota1890
+                    - --wandb-project
+                    - dakota-rl-grammar-tinker
+                    - --skip-publish
+                cpu_count: 12
+                cpu_count_logical: 12
+                disk:
+                    /:
+                        total: "1004769636352"
+                        used: "990687219712"
+                email: christian.cooper.us@gmail.com
+                executable: C:\Python312\python.exe
+                git:
+                    commit: 88851a7a49c8bdbb35fb0cdfed5d51352f5211b9
+                    remote: https://github.com/HarleyCoops/Dakota1890.git
+                host: PC
+                memory:
+                    total: "16749838336"
+                os: Windows-11-10.0.26100-SP0
+                program: -m dakota_rl_training.publish_tinker_weights
+                python: CPython 3.12.6
+                root: C:\Users\chris\Dakota1890
+                startedAt: "2025-11-19T04:04:38.329981Z"
+                writerId: piv357aanw221fdfvbeoim366wktr4uf
+        m: []
+        python_version: 3.12.6
+        t:
+            "1":
+                - 1
+                - 49
+                - 51
+                - 95
+                - 105
+            "2":
+                - 1
+                - 49
+                - 51
+                - 95
+                - 105
+            "3":
+                - 2
+                - 13
+            "4": 3.12.6
+            "5": 0.23.0
+            "8":
+                - 3
+            "12": 0.23.0
+            "13": windows-arm64

@@ -23,4 +23,11 @@ python-dotenv>=1.0.0
 tqdm>=4.66.0
 
 # Weights & Biases for experiment tracking and logging
+# Weights & Biases for experiment tracking and logging
 wandb>=0.16.0
+weave>=0.50.0
+
+# Thinking Machines / Tinker integration
+tinker>=0.4.0
+chz>=0.1.1
+git+https://github.com/thinking-machines-lab/tinker-cookbook.git

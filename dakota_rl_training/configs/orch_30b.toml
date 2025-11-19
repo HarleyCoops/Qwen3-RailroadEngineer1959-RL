@@ -5,7 +5,7 @@ mask_truncated_completions = false
 max_steps = 1000
 
 [model]
-name = "Qwen/Qwen3-0.6B"
+name = "Qwen/Qwen3-30B-A3B-Instruct-2507"
 
 [sampling]
 max_tokens = 512
@@ -18,5 +18,5 @@ interval = 100
 keep = 3
 
 [wandb]
-project = "dakota-rl-grammar"
+project = "thinking-machines-qwen3-30b"
 offline = false

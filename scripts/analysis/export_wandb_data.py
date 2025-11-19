@@ -27,7 +27,7 @@ except ImportError:
 
 
 def export_wandb_run(
-    run_path: str = "christian-cooper-us/dakota-rl-grammar/29hn8w98",
+    run_path: str = "christian-cooper-us/thinking-machines-qwen3-30b/latest",
     output_dir: str = "wandb_analysis",
     max_samples: int = 10000,
 ):

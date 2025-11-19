@@ -44,6 +44,14 @@ COLORS = {
 }
 
 
+def get_history_series(history, candidates):
+    """Return the first available metric series from history."""
+    for key in candidates:
+        if key in history.columns:
+            return history[key], key
+    return None, None
+
+
 def load_run_data(run_id: str, project: str = "dakota-rl-grammar", entity: str = "christian-cooper-us"):
     """Load run data from wandb."""
     api = wandb.Api()
@@ -54,7 +62,15 @@ def load_run_data(run_id: str, project: str = "dakota-rl-grammar", entity: str =
 def create_reward_progression_plot(orchestrator_run, output_dir: Path):
     """Create beautiful reward progression visualization."""
     history = orchestrator_run.history()
-    if history.empty or 'reward/mean' not in history.columns:
+    reward_series, reward_key = get_history_series(
+        history,
+        [
+            "reward/mean",
+            "reward/total",
+            "env/all/reward/total",
+        ],
+    )
+    if history.empty or reward_series is None:
         print("No reward data available")
         return
     
@@ -65,7 +81,7 @@ def create_reward_progression_plot(orchestrator_run, output_dir: Path):
     
     # Main reward curve
     ax = axes[0]
-    ax.plot(steps, history['reward/mean'], 
+    ax.plot(steps, reward_series, 
             color=COLORS['reward'], linewidth=2.5, label='Overall Reward', zorder=3)
     
     # Add milestone markers
@@ -85,12 +101,12 @@ def create_reward_progression_plot(orchestrator_run, output_dir: Path):
                        bbox=dict(boxstyle='round,pad=0.3', facecolor=color, alpha=0.7))
     
     # Add shaded improvement regions
-    initial_reward = history['reward/mean'].iloc[0]
-    final_reward = history['reward/mean'].iloc[-1]
+    initial_reward = reward_series.iloc[0]
+    final_reward = reward_series.iloc[-1]
     improvement = final_reward - initial_reward
     
     ax.axhspan(initial_reward, final_reward, alpha=0.1, color=COLORS['reward'], zorder=1)
-    ax.fill_between(steps, initial_reward, history['reward/mean'], 
+    ax.fill_between(steps, initial_reward, reward_series, 
                     alpha=0.2, color=COLORS['reward'], zorder=2)
     
     ax.set_xlabel('Training Step', fontsize=12, fontweight='bold')
@@ -103,20 +119,21 @@ def create_reward_progression_plot(orchestrator_run, output_dir: Path):
     
     # Component breakdown
     ax2 = axes[1]
-    component_metrics = {
-        'Morphological Accuracy': 'metrics/affix_reward',
-        'Character Preservation': 'metrics/char_overlap_reward',
-        'Overall Composite': 'reward/mean',
-    }
+    component_metrics = [
+        ('Morphological Accuracy', ['metrics/affix_reward', 'env/all/ledger/affix_raw', 'env/all/ledger/affix_norm']),
+        ('Character Preservation', ['metrics/char_overlap_reward', 'env/all/ledger/char_overlap_raw', 'env/all/ledger/char_overlap_norm']),
+        ('Overall Composite', ['reward/mean', 'reward/total', 'env/all/reward/total']),
+    ]
     
-    for label, metric_key in component_metrics.items():
-        if metric_key in history.columns:
+    for label, metric_keys in component_metrics:
+        series, _ = get_history_series(history, metric_keys)
+        if series is not None:
             color_map = {
                 'Morphological Accuracy': COLORS['morphology'],
                 'Character Preservation': COLORS['character'],
                 'Overall Composite': COLORS['composite'],
             }
-            ax2.plot(steps, history[metric_key], 
+            ax2.plot(steps, series, 
                     label=label, linewidth=2.5, color=color_map[label], alpha=0.8)
     
     ax2.set_xlabel('Training Step', fontsize=12, fontweight='bold')
@@ -130,7 +147,7 @@ def create_reward_progression_plot(orchestrator_run, output_dir: Path):
     plt.tight_layout(rect=[0, 0, 1, 0.97])
     plot_path = output_dir / 'reward_progression.png'
     plt.savefig(plot_path, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"✓ Saved reward progression plot: {plot_path}")
+    print(f"[OK] Saved reward progression plot: {plot_path}")
     plt.close()
 
 
@@ -216,7 +233,7 @@ def create_training_metrics_plot(trainer_run, output_dir: Path):
     plt.tight_layout(rect=[0, 0, 1, 0.97])
     plot_path = output_dir / 'training_metrics.png'
     plt.savefig(plot_path, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"✓ Saved training metrics plot: {plot_path}")
+    print(f"[OK] Saved training metrics plot: {plot_path}")
     plt.close()
 
 
@@ -262,7 +279,7 @@ def create_performance_plot(trainer_run, output_dir: Path):
     plt.tight_layout()
     plot_path = output_dir / 'performance_metrics.png'
     plt.savefig(plot_path, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"✓ Saved performance metrics plot: {plot_path}")
+    print(f"[OK] Saved performance metrics plot: {plot_path}")
     plt.close()
 
 
@@ -282,14 +299,19 @@ def create_summary_dashboard(orchestrator_run, trainer_run, output_dir: Path):
     
     # 1. Reward progression (large, top-left)
     ax1 = fig.add_subplot(gs[0, :2])
-    if 'reward/mean' in orch_history.columns:
-        ax1.plot(orch_steps, orch_history['reward/mean'], 
+    orch_reward_series, _ = get_history_series(
+        orch_history,
+        ["reward/mean", "reward/total", "env/all/reward/total"],
+    )
+    if orch_reward_series is not None:
+        ax1.plot(orch_steps, orch_reward_series, 
                 color=COLORS['reward'], linewidth=3, label='Overall Reward')
-        initial = orch_history['reward/mean'].iloc[0]
-        final = orch_history['reward/mean'].iloc[-1]
-        ax1.fill_between(orch_steps, initial, orch_history['reward/mean'], 
+        initial = orch_reward_series.iloc[0]
+        final = orch_reward_series.iloc[-1]
+        ax1.fill_between(orch_steps, initial, orch_reward_series, 
                         alpha=0.2, color=COLORS['reward'])
-        ax1.set_title(f'Reward: {initial:.3f} → {final:.3f} ({((final-initial)/initial*100):.1f}% improvement)', 
+        improvement_pct = ((final-initial)/initial*100) if initial != 0 else 0
+        ax1.set_title(f'Reward: {initial:.3f} → {final:.3f} ({improvement_pct:.1f}% improvement)', 
                      fontsize=12, fontweight='bold')
     ax1.set_xlabel('Step', fontweight='bold')
     ax1.set_ylabel('Reward', fontweight='bold')
@@ -308,11 +330,21 @@ def create_summary_dashboard(orchestrator_run, trainer_run, output_dir: Path):
         if '_step' in orchestrator_run.summary:
             stats_text.append(f"Steps: {orchestrator_run.summary['_step']}")
     
-    if 'reward/mean' in orch_history.columns:
-        stats_text.append(f"Final Reward: {orch_history['reward/mean'].iloc[-1]:.3f}")
+    if orch_reward_series is not None:
+        stats_text.append(f"Final Reward: {orch_reward_series.iloc[-1]:.3f}")
     
-    if 'metrics/affix_reward' in orch_history.columns:
-        stats_text.append(f"Morphology: {orch_history['metrics/affix_reward'].iloc[-1]:.3f}")
+    affix_series, _ = get_history_series(
+        orch_history,
+        ["metrics/affix_reward", "env/all/ledger/affix_raw", "env/all/ledger/affix_norm"],
+    )
+    char_series, _ = get_history_series(
+        orch_history,
+        ["metrics/char_overlap_reward", "env/all/ledger/char_overlap_raw", "env/all/ledger/char_overlap_norm"],
+    )
+    if affix_series is not None:
+        stats_text.append(f"Morphology: {affix_series.iloc[-1]:.3f}")
+    if char_series is not None:
+        stats_text.append(f"Character: {char_series.iloc[-1]:.3f}")
     
     if 'perf/throughput' in train_history.columns:
         stats_text.append(f"Throughput: {train_history['perf/throughput'].mean():.0f} tok/s")
@@ -323,12 +355,13 @@ def create_summary_dashboard(orchestrator_run, trainer_run, output_dir: Path):
     
     # 3. Component comparison (middle-left)
     ax3 = fig.add_subplot(gs[1, 0])
-    if 'metrics/affix_reward' in orch_history.columns and 'metrics/char_overlap_reward' in orch_history.columns:
+    if affix_series is not None and char_series is not None:
         components = ['Morphology', 'Character', 'Composite']
+        composite_val = orch_reward_series.iloc[-1] if orch_reward_series is not None else 0
         values = [
-            orch_history['metrics/affix_reward'].iloc[-1],
-            orch_history['metrics/char_overlap_reward'].iloc[-1],
-            orch_history['reward/mean'].iloc[-1] if 'reward/mean' in orch_history.columns else 0
+            affix_series.iloc[-1],
+            char_series.iloc[-1],
+            composite_val,
         ]
         colors_bar = [COLORS['morphology'], COLORS['character'], COLORS['composite']]
         bars = ax3.bar(components, values, color=colors_bar, alpha=0.8, edgecolor='black', linewidth=1.5)
@@ -389,11 +422,19 @@ def create_summary_dashboard(orchestrator_run, trainer_run, output_dir: Path):
     
     # 8. Component trends (bottom-right)
     ax8 = fig.add_subplot(gs[2, 2])
-    if 'metrics/affix_reward' in orch_history.columns:
-        ax8.plot(orch_steps, orch_history['metrics/affix_reward'], 
+    morph_series, _ = get_history_series(
+        orch_history,
+        ["metrics/affix_reward", "env/all/ledger/affix_raw", "env/all/ledger/affix_norm"],
+    )
+    char_series, _ = get_history_series(
+        orch_history,
+        ["metrics/char_overlap_reward", "env/all/ledger/char_overlap_raw", "env/all/ledger/char_overlap_norm"],
+    )
+    if morph_series is not None:
+        ax8.plot(orch_steps, morph_series, 
                 label='Morphology', color=COLORS['morphology'], linewidth=2)
-    if 'metrics/char_overlap_reward' in orch_history.columns:
-        ax8.plot(orch_steps, orch_history['metrics/char_overlap_reward'], 
+    if char_series is not None:
+        ax8.plot(orch_steps, char_series, 
                 label='Character', color=COLORS['character'], linewidth=2)
     ax8.set_xlabel('Step', fontweight='bold')
     ax8.set_ylabel('Reward', fontweight='bold')
@@ -404,7 +445,7 @@ def create_summary_dashboard(orchestrator_run, trainer_run, output_dir: Path):
     
     plot_path = output_dir / 'comprehensive_dashboard.png'
     plt.savefig(plot_path, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"✓ Saved comprehensive dashboard: {plot_path}")
+    print(f"[OK] Saved comprehensive dashboard: {plot_path}")
     plt.close()
 
 
@@ -438,8 +479,8 @@ def main():
     try:
         trainer_run = load_run_data(args.trainer_id, args.project, args.entity)
         orchestrator_run = load_run_data(args.orchestrator_id, args.project, args.entity)
-        print(f"✓ Loaded trainer run: {trainer_run.name}")
-        print(f"✓ Loaded orchestrator run: {orchestrator_run.name}")
+        print(f"[OK] Loaded trainer run: {trainer_run.name}")
+        print(f"[OK] Loaded orchestrator run: {orchestrator_run.name}")
     except Exception as e:
         print(f"ERROR: Failed to load runs: {e}")
         return 1

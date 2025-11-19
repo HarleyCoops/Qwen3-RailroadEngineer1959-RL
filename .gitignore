@@ -79,3 +79,9 @@ coverage.xml
 *.log
 logs/
 prime-rl-framework/
+
+# Downloaded model weights (large files, should not be committed)
+downloaded_model*/
+downloaded_model_step_*/
+model_step_*.tar.gz
+*.tar.gz

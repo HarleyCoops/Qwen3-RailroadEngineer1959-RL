@@ -1,0 +1,37 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.6",
+  "startedAt": "2025-11-19T04:04:38.329981Z",
+  "args": [
+    "--log-path",
+    "dakota_rl_training/outputs/tinker_smoke",
+    "--checkpoint-name",
+    "latest",
+    "--artifact-name",
+    "Qwen3-30B-ThinkingMachines-Dakota1890",
+    "--wandb-project",
+    "dakota-rl-grammar-tinker",
+    "--skip-publish"
+  ],
+  "program": "-m dakota_rl_training.publish_tinker_weights",
+  "git": {
+    "remote": "https://github.com/HarleyCoops/Dakota1890.git",
+    "commit": "88851a7a49c8bdbb35fb0cdfed5d51352f5211b9"
+  },
+  "email": "christian.cooper.us@gmail.com",
+  "root": "C:\\Users\\chris\\Dakota1890",
+  "host": "PC",
+  "executable": "C:\\Python312\\python.exe",
+  "cpu_count": 12,
+  "cpu_count_logical": 12,
+  "disk": {
+    "/": {
+      "total": "1004769636352",
+      "used": "990687219712"
+    }
+  },
+  "memory": {
+    "total": "16749838336"
+  },
+  "writerId": "piv357aanw221fdfvbeoim366wktr4uf"
+}

@@ -48,13 +48,7 @@ URLS = {
     "orchestrator": BASE + "orchestrator_run_29hn8w98.json",
 }
 
-OUT_DIR = os.path.abspath(os.path.join(os.getcwd(), "dakota_rl_outputs"))
-FIG_DIR = os.path.join(OUT_DIR, "figures")
-TAB_DIR = os.path.join(OUT_DIR, "tables")
-REP_FILE = os.path.join(OUT_DIR, "dakota_rl_wandb_report.pdf")
-
-os.makedirs(FIG_DIR, exist_ok=True)
-os.makedirs(TAB_DIR, exist_ok=True)
+# OUT_DIR setup moved to after arg parsing
 
 
 # -----------------------------
@@ -121,20 +115,92 @@ def pct(x: float) -> str:
 # Data Loading
 # -----------------------------
 
-print("Fetching W&B-derived artifacts from GitHub...")
-dfs: Dict[str, pd.DataFrame] = {}
-jsons: Dict[str, dict] = {}
+# -----------------------------
+# Data Loading
+# -----------------------------
 
-for key, url in URLS.items():
-    try:
-        if url.endswith(".csv"):
-            dfs[key] = fetch_csv(url)
-            print(f"Loaded CSV: {key} -> {dfs[key].shape}")
-        elif url.endswith(".json"):
-            jsons[key] = fetch_json(url)
-            print(f"Loaded JSON: {key} -> {len(jsons[key])} keys")
-    except Exception as e:
-        print(f"[WARN] Failed to load {key} from {url}: {e}")
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Generate Dakota RL W&B Report")
+    parser.add_argument("--history-csv", help="Path to local W&B history CSV (from export_wandb_data.py)")
+    parser.add_argument("--output-dir", default="dakota_rl_outputs", help="Output directory")
+    return parser.parse_args()
+
+args = parse_args()
+OUT_DIR = os.path.abspath(args.output_dir)
+FIG_DIR = os.path.join(OUT_DIR, "figures")
+TAB_DIR = os.path.join(OUT_DIR, "tables")
+REP_FILE = os.path.join(OUT_DIR, "dakota_rl_wandb_report.pdf")
+
+os.makedirs(FIG_DIR, exist_ok=True)
+os.makedirs(TAB_DIR, exist_ok=True)
+
+dfs: Dict[str, pd.DataFrame] = {}
+
+if args.history_csv:
+    print(f"Loading local history from {args.history_csv}...")
+    df = pd.read_csv(args.history_csv)
+    
+    # Map columns to expected format
+    # Total Reward
+    dfs["total_reward"] = df.copy()
+    if "reward/mean" in df.columns:
+        dfs["total_reward"]["reward_total"] = df["reward/mean"]
+    elif "reward" in df.columns:
+        dfs["total_reward"]["reward_total"] = df["reward"]
+        
+    # Components
+    dfs["components"] = df.copy()
+    # Map ledger/x to x
+    for col in df.columns:
+        if "ledger/" in col:
+            short_name = col.split("/")[-1]
+            # Handle norm vs raw if needed, or just keep as is
+            # Report expects "exact", "char", etc.
+            if "exact_match_norm" in short_name: dfs["components"]["exact"] = df[col]
+            if "char_overlap_norm" in short_name: dfs["components"]["char"] = df[col]
+            if "pattern_norm" in short_name: dfs["components"]["pattern"] = df[col]
+            if "affix_norm" in short_name: dfs["components"]["affix"] = df[col]
+            if "length_penalty_norm" in short_name: dfs["components"]["length"] = df[col]
+            
+            # Support for new orchestrator logging format
+            if "reward/exact_match/mean" in col: dfs["components"]["exact"] = df[col]
+            if "reward/char_overlap/mean" in col: dfs["components"]["char"] = df[col]
+            if "reward/pattern_match/mean" in col: dfs["components"]["pattern"] = df[col]
+            if "reward/affix_match/mean" in col: dfs["components"]["affix"] = df[col]
+            if "reward/length_penalty/mean" in col: dfs["components"]["length"] = df[col]
+
+    # Also check for direct column names (from ledger export)
+    for col in df.columns:
+        if "exact_match_norm" in col: dfs["components"]["exact"] = df[col]
+        if "char_overlap_norm" in col: dfs["components"]["char"] = df[col]
+        if "pattern_norm" in col: dfs["components"]["pattern"] = df[col]
+        if "affix_norm" in col: dfs["components"]["affix"] = df[col]
+        if "length_penalty_norm" in col: dfs["components"]["length"] = df[col]
+            
+    # Entropy
+    dfs["entropy"] = df.copy()
+    if "entropy/mean" in df.columns:
+        dfs["entropy"]["entropy"] = df["entropy/mean"]
+        
+    # Policy Probs
+    dfs["policy_probs"] = df.copy()
+    if "inference_probs/mean" in df.columns:
+        dfs["policy_probs"]["prob_mean"] = df["inference_probs/mean"]
+        
+else:
+    print("Fetching W&B-derived artifacts from GitHub...")
+    for key, url in URLS.items():
+        try:
+            if url.endswith(".csv"):
+                dfs[key] = fetch_csv(url)
+                print(f"Loaded CSV: {key} -> {dfs[key].shape}")
+            elif url.endswith(".json"):
+                jsons[key] = fetch_json(url)
+                print(f"Loaded JSON: {key} -> {len(jsons[key])} keys")
+        except Exception as e:
+            print(f"[WARN] Failed to load {key} from {url}: {e}")
 
 
 # -----------------------------

@@ -97,6 +97,50 @@ prime-rl train \
     --use-toploc  # Verifiable inference
 ```
 
+## Thinking Machines / Tinker Path
+
+We now maintain a parallel RL stack on **Thinking Machines Tinker** so we can reuse the Dakota reward functions inside their distributed infrastructure.
+
+### 1. Install the Tinker client + cookbook
+
+```bash
+pip install -r requirements.txt   # pulls tinker, tinker-cookbook, chz
+export TINKER_API_KEY=sk-xxxxx    # create in https://tinker-console.thinkingmachines.ai
+```
+
+### 2. Launch the native Tinker RL loop
+
+```bash
+python dakota_rl_training/tinker_train.py \
+  --model-name Qwen/Qwen3-0.6B \
+  --log-path dakota_rl_training/outputs/tinker_grpo \
+  --wandb-project dakota-rl-grammar-tinker \
+  --batch-size 48 --group-size 16 \
+  --max-tokens 256 --learning-rate 4e-5
+```
+
+This command wraps [`tinker_cookbook.rl.train`](https://tinker-docs.thinkingmachines.ai/rl/rl-loops) with our `DakotaTinkerEnv`. The same `DakotaGrammarRubric` runs inside every rollout, so we still compute exact match/char overlap/affix/length penalties and stream them to Tinker metrics (`ledger/*`). After every run, the script automatically emits `wandb_analysis/reward_ledger_tinker.csv`, fixing the missing Reward Ledger data from the last PrimeIntellect runs.
+
+### 3. Publish weights using the official format
+
+```bash
+python dakota_rl_training/publish_tinker_weights.py \
+  --log-path dakota_rl_training/outputs/tinker_grpo \
+  --checkpoint-name final \
+  --artifact-name qwen0.6b-dakota-ledger \
+  --wandb-project dakota-rl-grammar-tinker
+```
+
+Under the hood we follow the [Thinking Machines publish guide](https://tinker-docs.thinkingmachines.ai/publish-weights):
+
+1. Read `checkpoints.jsonl` and locate the latest `sampler_path`
+2. (Optionally) run `tinker checkpoint publish tinker://.../weights/<id>`
+3. Download the archive via `ServiceClient.create_rest_client().download_checkpoint_archive_from_tinker_path(...)`
+4. Write a metadata JSON that includes reward/ledger summaries and your W&B URL
+5. Optionally upload both files as a W&B artifact for public tracking
+
+TOPLOC remains available on PrimeIntellect; on Tinker the rubric itself enforces character preservation, so the ledger is still our source of truth for Unicode fidelity.
+
 ---
 
 ## Architecture
