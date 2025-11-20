@@ -151,28 +151,10 @@ class DakotaGrammarRubric(Rubric):
         **kwargs
     ) -> float:
         """
-        Penalize responses that are too long compared to expected answer
-
-        Dakota grammar responses should be concise (words/phrases, not essays)
-        Prevents degenerate policies that generate long repetitive outputs
-
-        Returns penalty multiplier: 1.0 (no penalty) to 0.0 (severe penalty)
+        Length penalty disabled for small-model Tinker runs (always 1.0).
         """
-        response_len = len(response.split())
-        expected_len = max(len(expected.split()), 1)  # Avoid division by zero
+        return 1.0
 
-        # Allow some flexibility (e.g., "Dawid suŋkaku" vs "Dawid suŋkaku.")
-        # But penalize heavily if response is 3x+ longer than expected
-        length_ratio = response_len / expected_len
-
-        if length_ratio <= max_length_ratio:
-            # No penalty for reasonable lengths
-            return 1.0
-        else:
-            # Exponential penalty for excessive length
-            # 3x length = 1.0, 6x = 0.5, 12x = 0.25, etc.
-            penalty = max_length_ratio / length_ratio
-            return max(0.1, penalty)  # Minimum 0.1 to allow recovery
 
     def composite_reward(
         self,

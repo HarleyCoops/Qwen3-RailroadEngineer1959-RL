@@ -12,6 +12,9 @@ tags:
 - thinking-machines
 - tinker
 base_model: Qwen/Qwen2.5-32B-Instruct
+widget:
+  - text: "Translate 'my elder brother' to Dakota."
+preview_image: grammar.jpg
 ---
 
 # Qwen3-30B-ThinkingMachines-Dakota1890
@@ -63,9 +66,10 @@ The model showed significant improvement in both morphological accuracy and char
 
 (Metrics from the final training run)
 
-* **Morphological Accuracy**: ~97.9%
-* **Character Preservation**: ~53.5% (on strict exact match of all special chars)
-* **Overall Composite Reward**: 0.349 (up from 0.120 baseline)
+* **Morphological Accuracy**: 100.0%
+* **Character Preservation**: 61.9% (on strict exact match of all special chars)
+* **Overall Composite Reward**: 0.317
+* **Token Efficiency**: Reduced from ~210 tokens/turn to 13.28 tokens/turn
 
 <div align="center">
   <img src="https://huggingface.co/HarleyCooper/Qwen3-30B-ThinkingMachines-Dakota1890/resolve/main/visualizations/training_metrics.png" width="100%" alt="Training Metrics" />
@@ -112,7 +116,7 @@ This checkpoint is also available directly via the Tinker platform:
 
 ```python
 # Tinker path
-tinker_path = "tinker://c5c6be06-cf8d-5177-acdd-1542225b0750:train:0/sampler_weights/final"
+tinker_path = "tinker://da1ef918-d67a-5080-b500-dd1256db9ca7:train:0/weights/final"
 ```
 
 ## Files

@@ -157,21 +157,29 @@ def create_training_metrics_plot(trainer_run, output_dir: Path):
     if history.empty:
         print("No training data available")
         return
-    
+
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle('Training Metrics - Dakota RL Trainer', fontsize=18, fontweight='bold', y=0.98)
-    
+
     steps = history['_step'] if '_step' in history.columns else history.index
-    
+
+    def _first_present(keys):
+        for k in keys:
+            if k in history.columns:
+                return k
+        return None
+
     # Loss plot
     ax = axes[0, 0]
-    if 'loss/mean' in history.columns:
-        ax.plot(steps, history['loss/mean'], 
-               color=COLORS['loss'], linewidth=2, label='Mean Loss', zorder=3)
-        if 'loss/std' in history.columns:
+    loss_key = _first_present(['loss/mean', 'train/loss', 'optim/loss'])
+    if loss_key:
+        ax.plot(steps, history[loss_key],
+               color=COLORS['loss'], linewidth=2, label=loss_key, zorder=3)
+        std_key = _first_present(['loss/std', 'train/loss_std'])
+        if std_key:
             ax.fill_between(steps,
-                          history['loss/mean'] - history['loss/std'],
-                          history['loss/mean'] + history['loss/std'],
+                          history[loss_key] - history[std_key],
+                          history[loss_key] + history[std_key],
                           alpha=0.3, color=COLORS['loss'], zorder=2, label='±1 Std')
         ax.set_yscale('log')
     ax.set_xlabel('Training Step', fontweight='bold')
@@ -179,33 +187,35 @@ def create_training_metrics_plot(trainer_run, output_dir: Path):
     ax.set_title('Policy Loss Over Time', fontsize=13, pad=10)
     ax.grid(True, alpha=0.3, linestyle='--')
     ax.legend(framealpha=0.9)
-    
+
     # Entropy plot
     ax = axes[0, 1]
-    if 'entropy/mean' in history.columns:
-        ax.plot(steps, history['entropy/mean'], 
-               color=COLORS['entropy'], linewidth=2, label='Mean Entropy', zorder=3)
-        if 'entropy/std' in history.columns:
+    entropy_key = _first_present(['entropy/mean', 'optim/entropy'])
+    if entropy_key:
+        ax.plot(steps, history[entropy_key],
+               color=COLORS['entropy'], linewidth=2, label=entropy_key, zorder=3)
+        std_key = _first_present(['entropy/std'])
+        if std_key:
             ax.fill_between(steps,
-                          history['entropy/mean'] - history['entropy/std'],
-                          history['entropy/mean'] + history['entropy/std'],
+                          history[entropy_key] - history[std_key],
+                          history[entropy_key] + history[std_key],
                           alpha=0.3, color=COLORS['entropy'], zorder=2)
     ax.set_xlabel('Training Step', fontweight='bold')
     ax.set_ylabel('Entropy', fontweight='bold')
     ax.set_title('Model Entropy (Confidence)', fontsize=13, pad=10)
     ax.grid(True, alpha=0.3, linestyle='--')
     ax.legend(framealpha=0.9)
-    
+
     # KL Divergence plot
     ax = axes[1, 0]
     kl_metrics = {
-        'Masked KL': 'masked_mismatch_kl/mean',
-        'Overall KL': 'mismatch_kl/mean',
-        'Unmasked KL': 'unmasked_mismatch_kl/mean',
+        'Masked KL': _first_present(['masked_mismatch_kl/mean', 'optim/kl_sample_train_v1']),
+        'Overall KL': _first_present(['mismatch_kl/mean', 'optim/kl_sample_train_v2']),
+        'Unmasked KL': _first_present(['unmasked_mismatch_kl/mean']),
     }
     colors_kl = [COLORS['kl'], '#8B0000', '#FF6B6B']
     for i, (label, metric_key) in enumerate(kl_metrics.items()):
-        if metric_key in history.columns:
+        if metric_key:
             ax.plot(steps, history[metric_key], 
                    label=label, linewidth=2, color=colors_kl[i], alpha=0.8)
     ax.set_xlabel('Training Step', fontweight='bold')

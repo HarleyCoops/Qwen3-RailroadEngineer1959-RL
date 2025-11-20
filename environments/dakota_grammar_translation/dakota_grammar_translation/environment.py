@@ -314,7 +314,7 @@ class DakotaGrammarRubric(Rubric):
             self.length_penalty_reward,
         ]
         weights = [0.4, 0.2, 0.15, 0.1, 0.15]  # Added length penalty weight
-        super().__init__(funcs=funcs, weights=weights, parser=parser, parallelize_scoring=False)
+        super().__init__(funcs=funcs, weights=weights, parser=parser)
         self.special_chars = set("ćšŋḣṡáéíóúķśṅźėčžʼ")
         self._last_ledger: Optional[Dict[str, float]] = None
 
@@ -411,27 +411,9 @@ class DakotaGrammarRubric(Rubric):
         **_: Any,
     ) -> float:
         """
-        Penalize responses that are too long compared to expected answer.
-        
-        Prevents degenerate policies that generate long repetitive outputs.
-        Returns penalty multiplier: 1.0 (no penalty) to 0.0 (severe penalty)
+        Length penalty disabled for the small-model Tinker configuration (always 1.0).
         """
-        prediction = self._prediction(completion, parser)
-        response_len = len(prediction.split())
-        expected_len = max(len(answer.split()), 1)  # Avoid division by zero
-        
-        # Allow some flexibility (e.g., "Dawid suŋkaku" vs "Dawid suŋkaku.")
-        # But penalize heavily if response is 3x+ longer than expected
-        length_ratio = response_len / expected_len
-        
-        if length_ratio <= max_length_ratio:
-            # No penalty for reasonable lengths
-            return 1.0
-        else:
-            # Exponential penalty for excessive length
-            # 3x length = 1.0, 6x = 0.5, 12x = 0.25, etc.
-            penalty = max_length_ratio / length_ratio
-            return max(0.1, penalty)  # Minimum 0.1 to allow recovery
+        return 1.0
 
     def score(
         self,
