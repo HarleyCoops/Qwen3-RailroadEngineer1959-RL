@@ -168,6 +168,18 @@ Performance metrics track computational efficiency: training throughput (tokens 
 
 **View full run**: [Orchestrator Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/1y33h9zr)
 
+### Run 3: 30B Tinker (Thinking Machines Final)
+
+- **Project / Run ID**: `dakota-rl-grammar` / [`i55d4x26`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/i55d4x26)
+- **Base Model**: Qwen/Qwen3-30B-A3B-Instruct-2507 (LoRA rank 32)
+- **Steps**: 199 (0–198) on Tinker; checkpoint at `tinker://da1ef918-d67a-5080-b500-dd1256db9ca7:train:0/sampler_weights/final`
+- **Composite reward**: 0.105 → **0.442 peak (step 116)** → 0.317 final
+- **Character preservation**: 0.265 → **0.699 peak (step 185)** → 0.619 final
+- **Affix accuracy**: 0.957 → **1.000** (stayed perfect in later stages)
+- **Exact match**: 0.001 → **0.337 peak (step 116)** → 0.100 final; length penalty rose to 1.0 by step 52
+
+![Comprehensive Dashboard (30B Tinker)](wandb_visualizations/qwen30b/comprehensive_dashboard.png)
+
 ### GRPO for Qualitative Tasks: A Significant Breakthrough
 
 **This work demonstrates that GRPO (Group Relative Policy Optimization) can achieve exceptional learning on qualitative linguistic tasks when rewards are properly decomposed into interpretable components.** This is significant because:
@@ -717,6 +729,15 @@ Progressive difficulty over 3 stages:
 - Methodology for any historical grammar textbook
 - Framework for low-resource language preservation
 - Verifiable distributed training for linguistic tasks
+
+### Generalized RL Use Cases
+
+The same closed-loop, rule-to-reward pattern extends beyond low-resource language learning:
+
+- Legal & Compliance: Turn the US Tax Code (text) into a reward function to train models that avoid non-compliant financial advice.
+- Biology: Turn protein folding heuristics papers into reward constraints for generative chemistry.
+- Code Migration: Turn a 1970 COBOL manual into a verification environment to train a Python-to-COBOL translation agent.
+- Industrial Safety (1950s Rail): Build an RL environment that mirrors a postwar railroad engineer's operating rules using the procedures documented in `Public/1959RailRoadCodeRL.pdf`, enforcing safety, dispatch, and signaling constraints in generation.
 
 ### Future Research Directions
 

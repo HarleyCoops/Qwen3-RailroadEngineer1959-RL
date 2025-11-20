@@ -1,0 +1,44 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.6",
+  "startedAt": "2025-11-19T17:44:22.224726Z",
+  "args": [
+    "--model-name",
+    "Qwen/Qwen3-30B-A3B-Instruct-2507",
+    "--log-path",
+    "dakota_rl_training/outputs/tinker_qwen30b",
+    "--batch-size",
+    "48",
+    "--group-size",
+    "16",
+    "--max-tokens",
+    "384",
+    "--wandb-project",
+    "dakota-rl-grammar",
+    "--wandb-name",
+    "qwen3-30b-dakota",
+    "--ledger-csv",
+    "wandb_analysis/reward_ledger_tinker.csv"
+  ],
+  "program": "-m dakota_rl_training.tinker_train",
+  "git": {
+    "remote": "https://github.com/HarleyCoops/Dakota1890.git",
+    "commit": "c848a1f4495abc7e0132dc9217c41f18be59b8c3"
+  },
+  "email": "christian.cooper.us@gmail.com",
+  "root": "dakota_rl_training\\outputs\\tinker_qwen30b",
+  "host": "PC",
+  "executable": "C:\\Python312\\python.exe",
+  "cpu_count": 12,
+  "cpu_count_logical": 12,
+  "disk": {
+    "/": {
+      "total": "1004769636352",
+      "used": "983580495872"
+    }
+  },
+  "memory": {
+    "total": "16749838336"
+  },
+  "writerId": "fkodbfdh05vc6912asm3zugza6iqusgi"
+}

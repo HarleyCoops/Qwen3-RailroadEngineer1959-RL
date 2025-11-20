@@ -35,10 +35,10 @@ LEDGER_FIELDS = [
 def _extract_ledger_payload(entry: Dict[str, float]) -> dict[str, float]:
     payload: Dict[str, float] = {}
     for key, value in entry.items():
-        if key.startswith("ledger/"):
-            payload[key.split("/", 1)[1]] = value
-        elif key.startswith("env/all/ledger/"):
-            payload[key.split("/", 2)[2]] = value
+        # Tinker uses names like "env/all/ledger/affix_raw" and "test/env/all/ledger/affix_raw".
+        # We only care about the portion after the final "ledger/" segment.
+        if "ledger/" in key:
+            payload[key.split("ledger/", 1)[1]] = value
     if "parse_success" not in payload:
         parse_val = entry.get("ledger/parse_success") or entry.get("env/all/ledger/parse_success")
         if parse_val is not None:

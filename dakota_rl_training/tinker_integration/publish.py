@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
@@ -35,12 +34,20 @@ def select_checkpoint(log_dir: Path, name: str | None = None) -> dict:
 
 
 def publish_checkpoint(tinker_path: str) -> None:
-    """Publish a checkpoint via the tinker CLI."""
-    subprocess.run(["tinker", "checkpoint", "publish", tinker_path], check=True)
+    """Publish a checkpoint via the Tinker REST client."""
+    service_client = tinker.ServiceClient()
+    rest_client = service_client.create_rest_client()
+    future = rest_client.publish_checkpoint_from_tinker_path(tinker_path)
+    if future is not None:
+        future.result()
 
 
 def unpublish_checkpoint(tinker_path: str) -> None:
-    subprocess.run(["tinker", "checkpoint", "unpublish", tinker_path], check=True)
+    service_client = tinker.ServiceClient()
+    rest_client = service_client.create_rest_client()
+    future = rest_client.unpublish_checkpoint_from_tinker_path(tinker_path)
+    if future is not None:
+        future.result()
 
 
 def download_checkpoint_archive(tinker_path: str, output_path: Path) -> Path:
