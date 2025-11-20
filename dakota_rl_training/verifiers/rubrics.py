@@ -47,18 +47,16 @@ class DakotaGrammarRubric(Rubric):
         response_chars = set(c for c in response if c in self.special_chars)
         expected_set = set(expected_chars)
 
-        # Intersection over union
+        # If expected set is empty, nothing to match
         if not expected_set:
             return 1.0
 
         intersection = response_chars & expected_set
-        union = response_chars | expected_set
-
-        # Penalize extra chars (shows confusion)
-        if union:
-            return len(intersection) / len(expected_set)
-        else:
-            return 0.0
+        
+        # Recall-based: penalize missing characters, but allow extras (for reasoning)
+        # Old: return len(intersection) / len(expected_set) if union else 0.0 (IoU penalizes reasoning)
+        # New: Recall = intersection / expected
+        return len(intersection) / len(expected_set)
 
     def affix_accuracy_reward(
         self,
@@ -111,8 +109,9 @@ class DakotaGrammarRubric(Rubric):
         response_norm = response.strip().lower()
         expected_norm = expected.strip().lower()
 
-        # Exact match = full reward
-        if response_norm == expected_norm:
+        # Substring check (Primary Logic)
+        # This allows for verbosity/reasoning as long as the answer is present.
+        if expected_norm in response_norm:
             return 1.0
 
         # For translation tasks, allow word overlap
@@ -123,25 +122,34 @@ class DakotaGrammarRubric(Rubric):
             if not expected_words:
                 return 0.0
 
-            # Jaccard similarity
+            # Overlap ratio (Recall)
+            # intersection / expected (allows extras)
             intersection = response_words & expected_words
-            union = response_words | expected_words
+            return len(intersection) / len(expected_words)
 
-            if union:
-                return len(intersection) / len(union)
-
-        # For morphology, require exact match (or very close)
-        # Levenshtein distance normalized
+        # For morphology, fallback to Levenshtein on substrings (simplified to raw Lev for now if no exact match)
+        # But realistically, if the exact form isn't there, it's wrong.
+        # We can keep partial credit if they are CLOSE to the answer.
+        
+        # Partial credit logic:
+        # Find best substring match? Too expensive.
+        # Fallback: Check if Levenshtein is small relative to expected length?
         distance = self._levenshtein(response_norm, expected_norm)
         max_len = max(len(response_norm), len(expected_norm))
 
         if max_len == 0:
             return 1.0
 
-        similarity = 1.0 - (distance / max_len)
-
-        # Only reward if very close (>90% similar)
-        return max(0.0, similarity) if similarity > 0.9 else 0.0
+        # If response is huge (reasoning), distance is huge. 
+        # So Levenshtein only makes sense if response is short.
+        # If response is long and doesn't contain substring, score is likely 0.
+        # We can return 0 here safely.
+        
+        # But let's allow for slight typos in the target word within a long response?
+        # That's hard to detect without sliding window.
+        # For now, simple substring match is the biggest fix.
+        
+        return 0.0
 
     def length_penalty(
         self,
@@ -386,6 +394,10 @@ class DakotaMetrics:
 
 
 if __name__ == "__main__":
+    import sys
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    
     # Test rubric
     rubric = DakotaGrammarRubric()
 
@@ -424,7 +436,7 @@ if __name__ == "__main__":
 
     # Composite reward
     composite = rubric.composite_reward(response, expected, task_info)
-    print(f"\nComposite reward: {composite:.2f}")
+    print(f"Composite reward: {composite:.2f}")
 
     # Test wrong answer (missing ŋ)
     print("\n" + "="*60)
@@ -440,3 +452,29 @@ if __name__ == "__main__":
 
     composite_wrong = rubric.composite_reward(wrong_response, expected, task_info)
     print(f"Composite reward: {composite_wrong:.2f}")
+    
+    # Test Verbose Chain of Thought (The Fix)
+    print("\n" + "="*60)
+    print("Test Case: Verbose Reasoning (CoT)")
+    cot_response = "To form the kinship term for 'younger brother' using the base 'suŋka' and the suffix '-ku', we first note that 'suŋka' ends in a vowel. In Dakota morphology, '-ku' is added directly to kinship terms ending in 'a'. Therefore, we combine 'suŋka' + 'ku' to get 'suŋkaku'. The final answer is Dawid suŋkaku."
+    
+    print(f"Response: {cot_response}")
+    print(f"Expected: {expected}")
+    
+    char_reward_cot = rubric.character_preservation_reward(
+        cot_response, task_info["special_chars"]
+    )
+    print(f"Character reward: {char_reward_cot:.2f} (Should be 1.0)")
+    
+    affix_reward_cot = rubric.affix_accuracy_reward(
+        cot_response, task_info["required_affixes"]
+    )
+    print(f"Affix reward: {affix_reward_cot:.2f} (Should be 1.0)")
+    
+    semantic_reward_cot = rubric.semantic_accuracy_reward(
+        cot_response, expected, task_info["task_type"]
+    )
+    print(f"Semantic reward: {semantic_reward_cot:.2f} (Should be 1.0)")
+    
+    composite_cot = rubric.composite_reward(cot_response, expected, task_info)
+    print(f"Composite reward: {composite_cot:.2f} (Should be ~1.2 with difficulty mult)")

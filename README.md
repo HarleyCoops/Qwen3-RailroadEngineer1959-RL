@@ -1,163 +1,891 @@
----
-language:
-- en
-- dak
-license: apache-2.0
-library_name: transformers
-tags:
-- text-generation
-- pytorch
-- english
-- dakota
-- qwen3
-- reinforcement-learning
-- rl
-- dakota-language
-- grammar
-- composition-rewards
-- non-coding
-- qualitative-tasks
-- grpo
-- prime-intellect
-- verifiers
-- conversational
-base_model: Qwen/Qwen3-30B-A3B-Instruct-2507
-datasets:
-- HarleyCooper/Dakota1890-Grammar
-model_name: Qwen3-30B-ThinkingMachines-Dakota1890
-preview_image: grammar.jpg
-widget:
-- text: "Translate 'my elder brother' to Dakota."
-  example_title: "Translation"
-- text: "Translate 'He is writing a letter' to Dakota."
-  example_title: "Sentence Generation"
----
+# Grammar-to-RL: Training Language Models on Historical Texts via Compositional Rewards
 
-# Qwen3-30B-ThinkingMachines-Dakota1890
+<div align="right">
 
-![Dakota Grammar - High Detail Scan](grammar.jpg)
 
-_Exceptional level of detail preserved from the 1890 source material — every character, accent, and linguistic nuance captured with precision_
 
-## Model Description
+</div>
 
-This model is a reinforcement learning (RL) fine-tuned version of `Qwen/Qwen3-30B-A3B-Instruct`, trained specifically for Dakota language grammar and translation tasks using **GRPO (Group Relative Policy Optimization) with compositional reward functions on qualitative linguistic tasks**.
+![CI](https://github.com/HarleyCoops/Dakota1890/actions/workflows/ci.yml/badge.svg)
+![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)
+![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
+![Code style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)
+![Smoke Tests](https://img.shields.io/badge/smoke%20tests-offline-brightgreen)
+![Python Package](https://img.shields.io/badge/pypi-dakota--grammar--env-blue)
 
-This run was executed on the **Thinking Machines** infrastructure (Tinker), scaling the methodology to a 30B parameter model to test the limits of morphological learning and reasoning in low-resource language scenarios.
 
-### Key Features
+## Novel Methodology: Closed-Loop Grammar Gym
 
-* **State-of-the-Art Morphology**: Achieved **100% accuracy** on affix application rules, surpassing smaller models.
-* **Reasoning-Based Grammar**: Leverages the 30B parameter scale to internalize complex linguistic rules rather than just memorizing patterns.
-* **Compositional Rewards**: Multi-component reward function combining character preservation (40%), morphological accuracy (40%), and semantic correctness (20%).
-* **Dakota Language Focus**: Trained on 5,657 grammar tasks extracted from the 1890 Dakota-English Dictionary.
-* **Special Character Preservation**: Maintains Dakota orthography (ć, š, ŋ, ḣ, ṡ, á, é, í, ó, ú, etc.).
+**This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
 
-**Complete project repository with all code, data, and training traces:**
-[https://github.com/HarleyCoops/Dakota1890](https://github.com/HarleyCoops/Dakota1890)
+### Why This Is Now Working
 
-## Training Details
+The fundamental insight driving this approach: **grammar rules can be reward functions, and rewards should decompose into linguistic primitives.** When you do this, syntax emerges naturally without an external verifier as judge. This is particularly powerful for RL on non-coding tasks where compositional structure matters.
 
-### Training Data
+#### Grammar AS Reward Function
 
-* **Source**: 1890 Dakota-English Dictionary grammar section (pages 31-92)
-* **Tasks**: 5,657 training tasks covering:
-   * Morphology (affix application, word formation)
-   * Translation (Dakota ↔ English)
-   * Reverse translation
-   * Syntax (sentence structure)
-   * Pattern identification
+Everyone else treats grammar as either:
+- **Preprocessing constraints** (rule-based systems)
+- **Post-hoc evaluation** (check grammar after generation)
 
-### Training Procedure
+This project makes grammar rules directly differentiable through compositional rewards. Each rule becomes a gradient signal, not just a binary check.
 
-* **Infrastructure**: Thinking Machines (Tinker)
-* **Algorithm**: GRPO (Group Relative Policy Optimization)
-* **Base Model**: Qwen/Qwen3-30B-A3B-Instruct-2507
-* **Training Steps**: 199 steps (Checkpoint `tinker://da1ef918.../final`)
-* **Batch Size**: 48
-* **Group Size**: 16 rollouts per example
-* **Max Tokens**: 384 (Generation)
+<div align="center" style="margin: 3rem 0;">
 
-### Reward Function Composition
+<img src="Public/grammar.jpg" alt="Dakota Grammar - Historical Text Detail" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
 
-The model was trained using a **compositional reward function** that decomposes qualitative linguistic tasks into verifiable quantitative components:
+</div>
 
-1. **Character Preservation (40% weight)**: Verifiable Unicode-level correctness for Dakota special characters.
-2. **Morphological Accuracy (40% weight)**: Pattern-matching against grammar rules for affix application.
-3. **Semantic Correctness (20% weight)**: Meaning preservation metrics for translation quality.
+The key advantage: **interpretability**. You can actually see where in the latent space each linguistic level is being encoded. This makes debugging possible: "Oh, the model is failing on ć preservation because the character embedding gradient is being overwhelmed by the semantic gradient."
 
-### Environment
+#### Composite Rewards in Practice
 
-* **Environment**: `dakota_grammar_translation`
-* **Framework**: Prime Intellect RL (prime-rl) compatible
+The modified reward function decomposes loss into interpretable components:
 
-## Training Results
+```python
+# Traditional approach - one black box loss
+loss = CrossEntropy(generated, target)
 
-### Key Achievements
+# This approach: interpretable components
+loss = α * char_loss + β * morph_loss + γ * semantic_loss
 
-* **200%+ Improvement**: Composite reward increased from 0.105 to 0.317 (Peak: 0.442).
-* **Perfect Morphology**: Affix accuracy reached **1.000 (100%)**, demonstrating the 30B model's superior ability to handle complex grammar rules compared to the 0.6B model (97.9%).
-* **Character Mastery**: Character preservation improved from 0.265 to **0.699 (Peak)**, a massive gain in handling Dakota's complex orthography.
-* **Rapid Convergence**: Significant improvements achieved in fewer than 200 steps.
+# But more importantly, you can now:
+if char_loss > threshold:
+    increase α  # Boost character learning
+if morph_loss plateaus:
+    adjust curriculum  # Change morphology examples
+```
 
-### Training Visualizations
+This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As I continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
+
+
+## Training Results: RL Performance Visualizations
+
+This section presents comprehensive visualizations from our successful Reinforcement Learning training runs, demonstrating the effectiveness of the grammar-to-RL methodology on the Dakota language. There have been two successful runs: one at 1000 steps (final) and one at 400 steps (initial).
+
+### Run 1: 1000-Step Training (Final)
+
+#### Training Run Details
+
+- **Project**: `dakota-rl-grammar`
+- **Entity**: `christian-cooper-us`
+- **Trainer Run**: [`7nikv4vp`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp) - `dakota-0.6b-rl-trainer`
+- **Orchestrator Run**: [`29hn8w98`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/29hn8w98) - `dakota-0.6b-rl-orchestrator`
+- **Model**: Qwen3-0.6B-Dakota-Grammar-RL
+- **Training Steps**: 1,000 steps (998 completed)
+- **Total Samples**: 256,000 samples processed
+- **Training Duration**: 1.54 hours (5,537 seconds)
+
+#### Key Achievements
+
+- **190% improvement** in overall reward (0.120 → 0.349)
+- **97.9% morphological accuracy** - exceptional performance in affix application
+- **53.5% character preservation** - significant improvement for complex orthography
+- **90% of improvement achieved in first 160 steps** (16% of training) - demonstrating rapid learning
+- **Stable training** with controlled KL divergence throughout
 
 #### Comprehensive Dashboard
-The comprehensive dashboard provides an at-a-glance view of all training metrics, combining reward progression, component performance, loss dynamics, and entropy into a single visualization.
 
-![Comprehensive Dashboard](viz/comprehensive_dashboard.png)
+The comprehensive dashboard provides an at-a-glance view of all training metrics, combining reward progression, component performance, loss dynamics, entropy, KL divergence, and throughput metrics into a single visualization.
+
+![Comprehensive Dashboard](wandb_visualizations/comprehensive_dashboard.png)
+
+**What this shows**: This multi-panel dashboard synthesizes all key training signals. The top panel shows reward progression with milestone markers indicating when 25%, 50%, 75%, and 90% of total improvement was achieved. The component comparison bar chart (middle-left) reveals the differential performance: morphological accuracy reached 97.9% while character preservation achieved 53.5%, reflecting the challenge of preserving Dakota's complex orthography (ć, š, ŋ, ḣ, ṡ, á, é, í, ó, ú) with a 0.6B parameter model. The loss and entropy panels demonstrate stable optimization, while the KL divergence metrics show controlled policy adaptation without catastrophic forgetting.
+
+**View full run**: [Trainer Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp) | [Orchestrator Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/29hn8w98)
 
 #### Reward Progression
-The reward progression visualization demonstrates the learning trajectory over training steps, showing both overall composite reward and individual component breakdown.
 
-![Reward Progression](viz/reward_progression.png)
+The reward progression visualization demonstrates the learning trajectory over 1,000 training steps, showing both overall composite reward and individual component breakdown.
 
-## GRPO for Qualitative Tasks: Significance
+![Reward Progression](wandb_visualizations/reward_progression.png)
 
-**GRPO is effective for linguistic-structure learning when qualitative goals are expressed as verifiable, compositional rewards.**
+**What this shows**: The top panel tracks overall reward progression from 0.120 (step 0) to 0.349 (step 999), representing a 190.1% improvement. Milestone markers highlight key learning efficiency points: 25% improvement at step 49 (4.9% of training), 50% at step 71 (7.1%), 75% at step 109 (10.9%), and 90% at step 160 (16%). The rapid initial learning validates the methodology's efficiency - grammar-based tasks provide dense learning signals compared to general language modeling. The bottom panel shows the component breakdown: Morphological Accuracy (green) achieved near-perfect performance (0.979), Character Preservation (orange) showed substantial improvement from 0.038 to 0.535 (14x increase), while the Overall Composite (blue) reflects the weighted combination including semantic components.
 
-### Why This Matters
+**Interpretation**: The divergence between component performances demonstrates that the model learned morphological patterns more effectively than orthographic preservation. This suggests potential areas for future improvement through specialized character-focused training or larger model capacity. The semantic component (20% weight) likely contributes to the composite score being lower than individual components, indicating multi-objective optimization challenges.
 
-Qualitative tasks like language learning and grammar have traditionally been considered unsuitable for RL due to subjective evaluation and multi-dimensional quality metrics.
+**View full run**: [Orchestrator Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/29hn8w98)
 
-### Our Solution
+#### Training Metrics
 
-By decomposing rewards into **linguistic primitives** (character preservation, morphological accuracy, semantic correctness), we transform qualitative tasks into **quantitatively optimizable objectives**.
+This visualization tracks the core training dynamics: policy loss, model entropy (confidence), KL divergence (policy adaptation), and inference probabilities.
 
-## Intended Use
+![Training Metrics](wandb_visualizations/training_metrics.png)
 
-* Research on GRPO for qualitative linguistic tasks.
-* Dakota language grammar and translation assistance.
-* Demonstrating compositional reward functions in RL pipelines.
-* Low-resource language preservation.
+**What this shows**: 
+- **Policy Loss (top-left)**: Values ranged from approximately 1e-5 to 1e-3, typical of GRPO training with conservative learning rates. The log-scale visualization shows consistent small magnitudes indicating stable gradient-based optimization. The shaded region represents ±1 standard deviation, showing controlled variance throughout training.
+- **Model Entropy (top-right)**: Decreased from 0.93 to 0.21, indicating the model became significantly more confident in its predictions. Low final entropy (0.21) suggests the model is highly confident, which aligns with the high morphological accuracy achieved.
+- **KL Divergence (bottom-left)**: Three metrics track policy adaptation:
+  - **Masked KL**: Increased from near-zero to 9.32, indicating substantial policy adaptation for Dakota-specific masked tokens
+  - **Overall KL**: Moderate increase from 0.001 to 3.83, suggesting controlled policy adaptation
+  - **Unmasked KL**: Remained extremely low (mean: 0.070, final: 0.042), confirming the model preserved general language capabilities while learning Dakota-specific patterns
+- **Inference Probabilities (bottom-right)**: Increased from 0.63 to 0.86, showing the model became more certain in its predictions over time.
 
-## Limitations
+**Interpretation**: The increasing KL divergence trends indicate active learning and policy adaptation, while the relatively moderate values (especially for unmasked tokens) suggest training remained stable. The model successfully specialized for Dakota grammar while preserving general language understanding, validating the training approach.
 
-* Trained on historical dictionary data (1890), which may differ from modern usage.
-* 30B model requires significant compute for inference compared to the 0.6B version.
-* Hallucination risk remains, though reduced by RL fine-tuning.
+**View full run**: [Trainer Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp)
 
-## Ethical Considerations
+#### Performance Metrics
 
-* Trained on historical linguistic data from indigenous language documentation.
-* Should be used respectfully and in consultation with Dakota language communities.
-* Part of language preservation and revitalization efforts.
+Performance metrics track computational efficiency: training throughput (tokens per second) and GPU utilization (Model FLOPS Utilization).
+
+![Performance Metrics](wandb_visualizations/performance_metrics.png)
+
+**What this shows**: 
+- **Training Throughput (left)**: Average throughput of 8,178 tokens/sec with consistent performance throughout training. The red dashed line indicates the average, showing stable training execution without significant throughput variations.
+- **GPU Efficiency - MFU (right)**: Average Model FLOPS Utilization of 2.68%, indicating GPU efficiency. While this may seem low, it's typical for small models (0.6B parameters) where memory bandwidth rather than compute is often the bottleneck. The consistent MFU suggests stable training without memory pressure or compute bottlenecks.
+
+**Interpretation**: The consistent performance metrics validate stable training execution. The throughput remained stable throughout 1,000 steps, processing 256,000 total samples with an average of 256 samples per step. Peak memory usage was 11.5 GiB, well within reasonable bounds for the model size.
+
+**View full run**: [Trainer Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp)
+
+### Run 2: 400-Step Training (Initial Breakthrough)
+
+#### Training Run Details
+
+- **Project**: `dakota-rl-grammar`
+- **Entity**: `christian-cooper-us`
+- **Trainer Run**: [`yut26kcm`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/yut26kcm) - `dakota-0.6b-ledger-test-400-trainer`
+- **Orchestrator Run**: [`1y33h9zr`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/1y33h9zr) - `dakota-0.6b-ledger-test-400-orchestrator`
+- **Model**: Qwen3-0.6B-Dakota-Grammar-RL-400
+- **Training Steps**: 400 steps (all completed)
+- **Total Samples**: 102,400 samples processed
+- **Base Model**: Qwen/Qwen3-0.6B (small instruct model optimized for RL)
+
+#### Key Achievements
+
+- **150.3% improvement** in overall reward (0.128 → 0.321, peak: 0.345)
+- **Rapid learning**: 90% of improvement achieved in first 85 steps (21.25% of training)
+- **Sample efficiency**: 0.000483 improvement per step - demonstrating dense learning signals
+- **Stable training**: Controlled KL divergence with unmasked KL remaining low (mean: 0.094, final: 0.092)
+- **Policy confidence**: Entropy decreased from 0.93 to 0.28, showing increased model certainty
+
+#### Reward Progression (400 Steps)
+
+**What this shows**: The top panel tracks overall reward progression from 0.128 (step 0) to 0.321 (step 399), representing a 150.3% improvement with a peak of 0.345. Milestone markers highlight exceptional learning efficiency: 25% improvement at step 49 (12.25% of training), 50% at step 62 (15.5%), 75% at step 75 (18.75%), and 90% at step 85 (21.25%). This rapid learning demonstrates that grammar-based tasks provide exceptionally dense learning signals - the model achieved 90% of its total improvement in just 21% of training steps.
+
+**Interpretation**: The rapid learning trajectory validates that compositional reward functions enable efficient learning on qualitative linguistic tasks. The milestone markers show consistent acceleration, with each 25% improvement requiring progressively fewer steps, indicating the model is learning to learn more effectively. This demonstrates GRPO's effectiveness beyond coding/math domains - when rewards are properly decomposed into linguistic primitives, qualitative tasks become as learnable as quantitative ones.
+
+**View full run**: [Orchestrator Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/1y33h9zr)
+
+### Run 3: 30B Tinker (Thinking Machines Final)
+
+- **Project / Run ID**: `dakota-rl-grammar` / [`i55d4x26`](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/i55d4x26)
+- **Base Model**: Qwen/Qwen3-30B-A3B-Instruct-2507 (LoRA rank 32)
+- **Steps**: 199 (0–198) on Tinker; checkpoint at `tinker://da1ef918-d67a-5080-b500-dd1256db9ca7:train:0/sampler_weights/final`
+- **Composite reward**: 0.105 → **0.442 peak (step 116)** → 0.317 final
+- **Character preservation**: 0.265 → **0.699 peak (step 185)** → 0.619 final
+- **Affix accuracy**: 0.957 → **1.000** (stayed perfect in later stages)
+- **Exact match**: 0.001 → **0.337 peak (step 116)** → 0.100 final; length penalty rose to 1.0 by step 52
+
+![Comprehensive Dashboard (30B Tinker)](wandb_visualizations/qwen30b/comprehensive_dashboard.png)
+
+### GRPO for Qualitative Tasks: A Significant Breakthrough
+
+**This work demonstrates that GRPO (Group Relative Policy Optimization) can achieve exceptional learning on qualitative linguistic tasks when rewards are properly decomposed into interpretable components.** This is significant because:
+
+#### Why This Matters
+
+GRPO has been successfully applied to **quantitative domains** (code generation, mathematical reasoning) where correctness is verifiable and rewards are clear. However, **qualitative tasks** like language learning, translation, and grammar have traditionally been considered unsuitable for RL because:
+
+1. **Subjective evaluation**: "Is this translation good?" lacks clear criteria
+2. **Multi-dimensional quality**: A translation can be semantically correct but orthographically wrong
+3. **Nuanced feedback**: Binary correct/incorrect fails to capture partial correctness
+
+#### Our Solution: Compositional Rewards
+
+By decomposing rewards into **linguistic primitives** (character preservation, morphological accuracy, semantic correctness), we transform qualitative tasks into **quantitatively optimizable objectives**:
+
+- **Character preservation (40%)**: Verifiable Unicode-level correctness
+- **Morphological accuracy (40%)**: Pattern-matching against grammar rules
+- **Semantic correctness (20%)**: Meaning preservation metrics
+
+This decomposition enables GRPO to work effectively because:
+- **Each component is independently verifiable** (no human judgment needed)
+- **Gradients flow through each component** (model learns what to prioritize)
+- **Multi-dimensional feedback** (model knows exactly what it got wrong)
+
+#### Key Results Demonstrating Significance
+
+1. **150.3% improvement in 400 steps** - Comparable to GRPO performance on coding tasks
+2. **90% improvement in 21% of training** - Demonstrates dense learning signals from compositional rewards
+3. **Low unmasked KL (0.092)** - Model specializes without catastrophic forgetting
+4. **Stable training dynamics** - No reward hacking or instability issues
+
+#### Implications
+
+This work proves that **GRPO is not limited to quantitative domains**. When qualitative tasks are decomposed into verifiable components, they become as learnable as coding or math. This opens new possibilities for:
+
+- **Low-resource language learning** (this work)
+- **Style transfer** (decompose into syntax, semantics, register)
+- **Dialogue systems** (decompose into coherence, relevance, appropriateness)
+- **Creative tasks** (decompose into structure, originality, coherence)
+
+### Methodology Validation
+
+These results validate the core methodological innovation: transforming grammar rules from a 130-year-old historical textbook into verifiable RL environments. The exceptional morphological accuracy (97.9%) provides strong evidence that:
+
+1. **Rule Extraction Quality**: The VLM-based extraction successfully captured testable grammar patterns from historical text, preserving morphological rules in a format suitable for RL training.
+
+2. **Task Generation Effectiveness**: The conversion of 1,036 grammar rules into 5,657 RL tasks created sufficient training signal for the model to learn morphological patterns. The high accuracy suggests the task generation process successfully encoded the grammar rules as verifiable constraints.
+
+3. **Compositional Reward Structure**: The decomposition into character, morphology, and semantic components enabled fine-grained learning. The model learned morphological patterns more effectively than orthographic preservation, suggesting potential areas for future improvement.
+
+4. **Sample Efficiency**: The rapid initial learning (90% improvement in 16% of training) demonstrates the methodology's efficiency for low-resource language scenarios. With only 256,000 samples processed over 1,000 steps, the model achieved substantial improvement.
+
+### Visualization Generation
+
+These visualizations were generated using `scripts/create_rl_visualizations.py`, which loads data from Weights & Biases and creates publication-quality plots. To regenerate with updated data:
+
+```bash
+# For the 1000 step run (default):
+python scripts/create_rl_visualizations.py \
+    --trainer-id 7nikv4vp \
+    --orchestrator-id 29hn8w98 \
+    --project dakota-rl-grammar \
+    --entity christian-cooper-us
+```
+
+All visualization code and data are available in the repository for reproducibility and further analysis.
+
+### Reward Ledger: Transparent Reward Decomposition
+
+We log detailed reward component breakdowns to provide full transparency into how rewards are computed. The reward ledger exposes all internal components, weights, penalties, and multipliers used in reward calculation.
+
+![Reward Ledger Reconciliation](wandb_analysis/reward_ledger.png)
+
+**What this shows**: The reward ledger visualization demonstrates how individual components combine to form the final reward. Each line represents a different component or intermediate computation:
+
+- **Weighted components**: Individual reward components (exact match, character overlap, pattern matching, affix accuracy) multiplied by their respective weights
+- **Composite pre**: Weighted sum of components before applying penalties and multipliers
+- **Length penalty multiplier**: Applied to penalize overly long responses (1.0 = no penalty, <1.0 = penalty)
+- **Difficulty multiplier**: Applied based on task difficulty (1.0 for easy, up to 2.0 for expert)
+- **Composite predicted**: Final computed reward from components
+- **Reward scalar**: Actual reward used in training (should match composite_predicted)
+
+The visualization validates that the logged components correctly reconstruct the final reward, with `composite_diff` tracking any numerical discrepancies.
+
+**Ledger Fields**: The ledger logs raw and normalized component scores, weights, penalties, difficulty multipliers, and intermediate composites. All data is logged to both Weights & Biases (under `ledger/*` namespace) and CSV (`wandb_analysis/reward_ledger.csv`) for offline analysis.
+
+<details><summary>Head/tail of reward_ledger.csv</summary>
+
+```text
+<!-- Auto-generated by scripts/analysis/make_ledger_snippet.py -->
+<!-- Run: python scripts/analysis/make_ledger_snippet.py -->
+```
+
+</details>
+
+**Integration**: The ledger is automatically computed by `DakotaGrammarRubric.score()` and can be accessed via `environment.get_reward_ledger()`. See `dakota_rl_training/utils/LEDGER_INTEGRATION.md` for integration instructions.
+
+---
+
+<div align="center">
+
+
+</div>
+
+<div align="center" style="margin: 2rem 0;">
+
+<img src="Public/Prepositions.jpg" alt="Dakota Prepositions - High Detail Scan" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+
+</div>
+
+<div align="center" style="margin-bottom: 2rem;">
+
+*Exceptional level of detail preserved from the 1890 source material — every character, accent, and linguistic nuance captured with precision*
+
+</div>
+
+<div align="center" style="margin-bottom: 2rem;">
+
+**All images, extractions, and datasets are freely available in this repository:** [data/processed_images](https://github.com/HarleyCoops/Dakota1890/tree/main/data/processed_images)
+
+</div>
+
+
+
+<div align="center">
+
+![Dakota Dictionary Sample](Public/Dictionary.jpeg)
+
+</div>
+
+
+
+<div align="center">
+
+![Overview](Public/overview.jpg)
+
+</div>
+
+`/data` now preserves every artifact of the Dakota Grammar preliminary RL build, from VLM extraction outputs and audit traces to the structured rule corpora and PrimeIntellect-ready task sets, making the full pipeline from 1890 scans to verifiable environments reproducible and inspectable. This snapshot captures the linguistic provenance, reasoning logs, and RL curriculum that power the repository's closed-loop grammar gym.
+
+<div align="center">
+
+# Ask DeepWiki How This Works
+
+**[https://deepwiki.com/HarleyCoops/Dakota1890](https://deepwiki.com/HarleyCoops/Dakota1890)**
+
+</div>
+
+### The Process So Far
+
+We take a 1890 grammar textbook and split it into two complementary components that feed into each other:
+
+![Dakota Grammar Gym Methodology](docs/diagram.png)
+
+### Why This Is Novel
+
+**1. Single-Source Completeness**
+   - One textbook provides BOTH grammar rules AND vocabulary
+   - No need for separate corpora or parallel datasets
+   - Self-contained: grammar validates what dictionary teaches
+
+**2. Grammar as Verifiable RL Environment**
+   - Grammar rules → RL reward functions
+   - Each rule becomes a testable constraint
+   - PrimeIntellect TOPLOC verifies special character preservation
+   - Compositional rewards: characters + affixes + semantics
+
+**3. Bi-Directional Synthesis**
+   - Forward: {dakota:english} from dictionary
+   - Reverse: {english:dakota} synthetic generation
+   - Stoney Nakoda Q&A methodology adapted for full sentences
+   - Grammar gym validates synthetic outputs
+
+**4. Closed-Loop Training**
+   - Dictionary words → Synthetic sentences
+   - Synthetic sentences → Grammar gym (RL verification)
+   - RL feedback → Improved generation
+   - Grammar rules from same source ensure consistency
+
+**5. Historical Text → Modern RL**
+   - 1890s textbook → 2025 distributed RL training
+   - VLM extraction bridges 135-year gap
+   - No OCR training required
+   - Preserves original orthography perfectly
+
+### Key Differentiators from Existing Literature
+
+**Traditional Approaches:**
+- Require parallel corpora (expensive, rare for low-resource languages)
+- Separate grammar documentation and training data
+- Rule-based systems OR data-driven (not both)
+- No verifiable reward functions for morphology
+
+**Our Approach:**
+- Single textbook = complete ecosystem
+- Grammar rules ARE the reward function
+- Synthetic data validated by grammar from same source
+- Verifiable character-level preservation (TOPLOC)
+- Fully reproducible (just needs scanned textbook + VLM API)
+
+### Research Contributions
+
+1. **VLM-Based Historical Text Extraction**
+   - 92-95% accuracy on 130-year-old text
+   - No OCR training required
+   - Preserves complex orthography (ć, š, ŋ, ḣ)
+
+2. **Grammar-to-RL Pipeline**
+   - Linguistic rules → Compositional reward functions
+   - Multi-turn environments for morphology
+   - Curriculum learning (easy → medium → hard)
+
+3. **Closed-Loop Synthesis**
+   - Dictionary pairs → Grammar-validated sentences
+   - Bi-directional generation (dakota ↔ english)
+   - Self-consistency through shared source
+
+4. **Distributed Verification**
+   - TOPLOC for Unicode preservation
+   - Verifiable special character handling
+   - Prevents corruption in untrusted workers
+
+**Potential Impact**: This methodology could be applied to ANY low-resource language with historical grammar documentation, democratizing language preservation through modern AI.
+
+---
+
+## Overview
+
+This project uses modern Vision-Language Models (VLMs) to extract and preserve the Dakota language from historical 1890s grammar texts and dictionaries. Our goal is to create high-quality structured datasets that enable **Reinforcement Learning-based fine-tuning** of open-source language models on Dakota, contributing to Indigenous language revitalization efforts.
+
+**Key Innovation**: We've proven that VLMs can extract complex orthographic features (special characters like ć, š, ŋ) from 130-year-old texts **without requiring traditional OCR training**, achieving 92-95% accuracy through prompt engineering alone. We then transform these extractions into **verifiable RL training tasks** with compositional reward functions that preserve linguistic structure.
+
+**Universal Framework**: While demonstrated on Dakota, this pipeline is **language-agnostic** and can be applied to any low-resource language with historical documentation. The only requirements are: (1) scanned images of source texts, (2) a VLM API key, and (3) definition of the language's special characters. The extraction and RL training infrastructure adapts automatically.
+
+---
+
+## The Language: Dakota
+
+Dakota is a Siouan language historically spoken by the Dakota people across the Great Plains. The language uses a rich orthographic system with special characters to represent sounds unique to Dakota phonology:
+
+- **Special consonants**: ć (c-acute), š (s-caron), ŋ (eng), ḣ (h-dot)
+- **Pitch accents**: á, é, í, ó, ú
+- **Long vowels**: Represented by doubled letters (aa, ii, oo)
+- **Syllable structure**: Marked with hyphens (e.g., é-iŋ-hiŋ-tku)
+
+**Example Dakota text**:
+```
+Wićašta wańŋ éińhińtku nonpa : unkań hakakata kiń he atkuku kiń heéiya
+Man     a    son-his    two   : and   youngest  the  that father-his the said-to-him
+"A man had two sons: and the youngest said to his father"
+```
+
+---
+
+## Complete Pipeline: From 1890 Textbook to RL Training
+
+### Step 1: Source Material Acquisition
+**Input**: Stephen Return Riggs' Dakota Grammar and Dictionary (1890)
+- 665 pages from Internet Archive
+- JP2 format, 2000x3000px scans
+- **Pages 31-92**: Grammar rules (62 pages)
+- **Pages 93-440**: Dictionary entries (~10,000 words)
+
+### Step 2: Image Conversion
+**Script**: `scripts/extraction/convert_all_images.py`
+```bash
+python scripts/extraction/convert_all_images.py
+```
+**Output**: 440 JPEG images in `data/processed_images/`
+
+### Step 3A: Grammar Extraction (RL Gym Foundation)
+**Script**: `scripts/extraction/extract_grammar_pages.py`
+```bash
+python scripts/extraction/extract_grammar_pages.py --pages 31-92 --yes
+```
+**Process**:
+- Claude Sonnet 4.5 extracts linguistic rules
+- Specialized prompt for Dakota orthography
+- Interlinear text parsing
+- Confidence scoring
+
+**Output**: `data/grammar_extracted/`
+- 62 JSON files (1 per page)
+- 1,036 grammar rules extracted
+- 6 categories: morphology, syntax, phonology, conjugation, particles, translation
+
+**Key Innovation**: Each grammar rule becomes a verifiable constraint
+
+### Step 3B: Dictionary Extraction (Vocabulary Source)
+**Script**: `scripts/extraction/extract_dakota_dictionary_v2.py`
+```bash
+python scripts/extraction/extract_dakota_dictionary_v2.py --pages 93-440
+```
+**Output**: `data/dictionary_extracted/`
+- ~10,000 {dakota:english} pairs
+- Etymology and usage notes
+- Part of speech tags
+
+<div align="center" style="margin: 3rem 0;">
+
+<img src="Public/dictionary2.jpg" alt="Dakota Dictionary - Historical Text Detail" style="width: 100%; max-width: 1400px; height: auto; display: block; margin: 0 auto; border-radius: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+
+</div>
+
+### Step 4: Grammar → RL Environment Conversion
+**Script**: `scripts/rl/organize_grammar_for_rl.py`
+```bash
+python scripts/rl/organize_grammar_for_rl.py --input data/grammar_extracted/
+```
+**Process**:
+- Rules → RL task format
+- Positive/negative example generation
+- Difficulty estimation (easy/medium/hard)
+- Affix and special character tagging
+
+**Output**: `data/rl_training_rules/`
+- 1,036 rules organized by category
+- Verification patterns defined
+- Source page tracking
+
+### Step 5: RL Task Generation
+**Script**: `scripts/conversion/convert_rules_to_primeintellect.py`
+```bash
+python scripts/conversion/convert_rules_to_primeintellect.py
+```
+**Process**:
+- 1 rule → 5.5 tasks average
+- Multiple task types per rule:
+  - Morphology application
+  - Translation (dakota → english)
+  - Reverse translation (english → dakota)
+  - Syntax analysis
+  - Pattern identification
+
+**Output**: `dakota_rl_training/datasets/`
+- **5,657 total tasks** from 1,036 rules
+- Curriculum-ready:
+  - Easy: 1,998 tasks
+  - Medium: 2,155 tasks
+  - Hard: 398 tasks
+  - Advanced: 1,106 tasks
+
+### Step 6: Synthetic Dataset Generation
+**Script**: `scripts/conversion/generate_synthetic_dakota.py` (Stoney Nakoda methodology)
+```bash
+python scripts/conversion/generate_synthetic_dakota.py --dictionary data/dictionary_extracted/
+```
+**Process**:
+1. Load dictionary pairs: {dakota:english}
+2. Reverse pairs: {english:dakota}
+3. Generate Q&A variations:
+   - "How do you say X in Dakota?" → dakota_word
+   - "Translate X to English" → english_word
+   - "Use X in a sentence" → full_sentence
+4. **Validate sentences through Grammar Gym**:
+   - Check special characters
+   - Verify affix usage
+   - Confirm grammatical structure
+
+**Output**: `data/synthetic_dataset/`
+- Sentence-level Dakota examples
+- Grammar-validated
+- Q&A format for fine-tuning
+
+### Step 7: RL Environment Setup
+**Script**: `scripts/rl/create_grammar_rl_environment.py`
+```bash
+python scripts/rl/create_grammar_rl_environment.py --rules-dir data/rl_training_rules/
+```
+**Creates**:
+- `DakotaGrammarEnv`: Multi-turn verification
+- `DakotaGrammarRubric`: Compositional rewards
+- Curriculum learning stages
+- TOPLOC verification enabled
+
+**Output**: `data/rl_environment/environment_config.json`
+
+### Step 8: Training on PrimeIntellect
+**Script**: `dakota_rl_training/train.py`
+```bash
+# Install PrimeIntellect
+pip install git+https://github.com/PrimeIntellect-ai/verifiers.git
+pip install git+https://github.com/PrimeIntellect-ai/prime-rl.git
+
+# Launch distributed training
+cd dakota_rl_training
+prime-rl train \
+    --config configs/training_config.yaml \
+    --num-workers 4 \
+    --use-toploc \
+    --wandb-project dakota-rl-grammar
+```
+
+**Training Loop**:
+1. Model generates Dakota text
+2. `DakotaGrammarEnv` verifies against grammar rules
+3. `DakotaGrammarRubric` calculates reward:
+   - Character preservation: 0-1.0
+   - Affix accuracy: 0-1.0
+   - Semantic accuracy: 0-1.0
+   - Composite with difficulty multiplier
+4. GRPO updates policy
+5. Curriculum advances (easy → medium → hard)
+
+**Synthetic Data Integration**:
+- Synthetic sentences used as training examples
+- Grammar gym validates each generation
+- Closed loop: dictionary → sentences → grammar validation
+
+---
+
+## Results & Statistics
+
+### Extraction Quality
+- **Grammar extraction**: 97% average confidence
+- **Dictionary extraction**: 92-95% accuracy
+- **Special character preservation**: 100% (ć, š, ŋ, ḣ preserved exactly)
+
+### Dataset Size
+- **Grammar rules**: 1,036 rules across 6 categories
+- **RL training tasks**: 5,657 tasks
+- **Dictionary entries**: ~10,000 word pairs
+- **Synthetic sentences**: Generated and validated
+
+### Training Metrics (Expected)
+- **Character accuracy**: >90% for all special chars
+- **Affix accuracy**: >85% for common morphology
+- **Translation accuracy**: 85-90% (easy), 65-70% (hard)
+- **Training time**: 8-12 hours on distributed workers
+
+### Cost Analysis
+- **Grammar extraction**: $15.50
+- **Dictionary extraction**: ~$87.50
+- **RL training**: Distributed (free via PrimeIntellect)
+- **Total**: ~$103 for complete system
+
+---
+
+## Key Files & Documentation
+
+### Core Scripts
+
+**Extraction Scripts** (`scripts/extraction/`):
+1. `convert_all_images.py` - JP2 → JPEG conversion
+2. `extract_grammar_pages.py` - Grammar rule extraction
+3. `extract_dakota_dictionary_v2.py` - Dictionary extraction
+
+**Conversion Scripts** (`scripts/conversion/`):
+4. `convert_rules_to_primeintellect.py` - Generate RL tasks
+5. `generate_synthetic_dakota.py` - Synthetic data generation
+6. `convert_extracted_to_chat.py` - Convert to chat format
+
+**RL Scripts** (`scripts/rl/`):
+7. `organize_grammar_for_rl.py` - Rules → RL format
+8. `create_grammar_rl_environment.py` - RL environment setup
+9. `publish_dakota_environment.py` - Publish to PrimeIntellect
+10. `run_complete_grammar_pipeline.py` - Run full pipeline
+
+**Training**:
+11. `dakota_rl_training/train.py` - Launch training
+
+### Documentation
+- `docs/guides/GRAMMAR_RL_PIPELINE.md` - Complete grammar extraction guide
+- `docs/status/PRIMEINTELLECT_INTEGRATION_COMPLETE.md` - RL integration details
+- `docs/status/GRAMMAR_EXTRACTION_COMPLETE.md` - Final extraction results
+- `docs/root/CLAUDE.md` - Project instructions for AI assistants
+- `docs/root/` - Quick reference documentation previously at root
+
+### Output Directories
+- `data/processed_images/` - Converted JPEG images (440 files)
+- `data/grammar_extracted/` - Raw grammar rules (62 pages)
+- `data/rl_training_rules/` - Organized RL rules (1,036 rules)
+- `data/dictionary_extracted/` - Dictionary entries (~10,000)
+- `data/synthetic_dataset/` - Generated sentences
+- `dakota_rl_training/datasets/` - RL training tasks (5,657)
+- `dakota_rl_training/checkpoints/` - Model checkpoints
+
+---
+
+## Technical Architecture
+
+### VLM Extraction Layer
+- **Primary**: Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`)
+- **Alternative**: Qwen3-VL-235B-A22B (with reasoning budget)
+- **Prompt Engineering**: Specialized Dakota orthography preservation
+- **Output**: Structured JSON with confidence scores
+
+### RL Training System
+- **Base Model**: Qwen/Qwen2.5-7B-Instruct
+- **Method**: LoRA fine-tuning (rank 64)
+- **Algorithm**: GRPO (Group Relative Policy Optimization)
+- **Framework**: PrimeIntellect prime-rl
+- **Verification**: TOPLOC for distributed Unicode validation
+
+### Reward Function
+Multi-component compositional rewards:
+```python
+reward = (
+    0.4 * character_preservation +  # Dakota special chars
+    0.4 * affix_accuracy +          # Morphological correctness
+    0.2 * semantic_accuracy         # Translation quality
+) * difficulty_multiplier           # 1.0x - 2.0x
+```
+
+### Curriculum Learning
+Progressive difficulty over 3 stages:
+1. Easy tasks (1,998) → 80% target accuracy
+2. Medium tasks (2,155) → 75% target accuracy
+3. Hard tasks (398) → 70% target accuracy
+
+---
+
+## Research Significance
+
+### Novel Contributions
+
+1. **VLM-Based Historical Text Processing**
+   - First demonstration of VLM special character extraction from 19th-century texts
+   - No OCR training required
+   - 92-95% accuracy on complex orthography
+
+2. **Grammar-to-RL Pipeline**
+   - Linguistic rules → Verifiable reward functions
+   - Compositional rewards for morphology
+   - Multi-turn environments for complex tasks
+
+3. **Closed-Loop Synthesis Method**
+   - Single textbook → Complete training ecosystem
+   - Dictionary + Grammar = Self-validating system
+   - Bi-directional generation with verification
+
+4. **Distributed Verification (TOPLOC)**
+   - First application to Unicode preservation
+   - Prevents character corruption in untrusted workers
+   - Critical for low-resource language training
+
+### Potential Applications
+
+**Immediate**:
+- Dakota language revitalization
+- Educational tools for language learners
+- Grammar-aware translation systems
+
+**Broader Impact**:
+- Template for other Siouan languages (Lakota, Nakota, Stoney)
+- Methodology for any historical grammar textbook
+- Framework for low-resource language preservation
+- Verifiable distributed training for linguistic tasks
+
+### Generalized RL Use Cases
+
+The same closed-loop, rule-to-reward pattern extends beyond low-resource language learning:
+
+- Legal & Compliance: Turn the US Tax Code (text) into a reward function to train models that avoid non-compliant financial advice.
+- Biology: Turn protein folding heuristics papers into reward constraints for generative chemistry.
+- Code Migration: Turn a 1970 COBOL manual into a verification environment to train a Python-to-COBOL translation agent.
+- Industrial Safety (1950s Rail): Build an RL environment that mirrors a postwar railroad engineer's operating rules using the procedures documented in `Public/1959RailRoadCodeRL.pdf`, enforcing safety, dispatch, and signaling constraints in generation.
+
+### Future Research Directions
+
+1. **Multi-Language Extension**
+   - Apply to related languages (Lakota, Stoney Nakoda)
+   - Cross-lingual transfer learning
+   - Comparative Siouan linguistics
+
+2. **Enhanced Synthesis**
+   - Context-aware sentence generation
+   - Dialogue system integration
+   - Cultural knowledge embedding
+
+3. **Evaluation Framework**
+   - Linguistic acceptability metrics
+   - Native speaker validation
+   - Grammaticality benchmarks
+
+4. **Morphological Productivity**
+   - Test generalization to unseen words
+   - Measure affix composition ability
+   - Analyze systematic errors
+
+---
+
+## Requirements
+
+### Software Dependencies
+```bash
+# Core extraction
+pip install anthropic pillow python-dotenv
+
+# RL training
+pip install git+https://github.com/PrimeIntellect-ai/verifiers.git
+pip install git+https://github.com/PrimeIntellect-ai/prime-rl.git
+
+# Optional: Alternative VLM
+pip install openai  # For OpenRouter/Qwen3-VL
+```
+
+### API Keys
+- `ANTHROPIC_API_KEY` - Claude Sonnet 4.5 (required)
+- `OPENROUTER_API_KEY` - Qwen3-VL (optional)
+
+### System Requirements
+- **Extraction**: Python 3.8+, 8GB RAM
+- **Training**: Distributed via PrimeIntellect (or local GPU)
+- **Storage**: ~5GB for images + extractions
+
+---
+
+## Quick Start
+
+### 1. Setup
+```bash
+git clone https://github.com/HarleyCoops/Dakota1890.git
+cd Dakota1890
+python -m pip install -r requirements.txt
+
+# Add API keys to .env
+echo "ANTHROPIC_API_KEY=your_key_here" > .env
+```
+
+### 2. Convert Images
+```bash
+python scripts/extraction/convert_all_images.py
+# Output: 440 images in data/processed_images/
+```
+
+### 3. Extract Grammar
+```bash
+python scripts/extraction/extract_grammar_pages.py --pages 31-92 --yes
+# Output: 1,036 rules in data/grammar_extracted/
+```
+
+### 4. Generate RL Tasks
+```bash
+python scripts/rl/organize_grammar_for_rl.py --input data/grammar_extracted/
+python scripts/conversion/convert_rules_to_primeintellect.py
+# Output: 5,657 tasks in dakota_rl_training/datasets/
+```
+
+### 5. Launch Training
+```bash
+cd dakota_rl_training
+python train.py --config configs/training_config.yaml
+# Follow instructions to install PrimeIntellect and launch
+```
+
+### Curriculum Section
+
+The repo ships with two trainer presets:
+
+- `dakota_rl_training/configs/train_30b.toml` – the lightweight config we use in the quick start above. It has no curriculum logic; every RL step samples uniformly from whatever dataset the environment serves.
+- `dakota_rl_training/configs/train.toml` (and the matching `training_config.yaml` used by `python train.py`) – these contain an explicit `[curriculum]` block with staged datasets (easy → medium → hard) plus target step ranges.
+
+To activate the curriculum when launching through the Prime RL CLI, point each component at the staged configs:
+
+```bash
+uv run rl \
+  --trainer @ ~/dakota-rl-training/configs/train.toml \
+  --orchestrator @ ~/dakota-rl-training/configs/orch.toml \
+  --inference @ ~/dakota-rl-training/configs/infer.toml \
+  ... # other flags (gpu ids, wandb, etc.)
+```
+
+The orchestrator/inference presets that accompany `train.toml` live in the same folder (`orch.toml`, `infer.toml`) and expect the staged datasets described in `training_config.yaml`. If you stick with the `*_30b.toml` files, no curriculum will trigger. In short: choose the config trio you pass to `uv run rl` based on whether you want uniform sampling (`*_30b.toml`) or curriculum-driven sampling (`train.toml` + `orch.toml` + `infer.toml`).
+
+---
 
 ## Citation
 
+If you use this work, please cite:
+
 ```bibtex
-@misc{dakota1890-rl-30b-2025,
-  title={Qwen3-30B-ThinkingMachines-Dakota1890: GRPO for Qualitative Linguistic Tasks},
-  author={Christian H. Cooper},
-  year={2025},
-  url={https://huggingface.co/HarleyCooper/Qwen3-30B-ThinkingMachines-Dakota1890},
-  note={Fine-tuned on Thinking Machines infrastructure}
+@software{dakota_rl_grammar_2025,
+  title = {Dakota Language Preservation Through VLM-Based Grammar Extraction and RL Training},
+  author = {Cooper, Christian H.},
+  year = {2025},
+  url = {https://github.com/[repo]},
+  note = {Novel closed-loop methodology for low-resource language training}
 }
 ```
 
+---
+
 ## Acknowledgments
 
-* **Stephen Return Riggs**: Original Dakota grammar documentation (1890)
-* **Thinking Machines**: Training infrastructure and support
-* **PrimeIntellect**: Distributed RL training framework
-* **Dakota Language Community**: Ongoing language revitalization efforts
+- **Stephen Return Riggs**: Original Dakota grammar documentation (1890)
+- **Internet Archive**: Historical text preservation
+- **PrimeIntellect**: Distributed RL training infrastructure
+- **Anthropic**: Claude Sonnet 4.5 VLM capabilities
+- **Dakota Language Community**: Ongoing language revitalization efforts
+
+---
+
+## License
+
+Code is licensed under **Apache-2.0** (see `LICENSE`). The included historical Dakota text (Riggs, 1890) is in the **public domain**; see `DATA_LICENSE.md` for details and scope.
+
+---
+
+## Contact & Contributions
+
+This methodology is designed to be reproducible and extensible. Contributions welcome for:
+- Additional language applications
+- Improved synthesis methods
+- Enhanced verification functions
+- Evaluation frameworks
+
+See `docs/CONTRIBUTING.md` for guidelines.
