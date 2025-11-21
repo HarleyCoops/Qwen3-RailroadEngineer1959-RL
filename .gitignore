@@ -91,6 +91,7 @@ model_step_*.tar.gz
 *.pth
 outputs/
 tmp_publish/
+data/
 wandb_analysis/published/
 wandb_visualizations/qwen4b/
 wandb_analysis/reward_ledger_qwen4b.csv

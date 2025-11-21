@@ -162,8 +162,6 @@ Performance metrics track computational efficiency: training throughput (tokens 
 
 #### Reward Progression (400 Steps)
 
-**What this shows**: The top panel tracks overall reward progression from 0.128 (step 0) to 0.321 (step 399), representing a 150.3% improvement with a peak of 0.345. Milestone markers highlight exceptional learning efficiency: 25% improvement at step 49 (12.25% of training), 50% at step 62 (15.5%), 75% at step 75 (18.75%), and 90% at step 85 (21.25%). This rapid learning demonstrates that grammar-based tasks provide exceptionally dense learning signals - the model achieved 90% of its total improvement in just 21% of training steps.
-
 **Interpretation**: The rapid learning trajectory suggests that compositional reward functions can support efficient learning on qualitative linguistic tasks. The milestone markers show consistent acceleration, with each 25% improvement requiring progressively fewer steps, indicating the model is learning to learn more effectively. These early signals hint that GRPO could extend beyond coding/math domains when rewards are decomposed into linguistic primitives, but this still needs more confirmation.
 
 **View full run**: [Orchestrator Run](https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/1y33h9zr)
