@@ -85,3 +85,18 @@ downloaded_model*/
 downloaded_model_step_*/
 model_step_*.tar.gz
 *.tar.gz
+*.safetensors
+*.bin
+*.pt
+*.pth
+outputs/
+tmp_publish/
+wandb_analysis/published/
+wandb_visualizations/qwen4b/
+wandb_analysis/reward_ledger_qwen4b.csv
+wandb_analysis/reward_ledger_qwen4b.png
+wandb_analysis/ledger_snippet_qwen4b.txt
+
+# Explicitly ignore the specific large files that caused issues
+wandb_analysis/published/*.tar.gz
+Qwen3-30B-ThinkingMachines-Dakota1890/*.tar.gz
