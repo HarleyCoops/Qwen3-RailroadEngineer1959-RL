@@ -6,7 +6,7 @@
 
 **Qwen3-RailroadEngineer1959-RL** is a state-of-the-art neuro-symbolic project that translates the visual and procedural logic of the 1959 Railroad Instruction Manual into reinforcement learning reward functions. 
 
-This repository has been completely re-architected to leverage the cutting-edge **Gemini 3 Pro** model (`gemini-3-pro-preview`) for all linguistic and multimodal reasoning, coupled with **SAM 3D** for precise visual segmentation and reconstruction.
+
 
 ## The Architecture: Gemini 3 Pro + SAM 3D
 
