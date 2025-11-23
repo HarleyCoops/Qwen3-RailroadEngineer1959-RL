@@ -2,18 +2,18 @@
 
 # Dakota Dictionary Extraction - Complete Guide
 
-## 🎯 Project Goal
+##  Project Goal
 
 Extract structured linguistic data from the **1890 Dakota-English Dictionary** by Stephen Return Riggs to create training datasets for a Dakota language model, following the approach used by @harleycoops for the Stoney Nakoda language.
 
-## 📚 About the Dictionary
+##  About the Dictionary
 
 **Source**: U.S. Geological and Geological Survey of the Rocky Mountain Region, 1890
 **Author**: Stephen Return Riggs
 **Format**: 440 pages, JP2 (JPEG 2000) archival images
 **Structure**: Two-column dictionary with rich linguistic metadata
 
-## 🏗️ Architecture
+## ️ Architecture
 
 ### What Makes This Different
 
@@ -45,7 +45,7 @@ This isn't simple OCR. We're extracting **structured linguistic data** including
 
 5. **Transparency**: Reasoning traces let you verify extraction logic
 
-## 📋 Dictionary Entry Structure
+##  Dictionary Entry Structure
 
 Each entry follows this pattern:
 
@@ -83,7 +83,7 @@ Each entry follows this pattern:
 
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Environment Setup
 
@@ -150,7 +150,7 @@ Datasets are automatically generated after extraction. Find them in `data/traini
 
 - `blackfeet_corpus.txt` - Plain text for language modeling
 
-## 📂 Output Structure
+##  Output Structure
 
 ```
 
@@ -177,7 +177,7 @@ data/
 
 ```
 
-## 🔍 Data Schema
+##  Data Schema
 
 See `blackfeet_extraction/schemas/dictionary_schema.py` for the complete schema.
 
@@ -199,7 +199,7 @@ See `blackfeet_extraction/schemas/dictionary_schema.py` for the complete schema.
 
 - `confidence`: 0.0-1.0 extraction confidence
 
-## 🎓 Training a Language Model
+##  Training a Language Model
 
 ### Translation Model (Dakota ↔ English)
 
@@ -258,7 +258,7 @@ See `blackfeet_extraction/schemas/dictionary_schema.py` for the complete schema.
 
 ```
 
-## ⚙️ Advanced Configuration
+## ️ Advanced Configuration
 
 ### Increase Thinking Budget
 
@@ -293,7 +293,7 @@ good_entries = [
 
 ```
 
-## 📊 Cost Estimation
+##  Cost Estimation
 
 **Per page:**
 
@@ -313,7 +313,7 @@ good_entries = [
 
 **Recommendation**: Start with 10-20 pages, review quality, then batch process.
 
-## 🔬 Quality Assurance
+##  Quality Assurance
 
 ### 1. Review Reasoning Traces
 
@@ -359,7 +359,7 @@ Compare `data/extracted/page_001.json` against the original image. Verify:
 
 - Inflected forms properly separated
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### JP2 Files Won't Open
 
@@ -411,7 +411,7 @@ Compare `data/extracted/page_001.json` against the original image. Verify:
 
 - Process in smaller batches
 
-## 📚 Next Steps After Extraction
+##  Next Steps After Extraction
 
 1. **Clean Dataset**: Remove low-confidence entries, fix obvious errors
 
@@ -425,7 +425,7 @@ Compare `data/extracted/page_001.json` against the original image. Verify:
 
 6. **Deploy**: Build apps/tools using the trained model
 
-## 🌟 Use Cases for Trained Model
+##  Use Cases for Trained Model
 
 - **Translation Tool**: Dakota ↔ English translator
 
@@ -439,25 +439,25 @@ Compare `data/extracted/page_001.json` against the original image. Verify:
 
 - **Cultural Preservation**: Digital archive of language
 
-## 🤝 Following the Stoney Nakoda Approach
+##  Following the Stoney Nakoda Approach
 
 This project mirrors @harleycoops' approach for Stoney Nakoda:
 
-1. ✅ Source historical dictionary materials
+1.  Source historical dictionary materials
 
-2. ✅ Extract structured linguistic data (not just OCR)
+2.  Extract structured linguistic data (not just OCR)
 
-3. ✅ Build comprehensive training datasets
+3.  Build comprehensive training datasets
 
-4. ✅ Include grammatical metadata
+4.  Include grammatical metadata
 
-5. ✅ Focus on quality over quantity
+5.  Focus on quality over quantity
 
-6. ⏳ Train language model (next step)
+6.  Train language model (next step)
 
-7. ⏳ Build educational tools (future)
+7.  Build educational tools (future)
 
-## 📖 References
+##  References
 
 - Original Dictionary: *Dakota-English Dictionary* (1890), Stephen Return Riggs
 
@@ -486,4 +486,4 @@ python extract_dakota_dictionary.py --test
 
 ```
 
-Then review `data/extracted/page_001.json` and decide next steps! 🚀
+Then review `data/extracted/page_001.json` and decide next steps! 

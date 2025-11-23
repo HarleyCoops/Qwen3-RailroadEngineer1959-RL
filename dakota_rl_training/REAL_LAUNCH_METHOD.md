@@ -171,7 +171,7 @@ uv run rl \
 
 ---
 
-## 📋 QUICK REFERENCE: The Command You Need
+##  QUICK REFERENCE: The Command You Need
 
 ```bash
 cd prime-rl
@@ -187,22 +187,22 @@ uv run rl \
 
 ---
 
-## 🎯 What Prime Intellect Web UI Actually Does
+##  What Prime Intellect Web UI Actually Does
 
 The https://app.primeintellect.ai website is for:
-- ✅ **Managing/renting compute instances** (GPUs)
-- ✅ **Viewing environments** (like your `harleycooper/dakota1890`)
-- ✅ **Managing SSH keys** for instances
-- ✅ **Monitoring running instances**
+-  **Managing/renting compute instances** (GPUs)
+-  **Viewing environments** (like your `harleycooper/dakota1890`)
+-  **Managing SSH keys** for instances
+-  **Monitoring running instances**
 
 It does NOT:
-- ❌ Launch training jobs via UI
-- ❌ Have a "Create Training Job" button
-- ❌ Upload config files for training
+-  Launch training jobs via UI
+-  Have a "Create Training Job" button
+-  Upload config files for training
 
 ---
 
-## 🚨 Summary
+##  Summary
 
 **You MUST:**
 1. Provision/rent a Linux instance with GPUs (via Prime Intellect or elsewhere)

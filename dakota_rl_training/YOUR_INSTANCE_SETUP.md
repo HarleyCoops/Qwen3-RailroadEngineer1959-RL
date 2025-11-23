@@ -131,7 +131,7 @@ tail -f ~/dakota_rl_training/outputs/grpo_30b/logs/orchestrator.log
 
 ---
 
-## 💾 About /ephemeral Storage
+##  About /ephemeral Storage
 
 The `/ephemeral` path is likely for temporary storage. You have two options:
 
@@ -161,7 +161,7 @@ uv run rl \
 
 ---
 
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 **If scp fails:**
 - Make sure you're in PowerShell (not CMD)
@@ -181,7 +181,7 @@ uv run rl \
 
 ---
 
-## ✅ Quick Checklist
+##  Quick Checklist
 
 - [ ] SSH'd into instance: `ssh ubuntu@69.19.136.157`
 - [ ] Uploaded 3 config files via scp

@@ -36,7 +36,7 @@ def test_inference():
         device_map="auto" if torch.cuda.is_available() else None,
     )
     
-    print("✅ Model loaded successfully!")
+    print(" Model loaded successfully!")
     print(f"   Device: {next(model.parameters()).device}")
     print(f"   Dtype: {next(model.parameters()).dtype}")
     print()
@@ -120,13 +120,13 @@ def test_inference():
         print()
     
     print("=" * 70)
-    print("✅ Inference test completed!")
+    print(" Inference test completed!")
     print(f"\nModel available at: https://huggingface.co/{model_name}")
 
 if __name__ == "__main__":
     try:
         test_inference()
     except Exception as e:
-        print(f"\n❌ Error during inference: {e}")
+        print(f"\n Error during inference: {e}")
         import traceback
         traceback.print_exc()

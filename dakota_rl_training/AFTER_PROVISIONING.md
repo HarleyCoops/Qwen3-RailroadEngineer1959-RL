@@ -1,6 +1,6 @@
 # IMMEDIATE NEXT STEPS - After Instance Provisions
 
-## ✅ Step-by-Step Checklist
+##  Step-by-Step Checklist
 
 ### 1. Wait for Instance to Be Ready
 - Status should change from "Provisioning" → "Running" → "Ready"
@@ -116,7 +116,7 @@ tail -f ~/dakota_rl_training/outputs/grpo_30b/logs/trainer/rank_0.log
 
 ---
 
-## 📋 Quick Copy-Paste Commands
+##  Quick Copy-Paste Commands
 
 **Once instance is ready, SSH in and run:**
 
@@ -152,22 +152,22 @@ uv run rl \
 
 ---
 
-## 🔍 What to Look For
+##  What to Look For
 
 **Good signs:**
-- ✅ "Initializing model..."
-- ✅ "Starting RL trainer..."
-- ✅ GPU utilization > 0% in `nvidia-smi`
-- ✅ "Step 1/500" messages
+-  "Initializing model..."
+-  "Starting RL trainer..."
+-  GPU utilization > 0% in `nvidia-smi`
+-  "Step 1/500" messages
 
 **Bad signs:**
-- ❌ "Config file not found" → Check file paths
-- ❌ "Out of memory" → Reduce batch_size in orch_30b.toml
-- ❌ "Connection refused" → Check inference server started
+-  "Config file not found" → Check file paths
+-  "Out of memory" → Reduce batch_size in orch_30b.toml
+-  "Connection refused" → Check inference server started
 
 ---
 
-## ⚠️ If Upload Fails
+## ️ If Upload Fails
 
 **Alternative: Copy-paste config contents**
 

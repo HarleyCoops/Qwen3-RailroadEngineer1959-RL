@@ -111,10 +111,10 @@ With **Qwen 235B** (very large model):
 ## What Makes This Useful
 
 This evaluation is a **baseline** - it shows:
-- ✅ How hard the tasks are
-- ✅ What the model struggles with
-- ✅ What training should focus on
-- ✅ How much improvement is possible
+-  How hard the tasks are
+-  What the model struggles with
+-  What training should focus on
+-  How much improvement is possible
 
 After you train your model with **GRPO** (Group Relative Policy Optimization), you'll run the same evaluation again to see:
 - How much better your trained model performs
@@ -127,5 +127,5 @@ After you train your model with **GRPO** (Group Relative Policy Optimization), y
 
 **After training = "How much better did we make it?"**
 
-The difference = your training success! 🎯
+The difference = your training success! 
 

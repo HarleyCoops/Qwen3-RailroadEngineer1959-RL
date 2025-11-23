@@ -1,15 +1,15 @@
 # HuggingFace Space Deployment Checklist
 
-## ✅ Space Bundle Ready
+##  Space Bundle Ready
 
 All files are prepared in `huggingface_space/`:
-- ✅ `app.py` - Gradio interface with proper chat formatting
-- ✅ `requirements.txt` - All dependencies specified
-- ✅ `README.md` - Space description with metadata
+-  `app.py` - Gradio interface with proper chat formatting
+-  `requirements.txt` - All dependencies specified
+-  `README.md` - Space description with metadata
 
-## 📦 What You Need from the Instance
+##  What You Need from the Instance
 
-**Answer: NOTHING!** ✅
+**Answer: NOTHING!** 
 
 The model is already published on HuggingFace Hub at:
 - `HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL`
@@ -18,7 +18,7 @@ The Space will download the model directly from HuggingFace Hub when it builds. 
 
 **You can safely turn off your instance** - everything needed is on HuggingFace Hub.
 
-## 🚀 Deployment Steps
+##  Deployment Steps
 
 ### 1. Create the Space
 
@@ -68,7 +68,7 @@ git push -u origin main
 3. Adjust temperature/max tokens as needed
 4. Share the link!
 
-## 📝 Files Included
+##  Files Included
 
 ```
 huggingface_space/
@@ -77,23 +77,23 @@ huggingface_space/
 └── README.md          # Space description and metadata
 ```
 
-## 🔧 Features
+##  Features
 
-- ✅ Loads model from HuggingFace Hub automatically
-- ✅ Proper chat formatting with system prompts
-- ✅ Repetition penalty to avoid loops
-- ✅ Adjustable temperature and max tokens
-- ✅ Example prompts included
-- ✅ Clean response extraction
+-  Loads model from HuggingFace Hub automatically
+-  Proper chat formatting with system prompts
+-  Repetition penalty to avoid loops
+-  Adjustable temperature and max tokens
+-  Example prompts included
+-  Clean response extraction
 
-## 💡 Tips
+##  Tips
 
 - **First build may take 5-10 minutes** (downloading model + dependencies)
 - **GPU T4 is sufficient** for 0.6B model
 - **If build fails**, check logs in Deploy tab
 - **Model is ~1.5GB**, so download time varies
 
-## 🎉 You're Ready!
+##  You're Ready!
 
 Everything is prepared. Just create the Space and upload the files!
 

@@ -1,6 +1,6 @@
 # Dakota Grammar RL Training - Launch Instructions
 
-## System Ready ✓
+## System Ready 
 
 All components are complete and published to GitHub:
 - Repository: https://github.com/HarleyCoops/Dakota1890
@@ -377,7 +377,7 @@ python evaluate_model.py \
 
 ---
 
-## Ready to Launch! 🚀
+## Ready to Launch! 
 
 All systems are ready. The Dakota Grammar Gym is waiting for training.
 

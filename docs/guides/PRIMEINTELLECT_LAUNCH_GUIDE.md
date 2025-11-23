@@ -2,13 +2,13 @@
 
 ## Current Status
 
-✅ **Training Configuration Complete**
+ **Training Configuration Complete**
 - TOML configs created: [train.toml](dakota_rl_training/configs/train.toml), [infer.toml](dakota_rl_training/configs/infer.toml), [orch.toml](dakota_rl_training/configs/orch.toml)
 - Dataset ready: 5,657 tasks from 1,036 grammar rules
 - Curriculum: Easy (1,998) → Medium (2,155) → Hard (398)
 - PI_API_KEY configured in .env
 
-❌ **Windows Limitation**
+ **Windows Limitation**
 - PrimeIntellect prime-rl requires Linux with NVIDIA GPUs
 - Triton acceleration library not available on Windows
 - Cannot run training locally on this Windows machine
@@ -338,20 +338,20 @@ dakota_rl_training/
 
 ## Summary
 
-**✅ Ready to Launch:**
+** Ready to Launch:**
 - Configuration: Complete
 - Datasets: Generated and validated
 - API Key: Configured
 - Documentation: Complete
 
-**🚀 Recommended Action:**
+** Recommended Action:**
 Go to https://app.primeintellect.ai and launch training with Option 1 (Cloud Platform)
 
-**⏱️ Expected Timeline:**
+**️ Expected Timeline:**
 - Upload configs: 5 minutes
 - Job starts: 10-30 minutes
 - Training completes: 6-11 hours
 - Total: ~7-12 hours
 
-**💰 Estimated Cost:**
+** Estimated Cost:**
 TBD based on PrimeIntellect pricing (typically $1-5/hour for distributed RL training)

@@ -2,15 +2,15 @@ name-template: 'Release ${version}'
 tag-template: 'v$RESOLVED_VERSION'
 change-template: '* $TITLE (#$NUMBER)'
 categories:
-  - title: '🚀 Features'
+  - title: ' Features'
     labels:
       - feature
       - enhancement
-  - title: '🐛 Fixes'
+  - title: ' Fixes'
     labels:
       - fix
       - bug
-  - title: '🧰 Maintenance'
+  - title: ' Maintenance'
     labels:
       - chore
       - dependencies

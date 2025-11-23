@@ -1,18 +1,18 @@
 # Dakota Extraction Pipeline - Status
 
-## ✅ Completed
+##  Completed
 
 1. **Directory Renamed**: `blackfeet_extraction` → `dakota_extraction`
 2. **Image Converter Updated**: Points to `Dictionary/grammardictionar00riggrich_jp2`
 3. **Core Imports Fixed**: All internal imports updated to `dakota_extraction`
 4. **Main Scripts Updated**: `extract_grammar_pages.py`, `extract_dakota_dictionary_v2.py`, `convert_all_images.py`
 
-## 🔄 In Progress
+##  In Progress
 
 ### Image Conversion Pipeline
-- ✅ `dakota_extraction/tools/image_converter.py` - Updated to point to Dictionary directory
-- ✅ Default input directory: `Dictionary/grammardictionar00riggrich_jp2`
-- ✅ Supports 440 JP2 files from 1890 Dakota dictionary
+-  `dakota_extraction/tools/image_converter.py` - Updated to point to Dictionary directory
+-  Default input directory: `Dictionary/grammardictionar00riggrich_jp2`
+-  Supports 440 JP2 files from 1890 Dakota dictionary
 
 ### Extraction Pipeline Flow
 
@@ -36,7 +36,7 @@ data/bilingual_training_set.jsonl
 data/dakota_train.jsonl (SFT ready)
 ```
 
-## 📋 Pages Structure
+##  Pages Structure
 
 - **Pages 1-88**: Grammar rules (for RL training)
   - Extracted by: `extract_grammar_pages.py`
@@ -46,7 +46,7 @@ data/dakota_train.jsonl (SFT ready)
   - Extracted by: `extract_dakota_dictionary_v2.py`
   - Output: `data/extracted/*.json`
 
-## 🚀 Quick Start
+##  Quick Start
 
 1. **Convert Images**:
    ```bash
@@ -76,7 +76,7 @@ data/dakota_train.jsonl (SFT ready)
    python convert_extracted_to_chat.py
    ```
 
-## ⚠️ Remaining Tasks
+## ️ Remaining Tasks
 
 - Update remaining "blackfeet" references in:
   - `dakota_extraction/core/page_processor.py`

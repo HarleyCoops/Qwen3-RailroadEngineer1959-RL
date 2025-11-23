@@ -199,22 +199,22 @@ def generate_insights(run, analysis, history):
     
     # Training completion
     if run.state == 'finished':
-        insights.append("✓ Training completed successfully")
+        insights.append(" Training completed successfully")
     elif run.state == 'crashed':
-        insights.append("⚠ Training crashed")
+        insights.append(" Training crashed")
     elif run.state == 'failed':
-        insights.append("✗ Training failed")
+        insights.append(" Training failed")
     
     # Training duration
     if hasattr(run, 'summary') and '_runtime' in run.summary:
         runtime = run.summary['_runtime']
         hours = runtime / 3600
-        insights.append(f"⏱ Training duration: {hours:.2f} hours ({runtime:.0f} seconds)")
+        insights.append(f" Training duration: {hours:.2f} hours ({runtime:.0f} seconds)")
     
     # Steps completed
     if 'step' in history.columns:
         max_step = history['step'].max()
-        insights.append(f"📊 Steps completed: {max_step:.0f}")
+        insights.append(f" Steps completed: {max_step:.0f}")
     
     # Loss trends
     if analysis and 'loss' in analysis:
@@ -223,28 +223,28 @@ def generate_insights(run, analysis, history):
             initial_loss = analysis['loss']['loss/mean']['initial']
             final_loss = analysis['loss']['loss/mean']['final']
             if loss_trend == 'decreasing':
-                insights.append(f"📉 Loss decreased from {initial_loss:.6f} to {final_loss:.6f}")
+                insights.append(f" Loss decreased from {initial_loss:.6f} to {final_loss:.6f}")
             elif loss_trend == 'increasing':
-                insights.append(f"📈 Loss increased from {initial_loss:.6f} to {final_loss:.6f} (may indicate overfitting)")
+                insights.append(f" Loss increased from {initial_loss:.6f} to {final_loss:.6f} (may indicate overfitting)")
     
     # Performance
     if analysis and 'performance' in analysis:
         if 'perf/throughput' in analysis['performance']:
             throughput = analysis['performance']['perf/throughput']['mean']
-            insights.append(f"⚡ Average throughput: {throughput:.0f} tokens/sec")
+            insights.append(f" Average throughput: {throughput:.0f} tokens/sec")
         
         if 'perf/mfu' in analysis['performance']:
             mfu = analysis['performance']['perf/mfu']['mean']
-            insights.append(f"🔧 Average MFU: {mfu:.2f}%")
+            insights.append(f" Average MFU: {mfu:.2f}%")
     
     # Entropy (model confidence)
     if analysis and 'entropy' in analysis:
         if 'entropy/mean' in analysis['entropy']:
             entropy = analysis['entropy']['entropy/mean']['final']
             if entropy < 0.5:
-                insights.append(f"🎯 Low entropy ({entropy:.4f}) - model is confident")
+                insights.append(f" Low entropy ({entropy:.4f}) - model is confident")
             else:
-                insights.append(f"🤔 Higher entropy ({entropy:.4f}) - model is more uncertain")
+                insights.append(f" Higher entropy ({entropy:.4f}) - model is more uncertain")
     
     # Print insights
     for insight in insights:

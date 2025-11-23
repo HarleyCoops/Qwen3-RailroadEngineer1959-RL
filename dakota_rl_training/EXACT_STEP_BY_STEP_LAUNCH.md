@@ -1,6 +1,6 @@
 # HOW TO LAUNCH RL TRAINING ON PRIME INTELLECT - STEP BY STEP
 
-## ⚠️ IMPORTANT: Exact File Locations
+## ️ IMPORTANT: Exact File Locations
 
 Your config files are here:
 ```
@@ -156,7 +156,7 @@ After launching:
 
 ---
 
-## ❌ IF YOU CAN'T FIND THE UPLOAD BUTTON
+##  IF YOU CAN'T FIND THE UPLOAD BUTTON
 
 ### Try This:
 1. Look for a **"Advanced"** or **"Advanced Settings"** toggle
@@ -175,7 +175,7 @@ See `../docs/root/EXACT_LAUNCH_COMMANDS.md` for SSH instructions.
 
 ---
 
-## 📞 Still Stuck?
+##  Still Stuck?
 
 **Take screenshots:**
 1. Screenshot of the main dashboard
@@ -190,7 +190,7 @@ See `../docs/root/EXACT_LAUNCH_COMMANDS.md` for SSH instructions.
 
 ---
 
-## 🎯 QUICK CHECKLIST
+##  QUICK CHECKLIST
 
 Before clicking Launch:
 - [ ] All 3 config files uploaded (train_30b.toml, orch_30b.toml, infer_30b.toml)

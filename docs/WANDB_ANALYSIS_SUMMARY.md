@@ -10,7 +10,7 @@ This document summarizes what data we can extract from wandb runs after training
 - **Run Name**: `dakota-0.6b-rl-trainer`
 - **Project**: `dakota-rl-grammar`
 - **Entity**: `christian-cooper-us`
-- **State**: Finished ✅
+- **State**: Finished 
 - **URL**: https://wandb.ai/christian-cooper-us/dakota-rl-grammar/runs/7nikv4vp
 
 ## Types of Data Available
@@ -62,19 +62,19 @@ Files saved with the run:
 ## Key Insights from This Run
 
 ### Training Success
-- ✅ Training completed successfully (finished state)
-- ⏱ Training duration: **1.54 hours** (5,537 seconds)
-- 📊 Steps completed: **998 steps** (out of 1000 max)
+-  Training completed successfully (finished state)
+-  Training duration: **1.54 hours** (5,537 seconds)
+-  Steps completed: **998 steps** (out of 1000 max)
 
 ### Training Progress
-- 📉 **Loss decreased** from 0.000009 to -0.000068 (negative loss indicates policy improvement in RL)
-- 🎯 **Entropy decreased** from 0.93 to 0.21 - model became more confident
-- 📈 **Inference probabilities increased** from 0.63 to 0.86 - model is more certain
+-  **Loss decreased** from 0.000009 to -0.000068 (negative loss indicates policy improvement in RL)
+-  **Entropy decreased** from 0.93 to 0.21 - model became more confident
+-  **Inference probabilities increased** from 0.63 to 0.86 - model is more certain
 
 ### Performance
-- ⚡ **Average throughput**: 8,178 tokens/sec
-- 🔧 **Average MFU**: 2.68% (Model FLOPS Utilization - indicates GPU efficiency)
-- 💾 **Peak memory**: 11.5 GiB
+-  **Average throughput**: 8,178 tokens/sec
+-  **Average MFU**: 2.68% (Model FLOPS Utilization - indicates GPU efficiency)
+-  **Peak memory**: 11.5 GiB
 
 ### Model Behavior
 - **Low final entropy** (0.21) indicates the model is confident in its predictions

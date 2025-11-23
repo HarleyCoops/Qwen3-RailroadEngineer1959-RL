@@ -27,14 +27,14 @@ def test_text_inference():
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        print("❌ ANTHROPIC_API_KEY not found in .env file!")
+        print(" ANTHROPIC_API_KEY not found in .env file!")
         return False
 
-    print(f"✓ API Key loaded: {api_key[:20]}...")
+    print(f" API Key loaded: {api_key[:20]}...")
 
     try:
         client = anthropic.Anthropic(api_key=api_key)
-        print("✓ Client initialized")
+        print(" Client initialized")
 
         print("\nSending query: 'Explain what a vision-language model is in one sentence.'")
         response = client.messages.create(
@@ -54,11 +54,11 @@ def test_text_inference():
         print(f"Input tokens: {response.usage.input_tokens}")
         print(f"Output tokens: {response.usage.output_tokens}")
 
-        print("\n✅ Text inference test PASSED!\n")
+        print("\n Text inference test PASSED!\n")
         return True
 
     except Exception as e:
-        print(f"\n❌ Text inference test FAILED: {str(e)}\n")
+        print(f"\n Text inference test FAILED: {str(e)}\n")
         import traceback
         traceback.print_exc()
         return False
@@ -73,11 +73,11 @@ def test_image_inference():
     image_path = Path("Public/Dictionary.jpeg")
 
     if not image_path.exists():
-        print(f"❌ Image not found at {image_path}")
+        print(f" Image not found at {image_path}")
         print("Please ensure the dictionary image exists in the Public/ folder.")
         return False
 
-    print(f"✓ Image found: {image_path}")
+    print(f" Image found: {image_path}")
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
 
@@ -121,11 +121,11 @@ def test_image_inference():
         print(f"Input tokens: {response.usage.input_tokens}")
         print(f"Output tokens: {response.usage.output_tokens}")
 
-        print("\n✅ Image inference test PASSED!\n")
+        print("\n Image inference test PASSED!\n")
         return True
 
     except Exception as e:
-        print(f"\n❌ Image inference test FAILED: {str(e)}\n")
+        print(f"\n Image inference test FAILED: {str(e)}\n")
         import traceback
         traceback.print_exc()
         return False
@@ -154,19 +154,19 @@ def main():
     print("=" * 60)
     print("TEST SUMMARY")
     print("=" * 60)
-    print(f"Text Inference:  {'✅ PASSED' if text_passed else '❌ FAILED'}")
-    print(f"Image Inference: {'✅ PASSED' if image_passed else '❌ FAILED'}")
+    print(f"Text Inference:  {' PASSED' if text_passed else ' FAILED'}")
+    print(f"Image Inference: {' PASSED' if image_passed else ' FAILED'}")
     print("=" * 60)
 
     if text_passed and image_passed:
-        print("\n🎉 All tests passed! You're ready to use the model.")
+        print("\n All tests passed! You're ready to use the model.")
         print("\nNext steps:")
         print("  1. Try modifying the prompts in this script")
         print("  2. Experiment with different max_tokens values")
         print("  3. Analyze your own images")
         print("  4. Run extraction scripts: python test_dakota_claude.py")
     else:
-        print("\n⚠️  Some tests failed. Check the error messages above.")
+        print("\n️  Some tests failed. Check the error messages above.")
         print("\nCommon issues:")
         print("  - Invalid API key (check your .env file)")
         print("  - Network connectivity")

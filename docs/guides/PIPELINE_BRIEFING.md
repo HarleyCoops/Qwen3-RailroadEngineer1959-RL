@@ -5,11 +5,11 @@
 This document demonstrates the complete Dakota language extraction and RL training pipeline, showing where each JSON output is located and how it feeds into the next step. The pipeline transforms historical 1890s grammar texts into modern RL training data.
 
 **Current Status:**
-- ✅ Grammar extraction: Pages 1-92 completed (92 JSON files)
-- ✅ Dictionary extraction: Pages 109-128 completed (20 JSON files - test run)
-- ✅ RL training rules: 1,085 rules organized
-- ✅ Synthetic tasks: 5,657 training tasks generated
-- 🚀 Ready for RL training
+-  Grammar extraction: Pages 1-92 completed (92 JSON files)
+-  Dictionary extraction: Pages 109-128 completed (20 JSON files - test run)
+-  RL training rules: 1,085 rules organized
+-  Synthetic tasks: 5,657 training tasks generated
+-  Ready for RL training
 
 ---
 
@@ -30,11 +30,11 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │  Input: data/processed_images/grammardictionar00riggrich_*.jpg    │
 │  Output: data/grammar_extracted/grammar_page_*.json                │
 │                                                                     │
-│  📁 Output Location: data/grammar_extracted/                       │
+│   Output Location: data/grammar_extracted/                       │
 │     • grammar_page_001.json through grammar_page_092.json           │
 │     • grammar_combined_31-92.json (combined output)                │
 │                                                                     │
-│  📊 Statistics:                                                    │
+│   Statistics:                                                    │
 │     • 92 individual page JSON files                                 │
 │     • ~1,036 grammar rules extracted                                │
 │     • 404 interlinear translation texts                             │
@@ -49,16 +49,16 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │  Input: data/processed_images/grammardictionar00riggrich_*.jpg     │
 │  Output: data/extracted/page_*.json                                │
 │                                                                     │
-│  📁 Output Location: data/extracted/                                │
+│   Output Location: data/extracted/                                │
 │     • page_109.json through page_128.json (test run)               │
 │     • ~350 dictionary entries per page                             │
 │                                                                     │
-│  📊 Statistics:                                                    │
+│   Statistics:                                                    │
 │     • 20 pages extracted (test run)                                │
 │     • ~7,000 dictionary entries total                              │
 │     • Format: {headword, part_of_speech, definition, inflected_forms}│
 │                                                                     │
-│  ⚠️  NOTE: This was a test run on pages 109-128. Full extraction   │
+│  ️  NOTE: This was a test run on pages 109-128. Full extraction   │
 │     of pages 93-440 would yield ~100,000 entries.                  │
 └─────────────────────────────────────────────────────────────────────┘
                                     │
@@ -69,7 +69,7 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │  Input: data/grammar_extracted/grammar_page_*.json                 │
 │  Output: data/rl_training_rules/*.json                             │
 │                                                                     │
-│  📁 Output Location: data/rl_training_rules/                       │
+│   Output Location: data/rl_training_rules/                       │
 │     • all_rl_rules.json (master file with all 1,085 rules)          │
 │     • rules_morphology.json (346 rules)                             │
 │     • rules_syntax.json (182 rules)                                 │
@@ -79,13 +79,13 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │     • rules_particles.json (27 rules)                               │
 │     • rl_rules_summary.txt (statistics)                            │
 │                                                                     │
-│  🔄 Transformation:                                                 │
+│   Transformation:                                                 │
 │     • Extracts grammar rules from page JSON files                  │
 │     • Converts to RL training format with positive/negative examples│
 │     • Estimates difficulty (easy/medium/hard)                       │
 │     • Creates verification patterns                                 │
 │                                                                     │
-│  📊 Statistics:                                                    │
+│   Statistics:                                                    │
 │     • Input: 92 grammar page JSON files                            │
 │     • Output: 1,085 RL training rules                               │
 │     • 1,868 positive examples                                       │
@@ -99,14 +99,14 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │  Input: data/rl_training_rules/all_rl_rules.json                  │
 │  Output: dakota_rl_training/datasets/*.jsonl                       │
 │                                                                     │
-│  📁 Output Location: dakota_rl_training/datasets/                 │
+│   Output Location: dakota_rl_training/datasets/                 │
 │     • grammar_tasks_complete.jsonl (5,657 tasks - all)             │
 │     • grammar_tasks_easy.jsonl (1,998 tasks)                        │
 │     • grammar_tasks_medium.jsonl (2,155 tasks)                      │
 │     • grammar_tasks_hard.jsonl (398 tasks)                          │
 │     • sample_tasks.json (first 10 tasks for inspection)            │
 │                                                                     │
-│  🔄 Transformation:                                                 │
+│   Transformation:                                                 │
 │     • 1 RL rule → ~5.5 training tasks                               │
 │     • Multiple task types per rule:                                 │
 │       - Morphology application tasks                                │
@@ -115,7 +115,7 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │       - Syntax analysis                                             │
 │       - Pattern identification                                      │
 │                                                                     │
-│  📊 Statistics:                                                    │
+│   Statistics:                                                    │
 │     • Input: 1,085 RL training rules                               │
 │     • Output: 5,657 training tasks                                  │
 │     • Task distribution:                                           │
@@ -132,18 +132,18 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │  Input: dakota_rl_training/datasets/*.jsonl                       │
 │  Output: dakota_rl_training/checkpoints/*.pt                       │
 │                                                                     │
-│  📁 Configuration:                                                 │
+│   Configuration:                                                 │
 │     • dakota_rl_training/configs/training_config.yaml              │
 │     • dakota_rl_training/configs/train.toml                        │
 │     • dakota_rl_training/configs/orch.toml                         │
 │     • dakota_rl_training/configs/infer.toml                        │
 │                                                                     │
-│  🎯 Curriculum Learning:                                           │
+│   Curriculum Learning:                                           │
 │     Stage 1: Easy tasks (1,998) → target 80% accuracy              │
 │     Stage 2: Medium tasks (2,155) → target 75% accuracy            │
 │     Stage 3: Hard tasks (398) → target 70% accuracy                │
 │                                                                     │
-│  📊 Expected Output:                                               │
+│   Expected Output:                                               │
 │     • Model checkpoints in dakota_rl_training/checkpoints/         │
 │     • Training logs and metrics                                    │
 │     • Weights & Biases dashboard tracking                          │
@@ -405,19 +405,19 @@ dakota_rl_training/checkpoints/
 
 ## Current Pipeline Status
 
-### ✅ Completed
-1. ✅ Image conversion (all 440 pages)
-2. ✅ Grammar extraction (pages 1-92)
-3. ✅ RL rules organization (1,085 rules)
-4. ✅ Synthetic task generation (5,657 tasks)
+###  Completed
+1.  Image conversion (all 440 pages)
+2.  Grammar extraction (pages 1-92)
+3.  RL rules organization (1,085 rules)
+4.  Synthetic task generation (5,657 tasks)
 
-### 🔄 In Progress / Ready
-5. 🚀 RL training (ready to launch)
+###  In Progress / Ready
+5.  RL training (ready to launch)
 
-### ⏳ Future Work
-6. ⏳ Full dictionary extraction (pages 93-440)
-7. ⏳ Synthetic vocabulary generation
-8. ⏳ Combined grammar + vocabulary training
+###  Future Work
+6.  Full dictionary extraction (pages 93-440)
+7.  Synthetic vocabulary generation
+8.  Combined grammar + vocabulary training
 
 ---
 

@@ -7,10 +7,10 @@ def list_gpu_options():
         # Use token from environment or login
         token = os.getenv("HF_TOKEN") or get_token()
         if not token:
-            print("❌ Please login first: huggingface-cli login")
+            print("Please login first: huggingface-cli login")
             return
 
-        print("🔍 Fetching available instance types...")
+        print("Fetching available instance types...")
         # Note: As of current huggingface_hub, there isn't a direct public API to list 
         # specific pricing/instance availability via the SDK cleanly without a project ID,
         # but we can try to create a dummy config or just list common ones.

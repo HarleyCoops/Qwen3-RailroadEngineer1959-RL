@@ -1,18 +1,18 @@
 # Prime-RL Launch Guide - Quick Reference
 
-## ✅ Setup Complete
+##  Setup Complete
 
 Your Prime-RL training configuration is ready! Here's what's been set up:
 
 ### Config Files (Ready to Use)
-- ✅ `train_30b.toml` - Trainer configuration
-- ✅ `orch_30b.toml` - Orchestrator configuration  
-- ✅ `infer_30b.toml` - Inference configuration
+-  `train_30b.toml` - Trainer configuration
+-  `orch_30b.toml` - Orchestrator configuration  
+-  `infer_30b.toml` - Inference configuration
 
 ### Launch Script
-- ✅ `launch_prime_rl_30b.ps1` - PowerShell launch script
+-  `launch_prime_rl_30b.ps1` - PowerShell launch script
 
-## 🚀 How to Launch
+##  How to Launch
 
 ### Option 1: Prime Intellect Platform (Recommended)
 
@@ -43,7 +43,7 @@ cd dakota_rl_training
 .\launch_prime_rl_30b.ps1
 ```
 
-## 📋 Configuration Summary
+##  Configuration Summary
 
 | Setting | Value |
 |---------|-------|
@@ -58,12 +58,12 @@ cd dakota_rl_training
 | Checkpoint Interval | Every 100 steps |
 | W&B Project | `dakota-rl-grammar` |
 
-## 📊 GPU Allocation (8 A100s)
+##  GPU Allocation (8 A100s)
 
 - **Inference**: GPUs 0-3 (4 GPUs, dp=2, tp=2)
 - **Trainer**: GPUs 4-7 (4 GPUs)
 
-## 📁 Output Structure
+##  Output Structure
 
 ```
 outputs/grpo_30b/
@@ -79,19 +79,19 @@ outputs/grpo_30b/
     └── inference.stdout
 ```
 
-## 🔍 Monitoring
+##  Monitoring
 
 - **W&B Dashboard**: https://wandb.ai/your-username/dakota-rl-grammar
 - **Logs**: `outputs/grpo_30b/logs/`
 - **Prime Intellect Dashboard**: https://app.primeintellect.ai
 
-## ⏱️ Expected Timeline
+## ️ Expected Timeline
 
 - Provisioning: 10-30 min
 - Training: ~90 min
 - Total: ~2 hours
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -101,13 +101,13 @@ outputs/grpo_30b/
 | Out of memory | Reduce `batch_size` in `orch_30b.toml` |
 | CUDA error | `enforce_eager = true` already set in `infer_30b.toml` |
 
-## 📚 Documentation
+##  Documentation
 
 - Full guide: `dakota_rl_training/LAUNCH_PRIME_RL.md`
 - Prime-RL docs: https://github.com/PrimeIntellect-ai/prime-rl/tree/main/docs
 - Environment: https://app.primeintellect.ai/dashboard/environments/harleycooper/dakota1890
 
-## ✅ Pre-Launch Checklist
+##  Pre-Launch Checklist
 
 - [ ] All 3 config files exist
 - [ ] Environment `harleycooper/dakota1890` is published
@@ -118,7 +118,7 @@ outputs/grpo_30b/
 
 ---
 
-**Ready to launch!** 🚀
+**Ready to launch!** 
 
 For detailed instructions, see `LAUNCH_PRIME_RL.md`
 

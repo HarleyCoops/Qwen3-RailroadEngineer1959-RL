@@ -13,12 +13,12 @@ python -m pip install -r requirements.txt
 > OFFLINE=1 pytest -q
 > ```
 
-## 🎯 Important: Dictionary Starts at Page 89
+##  Important: Dictionary Starts at Page 89
 
 **Pages 1-88**: Grammar rules and linguistic notes
 **Pages 89-440**: Dictionary entries (352 pages) ← **This is what we extract**
 
-## 🚀 Run the Test Now
+##  Run the Test Now
 
 ```bash
 python extract_dakota_dictionary_v2.py --test
@@ -38,7 +38,7 @@ This will:
 **Cost**: ~$0.25
 **Time**: ~2 minutes
 
-## 📊 What You'll See
+##  What You'll See
 
 The test will extract entries like this from page 89:
 
@@ -54,7 +54,7 @@ The test will extract entries like this from page 89:
 
 ```
 
-## ✅ Next Steps After Test
+##  Next Steps After Test
 
 ### If extraction looks good
 
@@ -106,7 +106,7 @@ python extract_dakota_dictionary_v2.py --all-dictionary
 
 - Get complete dataset (~10,000+ entries)
 
-## 📁 Where to Find Output
+##  Where to Find Output
 
 After extraction:
 
@@ -133,7 +133,7 @@ data/
 
 ```
 
-## 🔍 Review Checklist
+##  Review Checklist
 
 After test extraction, check:
 
@@ -151,7 +151,7 @@ After test extraction, check:
 
 - `data/reasoning_traces/page_089_reasoning.json` - See how it decided
 
-## 💡 Pro Tips
+##  Pro Tips
 
 1. **Start small**: Test → 12 pages → review → continue
 
@@ -161,7 +161,7 @@ After test extraction, check:
 
 4. **Save grammar pages**: Pages 1-88 useful later (different extraction method)
 
-## 🐛 Common Issues
+##  Common Issues
 
 **"PIL cannot read JP2"**
 
@@ -187,7 +187,7 @@ After test extraction, check:
 
 - Add to `.env` file: `OPENROUTER_API_KEY=your_key_here`
 
-## 📚 What's Next After Extraction
+##  What's Next After Extraction
 
 1. **Review quality**: Spot-check random pages
 
@@ -199,7 +199,7 @@ After test extraction, check:
 
 5. **Deploy**: Build Dakota language tools
 
-## 🎓 Training Recommendations
+##  Training Recommendations
 
 **Small model (good for testing):**
 
@@ -233,7 +233,7 @@ After test extraction, check:
 
 ---
 
-## 🏃 Ready to Start?
+##  Ready to Start?
 
 ```bash
 
@@ -251,4 +251,4 @@ python extract_dakota_dictionary_v2.py --pages 89-100
 
 ```
 
-Good luck! 🚀
+Good luck! 

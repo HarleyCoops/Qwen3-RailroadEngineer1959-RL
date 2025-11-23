@@ -53,7 +53,7 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
     page_context = "This is page from Dakota Grammar and Dictionary. Focus on preserving special characters: ć, š, ŋ, ḣ, ṡ, ó, á"
     prompt = build_dakota_extraction_prompt(page_context)
 
-    print("🔍 Analyzing image with Claude Sonnet 4.5...")
+    print(" Analyzing image with Claude Sonnet 4.5...")
     print("   (Optimized for Dakota character preservation)")
     print()
 
@@ -95,17 +95,17 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
     print(" EXTRACTION RESULTS")
     print("="*80)
 
-    print(f"\n📊 Input tokens: {result['input_tokens']}")
-    print(f"📝 Response tokens: {result['response_tokens']}")
+    print(f"\n Input tokens: {result['input_tokens']}")
+    print(f" Response tokens: {result['response_tokens']}")
     print()
 
     # Try to parse as JSON
     try:
         extracted_data = json.loads(result['text'])
-        print("✅ Successfully parsed JSON output\n")
+        print(" Successfully parsed JSON output\n")
 
         # Check for special characters
-        print("🔤 SPECIAL CHARACTERS DETECTED:")
+        print(" SPECIAL CHARACTERS DETECTED:")
         print("-" * 80)
 
         if 'interlinear_entries' in extracted_data:
@@ -123,7 +123,7 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
 
         # Display sample entries
         if 'interlinear_entries' in extracted_data and extracted_data['interlinear_entries']:
-            print("📖 SAMPLE EXTRACTED ENTRIES:")
+            print(" SAMPLE EXTRACTED ENTRIES:")
             print("-" * 80)
 
             for i, entry in enumerate(extracted_data['interlinear_entries'][:3], 1):
@@ -140,7 +140,7 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
 
         # Display vocabulary items
         if 'vocabulary_items' in extracted_data and extracted_data['vocabulary_items']:
-            print("\n\n📚 VOCABULARY EXTRACTED:")
+            print("\n\n VOCABULARY EXTRACTED:")
             print("-" * 80)
 
             for item in extracted_data['vocabulary_items'][:5]:
@@ -158,10 +158,10 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(extracted_data, f, indent=2, ensure_ascii=False)
 
-        print(f"\n\n💾 Full extraction saved to: {output_path}")
+        print(f"\n\n Full extraction saved to: {output_path}")
 
     except json.JSONDecodeError as e:
-        print("⚠️  Warning: Could not parse as JSON")
+        print("️  Warning: Could not parse as JSON")
         print(f"Error: {e}")
         print("\nRaw response:")
         print("-" * 80)
@@ -173,17 +173,17 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
     print()
 
     # Character validation summary
-    print("🎯 CHARACTER VALIDATION:")
+    print(" CHARACTER VALIDATION:")
     print("-" * 80)
     print("Check the extracted text above for these Dakota characters:")
-    print("  ✓ ć (c-acute)     - in Wićášta, mićú")
-    print("  ✓ š (s-caron)     - in Wićášta, wašte")
-    print("  ✓ ŋ (eng)         - in éiŋhiŋtku, toŋaŋa")
-    print("  ✓ ó (o-acute)     - in Wióni")
-    print("  ✓ á, é, í, ú      - various pitch accents")
-    print("  ✓ ḣ, ṡ            - dotted consonants (if present)")
+    print("   ć (c-acute)     - in Wićášta, mićú")
+    print("   š (s-caron)     - in Wićášta, wašte")
+    print("   ŋ (eng)         - in éiŋhiŋtku, toŋaŋa")
+    print("   ó (o-acute)     - in Wióni")
+    print("   á, é, í, ú      - various pitch accents")
+    print("   ḣ, ṡ            - dotted consonants (if present)")
     print()
-    print("If these characters appear correctly above, the VLM extraction is working! ✅")
+    print("If these characters appear correctly above, the VLM extraction is working! ")
     print()
 
 
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     test_image = Path("data/processed_images/grammardictionar00riggrich_0089.jpg")
 
     if not test_image.exists():
-        print(f"❌ Test image not found: {test_image}")
+        print(f" Test image not found: {test_image}")
         print("\nAvailable images:")
         images_dir = Path("data/processed_images")
         if images_dir.exists():

@@ -4,9 +4,9 @@ Complete step-by-step guide for deploying your Dakota Grammar RL model to Huggin
 
 ## Prerequisites
 
-- ✅ Model published on HuggingFace Hub: `HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL`
-- ✅ HuggingFace account with write access
-- ✅ Files prepared in `huggingface_space/` directory
+-  Model published on HuggingFace Hub: `HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL`
+-  HuggingFace account with write access
+-  Files prepared in `huggingface_space/` directory
 
 ## Quick Start (5 Minutes)
 
@@ -69,12 +69,12 @@ huggingface_space/
 
 ## Features Included
 
-- ✅ Automatic model loading from HuggingFace Hub
-- ✅ Proper chat formatting (matches RL training)
-- ✅ Adjustable generation parameters (temperature, max tokens)
-- ✅ Example prompts
-- ✅ Clean response extraction
-- ✅ Debug mode (set `DEBUG_INFERENCE=true` env var)
+-  Automatic model loading from HuggingFace Hub
+-  Proper chat formatting (matches RL training)
+-  Adjustable generation parameters (temperature, max tokens)
+-  Example prompts
+-  Clean response extraction
+-  Debug mode (set `DEBUG_INFERENCE=true` env var)
 
 ## Updating Your Space
 
@@ -153,5 +153,5 @@ huggingface-cli login
 
 ---
 
-**You're ready to debut your model!** 🚀
+**You're ready to debut your model!** 
 
