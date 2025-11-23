@@ -53,7 +53,8 @@ class DakotaInferenceClient:
         self,
         model_id: str = MODEL_ID,
         endpoint_url: Optional[str] = None,
-        token: Optional[str] = None
+        token: Optional[str] = None,
+        timeout: int = 120
     ):
         """
         Initialize the inference client.
@@ -62,17 +63,22 @@ class DakotaInferenceClient:
             model_id: HuggingFace model ID
             endpoint_url: Optional Inference Endpoint URL (if using dedicated endpoints)
             token: Optional HF token (will use login if not provided)
+            timeout: Client-side timeout in seconds
         """
         self.model_id = model_id
         self.endpoint_url = endpoint_url
+        self.timeout = timeout
         
-        # Get token from environment or use login
+        # Get token from environment or use login (skip login for public endpoints)
         if token:
             self.token = token
         elif os.getenv("HF_TOKEN"):
             self.token = os.getenv("HF_TOKEN")
+        elif endpoint_url:
+            # Public endpoint usage: no token and no interactive login.
+            self.token = None
         else:
-            # Try to login interactively
+            # Try to login interactively (Inference API path)
             print("No HF token found. Attempting to login...")
             try:
                 login()
@@ -85,9 +91,11 @@ class DakotaInferenceClient:
         # Initialize client
         if endpoint_url:
             # Using Inference Endpoint
+            # Note: In newer huggingface_hub, model param accepts endpoint URLs too
             self.client = InferenceClient(
-                endpoint_url=endpoint_url,
-                token=self.token
+                model=endpoint_url,
+                token=self.token,
+                timeout=self.timeout,
             )
             self.mode = "endpoint"
         else:
@@ -97,7 +105,8 @@ class DakotaInferenceClient:
             try:
                 self.client = InferenceClient(
                     model=model_id,
-                    token=self.token
+                    token=self.token,
+                    timeout=self.timeout,
                 )
                 self.mode = "api"
             except Exception as e:
@@ -154,40 +163,24 @@ class DakotaInferenceClient:
         
         try:
             if self.mode == "endpoint":
-                # Inference Endpoint - try chat completion first, fall back to text generation
-                try:
-                    response = self.client.chat_completion(
-                        messages=messages,
-                        max_tokens=max_new_tokens,
-                        temperature=temperature,
-                        top_p=top_p,
-                        repetition_penalty=repetition_penalty,
-                        **kwargs
-                    )
-                    # Extract text from response
-                    if isinstance(response, dict):
-                        generated_text = response.get("choices", [{}])[0].get("message", {}).get("content", "")
-                    else:
-                        generated_text = str(response)
-                except (AttributeError, TypeError):
-                    # Fall back to text generation with formatted prompt
-                    from transformers import AutoTokenizer
-                    tokenizer = AutoTokenizer.from_pretrained(self.model_id, token=self.token)
-                    formatted_prompt = tokenizer.apply_chat_template(
-                        messages,
-                        tokenize=False,
-                        add_generation_prompt=True
-                    )
-                    response = self.client.text_generation(
-                        formatted_prompt,
-                        max_new_tokens=max_new_tokens,
-                        temperature=temperature,
-                        top_p=top_p,
-                        repetition_penalty=repetition_penalty,
-                        return_full_text=False,
-                        **kwargs
-                    )
-                    generated_text = response
+                # Endpoint handlers expose text-generation; build chat prompt via tokenizer and call text_generation.
+                from transformers import AutoTokenizer
+                tokenizer = AutoTokenizer.from_pretrained(self.model_id, token=self.token)
+                formatted_prompt = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True
+                )
+                response = self.client.text_generation(
+                    formatted_prompt,
+                    max_new_tokens=max_new_tokens,
+                    temperature=temperature,
+                    top_p=top_p,
+                    repetition_penalty=repetition_penalty,
+                    return_full_text=False,
+                    **kwargs
+                )
+                generated_text = response
             else:
                 # Inference API - use text generation with chat template
                 # Note: Most models on Inference API use text_generation, not chat_completion
@@ -232,16 +225,22 @@ class DakotaInferenceClient:
             }
         
         except HfHubHTTPError as e:
-            error_msg = f"HTTP Error: {e.message}"
-            if hasattr(e, 'response') and e.response is not None:
+            # Some hub exceptions lack a direct status_code attribute; pull from response when available.
+            resp = getattr(e, "response", None)
+            status_code = getattr(resp, "status_code", None)
+            error_msg = f"HTTP Error: {getattr(e, 'message', str(e))}"
+            if resp is not None:
                 try:
-                    error_detail = e.response.json()
+                    error_detail = resp.json()
                     error_msg += f" | Details: {error_detail}"
-                except:
-                    error_msg += f" | Response: {e.response.text[:200]}"
+                except Exception:
+                    try:
+                        error_msg += f" | Response: {resp.text[:200]}"
+                    except Exception:
+                        pass
             return {
                 "error": error_msg,
-                "status_code": e.status_code,
+                "status_code": status_code,
                 "prompt": prompt
             }
         except Exception as e:
@@ -278,6 +277,11 @@ def main():
         type=str,
         default=None,
         help="Inference Endpoint URL (optional, uses Inference API if not provided)"
+    )
+    parser.add_argument(
+        "--no-login",
+        action="store_true",
+        help="Skip interactive login even if no HF_TOKEN is set (useful for public endpoints)"
     )
     parser.add_argument(
         "--token",
