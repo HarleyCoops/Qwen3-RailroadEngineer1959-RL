@@ -1,6 +1,6 @@
 # Qwen3-RailroadEngineer1959-RL
 
-![Hero Image](heroimage.jpg)
+![Hero Image](Public/heroimage.jpg)
 
 ## Overview
 
@@ -26,9 +26,23 @@ We use **Google's Gemini 3 Pro** (`gemini-3-pro-preview`) as the exclusive cogni
     *   Generates precise "Composite Signal Functions" (e.g., mapping a visual aspect to a procedural constraint).
     *   Translates 1959 operational text into formal logic for RL.
 
+## Project Structure
+
+Mimicking the structure of [Dakota1890](https://github.com/HarleyCoops/Dakota1890), the project is organized as follows:
+
+*   `Public/`: Contains raw assets (PDFs, Images).
+*   `src/`: Source code.
+    *   `extraction/`: Scripts for PDF rasterization, VLM rule extraction, and SAM 3D pipelines.
+    *   `rl/`: Scripts for converting extracted rules into RL environments.
+*   `data/`: Generated artifacts.
+    *   `processed_images/`: Rasterized pages from the Rulebook.
+    *   `definitions_extracted/`: Dictionary of railroad terms.
+    *   `rules_extracted/`: Raw operating rules (JSON).
+    *   `rl_environment_rules/`: Complied logic for the RL agent.
+
 ## The Pipeline
 
-The `pipeline.py` script orchestrates this interaction:
+The `src/extraction/pipeline.py` script orchestrates this interaction:
 
 1.  **Input**: A raw image (e.g., a signal diagram) is loaded.
 2.  **SAM 3D Reconstruction**: The image is passed to SAM 3D (along with a mask) to generate a `.ply` 3D reconstruction.
@@ -54,7 +68,7 @@ The `pipeline.py` script orchestrates this interaction:
     ```
 2.  Run the pipeline:
     ```bash
-    python pipeline.py
+    python src/extraction/pipeline.py
     ```
 
 ## Relation to Dakota1890
