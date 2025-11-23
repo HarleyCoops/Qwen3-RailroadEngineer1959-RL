@@ -6,37 +6,35 @@
 
 **Qwen3-RailroadEngineer1959-RL** is a state-of-the-art neuro-symbolic project that translates the visual and procedural logic of the 1959 Railroad Instruction Manual into reinforcement learning reward functions. 
 
-This repository has been completely re-architected to leverage the cutting-edge **Gemini 3 Pro** model (`gemini-3-pro-preview`) for all linguistic and multimodal reasoning, coupled with **SAM2 (Segment Anything Model 2)** for precise 3D visual segmentation.
+This repository has been completely re-architected to leverage the cutting-edge **Gemini 3 Pro** model (`gemini-3-pro-preview`) for all linguistic and multimodal reasoning, coupled with **SAM 3D** for precise visual segmentation and reconstruction.
 
-## The Architecture: Gemini 3 Pro + SAM2
+## The Architecture: Gemini 3 Pro + SAM 3D
 
 This project abandons legacy extraction methods in favor of a two-model pipeline:
 
-### 1. Visual Processing: SAM2
-We use **Meta's SAM2** (via `sam-3d-objects`) to handle the low-level spatial understanding.
-*   **Role**: "The Eyes"
-*   **Function**: Decomposes complex 2D signal diagrams and interchange layouts into distinct semantic objects.
-*   **Output**: Segmentation masks and 3D point cloud reconstructions of signal structures.
+### 1. 3D Reconstruction: SAM 3D Objects
+We use **Meta's SAM 3D** to lift 2D images into 3D.
+*   **Model**: `SAM 3D Objects`
+*   **Role**: "The Visual Cortex"
+*   **Function**: Decomposes masked 2D signal diagrams into 3D point clouds and meshes, allowing the system to understand "depth" (e.g., a semaphore arm angle relative to the mast).
 
 ### 2. Semantic Reasoning: Gemini 3 Pro
 We use **Google's Gemini 3 Pro** (`gemini-3-pro-preview`) as the exclusive cognitive engine.
 *   **Role**: "The Brain"
 *   **Function**: 
-    *   Takes the raw rulebook pages and SAM2-processed visual contexts.
+    *   Takes the raw rulebook pages and SAM 3D reconstructions.
     *   Generates precise "Composite Signal Functions" (e.g., mapping a visual aspect to a procedural constraint).
     *   Translates 1959 operational text into formal logic for RL.
-*   **Why Gemini 3 Pro?**: chosen for its superior multimodal reasoning capabilities and large context window, essential for cross-referencing definitions, rules, and diagrams across the entire manual.
 
 ## The Pipeline
 
 The `pipeline.py` script orchestrates this interaction:
 
-1.  **Input**: A raw image (e.g., a signal diagram from `1959RailRoadCodeRL.pdf`) is loaded.
-2.  **SAM2 Segmentation**: SAM2 generates segmentation masks to isolate the signal from the background.
-3.  **3D Reconstruction**: The system attempts to lift the 2D signal into a 3D representation to understand spatial depth (e.g., arm positions).
-4.  **Gemini 3 Pro Analysis**: The original image and context are fed into Gemini 3 Pro with the prompt:
+1.  **Input**: A raw image (e.g., a signal diagram) is loaded.
+2.  **SAM 3D Reconstruction**: The image is passed to SAM 3D (along with a mask) to generate a `.ply` 3D reconstruction.
+3.  **Gemini 3 Pro Analysis**: The original image and context are fed into Gemini 3 Pro with the prompt:
     > "Analyze this image... define the 'Indication' and 'Name' of this signal, and write the corresponding Operating Rule as a conditional statement."
-5.  **Output**: A structured, verifiable rule (e.g., `IF Aspect is Red-Over-Green THEN Speed <= 15MPH`).
+4.  **Output**: A structured, verifiable rule.
 
 ## Installation
 
@@ -45,9 +43,8 @@ The `pipeline.py` script orchestrates this interaction:
     ```bash
     pip install -r requirements.txt
     ```
-    *Note: Includes `google-generativeai` for Gemini API access.*
-3.  **SAM2 Setup**:
-    Ensure the `sam-3d-objects` submodule is initialized and model checkpoints are downloaded to `sam-3d-objects/checkpoints/hf/`.
+3.  **Model Setup**:
+    *   **SAM 3D**: Ensure `sam-3d-objects` checkpoints are in `sam-3d-objects/checkpoints/hf/`.
 
 ## Usage
 
