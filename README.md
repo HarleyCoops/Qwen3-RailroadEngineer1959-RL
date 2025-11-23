@@ -10,7 +10,7 @@
 
 ## The Architecture: Gemini 3 Pro + SAM 3D
 
-This project abandons legacy extraction methods in favor of a two-model pipeline:
+This project will augment the rule building extraction of the Dakota1890 project but augment that with 3D visualizations in the learning process. Not sure how this is going to work to be honest, but the math makes sense. 
 
 ### 1. 3D Reconstruction: SAM 3D Objects
 We use **Meta's SAM 3D** to lift 2D images into 3D.
