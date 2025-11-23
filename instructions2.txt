@@ -1,0 +1,66 @@
+[2 tools called]
+
+This is a sophisticated migration because we are moving from a **linguistic domain** (Dakota morphology) to a **procedural/visual domain** (Railroad operations), but the underlying **neuro-symbolic architecture** remains identical.
+
+Here is the sequence for migrating the logic to the Railroad Repo, adapted for the PDF source and Gemini 1.5 Pro ("Gemini 3") model.
+
+### Phase 1: Digitization & Visual Segmentation (The Pre-Processing Layer)
+Unlike the Dakota project where we had discrete JP2 scans, your Railroad source is a monolithic PDF (`Public/1959RailRoadCodeRL.pdf`). We cannot simply "read" the text; we must preserve the **spatial layout** because railroad rules are often multimodal (text + signal diagrams).
+
+1.  **PDF Rasterization**: We must convert the PDF into high-resolution images (300 DPI), not text.
+    *   *Why:* Gemini 1.5 Pro is a native multimodal model. It needs to "see" the precise shape of a semaphore arm or the color position on a signal mast, which text extraction would lose.
+2.  **Page Classification**: We will run a lightweight "triage" pass to sort pages into three buckets:
+    *   **Type A: Definitions** (The "Dictionary" equivalent)
+    *   **Type B: Operating Rules** (The "Grammar" equivalent)
+    *   **Type C: Signal Aspects** (The "Visuals" equivalent)
+
+### Phase 2: VLM-Based Semantic Extraction (The Model Swap)
+We will port the extraction logic from `extract_grammar_pages.py`, replacing the Anthropic client with the Google Generative AI client.
+
+*   **The Prompt Inversion**: We will reuse the *structure* of the Dakota prompt but invert the domain:
+    *   *Dakota Prompt*: "Extract morphological patterns, affixation rules, and phonological constraints."
+    *   *Railroad Prompt*: "Extract procedural constraints, signal aspects, and right-of-way hierarchies."
+
+We will process the three sections in this specific order to build dependencies:
+
+#### Step 2A: The Dictionary (Definitions)
+*   **Source**: The "Definitions" section of the Rulebook.
+*   **Logic**: Just as we extracted `{Dakota: English}` pairs, we will extract `{Term: Semantic Definition}` pairs (e.g., "Fixed Signal", "Yard Limit", "Restricted Speed").
+*   **Output**: A structured vocabulary that defines the *entities* in our RL environment.
+
+#### Step 2B: The Visuals (Composite Signal Functions)
+*   **Source**: The Signal Aspect charts (usually colored diagrams).
+*   **Logic**: This is the most critical "Model Change" adaptation.
+    *   We will prompt Gemini to output a **Composite Function**: `f(visual_aspect) -> indication_name + required_action`.
+    *   *Example Extraction*:
+        *   **Input**: Image of Red light over Green light.
+        *   **Output**: `{"aspect": "Red over Green", "name": "Diverging Clear", "rule": "Proceed on diverging route at prescribed speed..."}`.
+*   **Why this comes before Rules**: The Operating Rules often reference signals by name (e.g., "When signal displays Diverging Clear..."). We need these defined first.
+
+#### Step 2C: The Operating Rules (The Logic Core)
+*   **Source**: The main body of the text (Rules 1–999).
+*   **Logic**: We treat these exactly like Dakota Grammar Rules.
+    *   *Dakota*: "If stem ends in 'a', change to 'e' when followed by..." (Morphological Constraint).
+    *   *Railroad*: "If speed is restricted, do not exceed 15 MPH." (Procedural Constraint).
+*   **Transformation**: We extract these as **Conditional Tuples**: `(Condition, Action, Constraint)`.
+
+### Phase 3: From Text to Reward Functions (The RL Bridge)
+This is where we migrate `organize_grammar_for_rl.py`.
+
+1.  **Rule Atomization**: We break complex paragraphs into atomic verifiable units.
+    *   *Raw*: "Rule 99: When a train stops under circumstances in which it may be overtaken..."
+    *   *Atomic*: `IF train_speed == 0 AND track_status == main_line THEN action == deploy_flagman`.
+2.  **Composite Function Assembly**: We combine the **Visuals** (Step 2B) with the **Rules** (Step 2C).
+    *   The "Reward Function" becomes: `Reward = (Correct_Signal_Identification * 0.4) + (Correct_Speed_Compliance * 0.4) + (Safety_Protocol_Adherence * 0.2)`.
+
+### Summary of the Migration Order
+
+| Sequence | Dakota Equivalent | Railroad Implementation | Output Artifact |
+| :--- | :--- | :--- | :--- |
+| **1** | `convert_all_images.py` | **PDF Rasterization** | `data/processed_images/*.jpg` |
+| **2** | `extract_dakota_dictionary.py` | **Definition Extraction** (Gemini) | `data/definitions.json` |
+| **3** | *N/A (New)* | **Signal Aspect Extraction** (Gemini) | `data/signals.json` |
+| **4** | `extract_grammar_pages.py` | **Operating Rule Extraction** (Gemini) | `data/rules.json` |
+| **5** | `organize_grammar_for_rl.py` | **Constraint Compilation** | `data/rl_environment_rules/` |
+
+We are ready to begin **Phase 1**: Converting the PDF to images so Gemini can see the signals.

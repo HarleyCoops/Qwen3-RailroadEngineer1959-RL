@@ -1,0 +1,4 @@
+we are going to use the SAM2 model to process visual instructions from a 1959 Railroad rule manual. 
+Lets first build the processing pipeline that can process the demo image included
+here is whhat we are waiting on access for https://huggingface.co/facebook/sam-3d-objects lets research how to use it. 
+Then we are going to adopt the rule generation logic of the public repo dakota1890. Lets COPY THAT ExACT PIPELINE - we should only have to mchange the prompts. so we are going to copy effecively the code of the pipeline of the dakota repo and process that on this new dictionary (which we dont have yet)
