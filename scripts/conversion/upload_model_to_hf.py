@@ -26,11 +26,20 @@ def parse_args():
 def main():
     args = parse_args()
     
-    if not args.token:
-        logger.error("No HF_TOKEN found. Please set HF_TOKEN env var or pass --token")
-        return 1
+    # if not args.token:
+    #     logger.error("No HF_TOKEN found. Please set HF_TOKEN env var or pass --token")
+    #     return 1
 
+    # Use token if provided, otherwise let HfApi use cached token
     api = HfApi(token=args.token)
+    
+    # Verify login/token validity
+    try:
+        user = api.whoami()
+        logger.info(f"Logged in as: {user['name']}")
+    except Exception as e:
+        logger.error("Not logged in or invalid token. Please set HF_TOKEN or run 'huggingface-cli login'")
+        return 1
     weights_dir = Path(args.weights_dir)
     
     if not weights_dir.exists():

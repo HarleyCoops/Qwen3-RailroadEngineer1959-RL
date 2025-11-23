@@ -13,7 +13,7 @@ from typing import Optional, Dict, Any
 from huggingface_hub import InferenceClient, login
 from huggingface_hub.utils import HfHubHTTPError
 
-MODEL_ID = "HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL"
+MODEL_ID = "HarleyCooper/Qwen3-30B-Dakota1890"
 
 DEFAULT_SYSTEM_PROMPT = (
     "You are a Dakota language expert specializing in the 1890 Dakota-English Dictionary grammar. "
@@ -263,8 +263,9 @@ def main():
     parser.add_argument(
         "--prompt",
         type=str,
-        required=True,
-        help="Input prompt for the model"
+        required=False,
+        default=None,
+        help="Input prompt for the model (required unless --interactive is set)"
     )
     parser.add_argument(
         "--model-id",
@@ -332,6 +333,10 @@ def main():
     
     args = parser.parse_args()
     
+    # Check prompt requirement
+    if not args.interactive and not args.prompt:
+        parser.error("--prompt is required unless --interactive is set")
+
     # Initialize client
     try:
         client = DakotaInferenceClient(
@@ -345,7 +350,7 @@ def main():
     
     if args.interactive:
         # Interactive mode
-        print(f"🚀 Dakota Grammar RL Inference ({client.mode} mode)")
+        print(f"Dakota Grammar RL Inference ({client.mode} mode)")
         print(f"Model: {args.model_id}")
         print("Enter prompts (type 'quit' to exit, 'clear' to clear history)")
         print("=" * 70)
@@ -368,7 +373,7 @@ def main():
                 )
                 
                 if "error" in result:
-                    print(f"❌ Error: {result['error']}")
+                    print(f"Error: {result['error']}")
                 else:
                     print(f"\nResponse: {result['response']}")
             
@@ -376,7 +381,7 @@ def main():
                 print("\n\nExiting...")
                 break
             except Exception as e:
-                print(f"❌ Error: {e}")
+                print(f"Error: {e}")
         
         return 0
     
@@ -394,7 +399,7 @@ def main():
         print(json.dumps(result, indent=2))
     else:
         if "error" in result:
-            print(f"❌ Error: {result['error']}")
+            print(f"Error: {result['error']}")
             if "error_type" in result:
                 print(f"   Error Type: {result['error_type']}")
             if "traceback" in result and args.verbose:
