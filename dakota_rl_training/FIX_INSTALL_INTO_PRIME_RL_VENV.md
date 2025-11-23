@@ -17,7 +17,7 @@ uv pip install -e ../Dakota1890/environments/dakota_grammar_translation
 uv pip install verifiers>=0.1.7.post0 datasets>=2.18
 
 # Now verify it works
-uv run python -c "import dakota_grammar_translation; print('✓ Environment OK')"
+uv run python -c "import dakota_grammar_translation; print(' Environment OK')"
 ```
 
 ## Why This Works

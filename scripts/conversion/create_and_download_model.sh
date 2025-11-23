@@ -10,7 +10,7 @@ cd "$HOME/dakota_rl_training/outputs/ledger_test_400/weights"
 tar -czf "$OUTPUT_ARCHIVE" step_400/
 
 if [ $? -eq 0 ]; then
-    echo "✓ Archive created: $OUTPUT_ARCHIVE"
+    echo " Archive created: $OUTPUT_ARCHIVE"
     echo ""
     echo "File size:"
     ls -lh "$OUTPUT_ARCHIVE"
@@ -20,7 +20,7 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "Or check Prime Intellect dashboard for file download option"
 else
-    echo "✗ Failed to create archive"
+    echo " Failed to create archive"
     exit 1
 fi
 

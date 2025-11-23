@@ -166,7 +166,7 @@ def main():
         print("  3. Analyze your own images")
         print("  4. Run extraction scripts: python test_dakota_claude.py")
     else:
-        print("\n️  Some tests failed. Check the error messages above.")
+        print("\n  Some tests failed. Check the error messages above.")
         print("\nCommon issues:")
         print("  - Invalid API key (check your .env file)")
         print("  - Network connectivity")

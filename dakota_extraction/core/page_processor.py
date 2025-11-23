@@ -137,9 +137,9 @@ class PageProcessor:
         # Save extraction
         self._save_extraction(page_number, extraction)
 
-        print(f"✓ Extracted {len(extraction.get('entries', []))} entries")
-        print(f"✓ Input tokens: {response.usage.input_tokens}")
-        print(f"✓ Output tokens: {response.usage.output_tokens}")
+        print(f" Extracted {len(extraction.get('entries', []))} entries")
+        print(f" Input tokens: {response.usage.input_tokens}")
+        print(f" Output tokens: {response.usage.output_tokens}")
 
         return extraction
 
@@ -231,7 +231,7 @@ Provide ONLY the JSON output, no other text."""
             return extraction
 
         except json.JSONDecodeError as e:
-            print(f"⚠️  Warning: Could not parse JSON response: {e}")
+            print(f"  Warning: Could not parse JSON response: {e}")
             print(f"Raw response:\n{response_text[:500]}...")
 
             # Return fallback structure
@@ -247,7 +247,7 @@ Provide ONLY the JSON output, no other text."""
         output_path = self.output_dir / f"page_{page_number:03d}.json"
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(extraction, f, indent=2, ensure_ascii=False)
-        print(f"✓ Saved extraction to: {output_path}")
+        print(f" Saved extraction to: {output_path}")
 
     def _encode_image(self, image_path: Path) -> Dict[str, str]:
         """Encode image to base64 for Claude API."""
@@ -281,7 +281,7 @@ Provide ONLY the JSON output, no other text."""
             f.write(f"Page {page_number} - Claude Sonnet 4.5 Response\n")
             f.write(f"{'='*60}\n\n")
             f.write(response_text)
-        print(f"✓ Saved response to: {response_path}")
+        print(f" Saved response to: {response_path}")
 
     def batch_extract(
         self,
@@ -319,7 +319,7 @@ Provide ONLY the JSON output, no other text."""
                 extraction = self.extract_page(image_path, i, max_tokens)
                 extractions.append(extraction)
             except Exception as e:
-                print(f"❌ Error processing page {i}: {e}")
+                print(f" Error processing page {i}: {e}")
                 # Continue with next page
                 continue
 

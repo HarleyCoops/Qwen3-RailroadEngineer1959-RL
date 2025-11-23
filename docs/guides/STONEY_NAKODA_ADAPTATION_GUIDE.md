@@ -22,10 +22,10 @@ Dictionary JSONL → Gemini Q&A Generation → OpenAI Chat Format → OpenAI Fin
 3. `openai_finetune.py` - Runs OpenAI fine-tuning with W&B tracking and HF publishing
 
 **What Dakota Needs:**
-- ✅ Dictionary extraction exists (`data/extracted/*.json`)
-- ❌ **MISSING:** Script to convert extracted dictionary JSON → chat JSONL format
-- ❌ **MISSING:** Actual OpenAI fine-tuning script (Dakota only has placeholder)
-- ❌ **MISSING:** Q&A generation from dictionary (referenced but not implemented)
+-  Dictionary extraction exists (`data/extracted/*.json`)
+-  **MISSING:** Script to convert extracted dictionary JSON → chat JSONL format
+-  **MISSING:** Actual OpenAI fine-tuning script (Dakota only has placeholder)
+-  **MISSING:** Q&A generation from dictionary (referenced but not implemented)
 
 ### Pipeline 2: Grammar → RL (Reinforcement Learning)
 
@@ -43,15 +43,15 @@ Grammar PDF → PDF Ingest (PNG images) → Vision Extraction → Rule Organizat
 6. `environments/stoney_nakoda_translation/` - Verifiers-compatible package
 
 **What Dakota Has:**
-- ✅ Grammar extraction exists (`create_grammar_rl_environment.py`)
-- ✅ Rule organization exists (`organize_grammar_for_rl.py`)
-- ✅ Task generation exists (`convert_rules_to_primeintellect.py`)
-- ⚠️ **PARTIAL:** Environment exists but not properly packaged/integrated
+-  Grammar extraction exists (`create_grammar_rl_environment.py`)
+-  Rule organization exists (`organize_grammar_for_rl.py`)
+-  Task generation exists (`convert_rules_to_primeintellect.py`)
+-  **PARTIAL:** Environment exists but not properly packaged/integrated
 
 **What Dakota Needs:**
-- ❌ **MISSING:** Proper verifiers-compatible environment package (like `stoney_nakoda_translation/`)
-- ❌ **MISSING:** Actual RL trainer implementation (train.py is just a stub)
-- ⚠️ **NEEDS IMPROVEMENT:** Task generation needs multi-step morphology tasks
+-  **MISSING:** Proper verifiers-compatible environment package (like `stoney_nakoda_translation/`)
+-  **MISSING:** Actual RL trainer implementation (train.py is just a stub)
+-  **NEEDS IMPROVEMENT:** Task generation needs multi-step morphology tasks
 
 ## Detailed File-by-File Comparison
 

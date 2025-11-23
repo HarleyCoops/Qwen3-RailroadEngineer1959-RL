@@ -15,7 +15,7 @@ echo ""
 
 # Step 2: Check flash-attn
 echo "2. Checking flash-attn installation..."
-uv run python -c "import flash_attn; print('✓ flash-attn installed')" || echo "✗ flash-attn NOT installed"
+uv run python -c "import flash_attn; print(' flash-attn installed')" || echo " flash-attn NOT installed"
 echo ""
 
 # Step 3: Check SFT trainer debug (requires 1 GPU)

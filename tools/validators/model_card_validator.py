@@ -146,7 +146,7 @@ if __name__ == "__main__":
     print("==============================")
     
     for check, (passed, details) in results.items():
-        status = "✓" if passed else "✗"
+        status = "" if passed else ""
         print(f"\n{check.replace('_', ' ').title()}: {status}")
         if not passed:
             print("Issues found:")

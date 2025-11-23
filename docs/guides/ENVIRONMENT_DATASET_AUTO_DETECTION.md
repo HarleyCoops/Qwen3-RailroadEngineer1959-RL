@@ -47,11 +47,11 @@ The environment now automatically finds the dataset through multiple fallback me
 
 ## Benefits
 
-✅ **Zero Configuration Required**: Environment works out-of-the-box
-✅ **Backward Compatible**: Still supports explicit `dataset_path`
-✅ **URL Support**: Can load datasets from URLs
-✅ **Multiple Fallbacks**: Robust error handling
-✅ **Better User Experience**: No more "dataset not found" errors
+ **Zero Configuration Required**: Environment works out-of-the-box
+ **Backward Compatible**: Still supports explicit `dataset_path`
+ **URL Support**: Can load datasets from URLs
+ **Multiple Fallbacks**: Robust error handling
+ **Better User Experience**: No more "dataset not found" errors
 
 ## Next Steps
 

@@ -4,11 +4,11 @@ This script provides standalone inference for the **Qwen3-0.6B-Dakota-Grammar-RL
 
 ## Features
 
-- ✅ Uses your HF login credentials
-- ✅ Supports both Inference API and Inference Endpoints
-- ✅ Proper chat format matching training
-- ✅ Interactive and single-prompt modes
-- ✅ Configurable generation parameters
+-  Uses your HF login credentials
+-  Supports both Inference API and Inference Endpoints
+-  Proper chat format matching training
+-  Interactive and single-prompt modes
+-  Configurable generation parameters
 
 ## Setup
 
@@ -130,18 +130,18 @@ print(result["response"])
 ## Inference API vs Inference Endpoints
 
 ### Inference API (Default)
-- ✅ Free tier available
-- ✅ No setup required
-- ✅ Shared infrastructure
-- ⚠️ Rate limits may apply
-- ⚠️ Slower for high-throughput
+-  Free tier available
+-  No setup required
+-  Shared infrastructure
+-  Rate limits may apply
+-  Slower for high-throughput
 
 ### Inference Endpoints
-- ✅ Dedicated resources
-- ✅ Better performance
-- ✅ Custom scaling
-- ⚠️ Requires setup and configuration
-- ⚠️ Paid service
+-  Dedicated resources
+-  Better performance
+-  Custom scaling
+-  Requires setup and configuration
+-  Paid service
 
 ## Troubleshooting
 

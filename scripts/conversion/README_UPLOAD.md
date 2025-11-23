@@ -44,9 +44,9 @@ python scripts/conversion/prepare_model_for_hf.py --model-dir "downloaded_model"
 
 Should show:
 ```
-✓ Config: ✓
-✓ Tokenizer: ✓
-✓ Weights: ✓
+ Config: 
+ Tokenizer: 
+ Weights: 
 ```
 
 ### Step 4: Upload to Hugging Face

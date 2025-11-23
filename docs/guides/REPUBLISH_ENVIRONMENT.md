@@ -7,10 +7,10 @@ Version 0.1.0 doesn't handle URLs properly - it treats URLs as file paths, causi
 ## Solution
 
 Version 0.1.1 includes:
-- ✅ URL support (http/https)
-- ✅ Packaged dataset
-- ✅ Automatic fallback to GitHub URL
-- ✅ Zero configuration required
+-  URL support (http/https)
+-  Packaged dataset
+-  Automatic fallback to GitHub URL
+-  Zero configuration required
 
 ## Steps to Republish
 
@@ -56,9 +56,9 @@ prime env info harleycooper/dakota1890@0.1.1
 ## For Users
 
 After republishing, users can:
-- Use environment without any configuration ✅
-- Still provide custom `dataset_path` if needed ✅
-- Use URLs for datasets ✅
+- Use environment without any configuration 
+- Still provide custom `dataset_path` if needed 
+- Use URLs for datasets 
 
 No more "dataset not found" errors!
 

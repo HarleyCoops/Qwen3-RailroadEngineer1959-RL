@@ -1,6 +1,6 @@
 # GPU Requirements for HF Inference
 
-## No Local GPU Needed! ✅
+## No Local GPU Needed! 
 
 The `hf_inference_standalone.py` script uses **Hugging Face's Inference API**, which runs entirely on HF's cloud infrastructure. You don't need a local GPU at all.
 

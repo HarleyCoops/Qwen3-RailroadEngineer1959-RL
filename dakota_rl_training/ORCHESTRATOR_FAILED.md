@@ -2,12 +2,12 @@
 
 ## What Happened
 
-✅ Training started successfully!
+ Training started successfully!
 - Inference process started on GPUs 0-3
 - Trainer process started on GPUs 4-7
 - Model loading began
 
-❌ Orchestrator failed with exit code 1
+ Orchestrator failed with exit code 1
 
 ## Check Orchestrator Logs
 

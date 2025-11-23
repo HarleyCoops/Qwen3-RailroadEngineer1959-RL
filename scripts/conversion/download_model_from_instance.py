@@ -35,10 +35,10 @@ def run_scp(
     print(f"Running: {' '.join(scp_cmd)}")
     try:
         result = subprocess.run(scp_cmd, check=True, capture_output=True, text=True)
-        print(f"✓ Successfully downloaded")
+        print(f" Successfully downloaded")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"✗ SCP failed: {e.stderr}")
+        print(f" SCP failed: {e.stderr}")
         return False
 
 
@@ -85,10 +85,10 @@ def download_model_files(
     
     try:
         result = subprocess.run(scp_cmd, check=True)
-        print(f"\n✓ Successfully downloaded model files to {local_dir}")
+        print(f"\n Successfully downloaded model files to {local_dir}")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"\n✗ Download failed. Error: {e}")
+        print(f"\n Download failed. Error: {e}")
         print("\nTroubleshooting:")
         print("1. Check SSH key path is correct")
         print("2. Verify instance IP/hostname")
@@ -172,7 +172,7 @@ Examples:
                 break
     
     if not ssh_key or not Path(ssh_key).exists():
-        print("⚠ Warning: No SSH key found. You may need to provide --ssh-key")
+        print(" Warning: No SSH key found. You may need to provide --ssh-key")
         print("  Or ensure SSH key is in ~/.ssh/prime_rl_key")
     
     # Download files

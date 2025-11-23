@@ -45,10 +45,10 @@ Get a comprehensive baseline before training to:
 ## Recommended: Start with 500 Examples
 
 **Why 500?**
-- ✅ Good statistical sample (5% of dataset)
-- ✅ Catches most difficulty patterns
-- ✅ Reasonable time/cost
-- ✅ Strong enough baseline for comparison
+-  Good statistical sample (5% of dataset)
+-  Catches most difficulty patterns
+-  Reasonable time/cost
+-  Strong enough baseline for comparison
 
 ## Configuration
 
@@ -132,20 +132,20 @@ Based on your 5-example test:
 
 ## Next Steps Checklist
 
-1. ✅ **Run 500-example eval** (baseline)
-2. ✅ **Analyze results** (identify problem areas)
-3. ✅ **Set up Prime Intellect RL training** (GRPO)
-4. ✅ **Train model** (on full dataset with RL)
-5. ✅ **Re-run eval** (measure improvement)
-6. ✅ **Compare before/after** (prove training worked!)
+1.  **Run 500-example eval** (baseline)
+2.  **Analyze results** (identify problem areas)
+3.  **Set up Prime Intellect RL training** (GRPO)
+4.  **Train model** (on full dataset with RL)
+5.  **Re-run eval** (measure improvement)
+6.  **Compare before/after** (prove training worked!)
 
 ## Key Insight
 
 **You don't need to eval ALL examples** - a well-chosen sample (500-1000 examples) gives you:
-- ✅ Statistical confidence
-- ✅ Representative difficulty distribution  
-- ✅ Reasonable time/cost
-- ✅ Strong baseline for comparison
+-  Statistical confidence
+-  Representative difficulty distribution  
+-  Reasonable time/cost
+-  Strong baseline for comparison
 
 **Focus training on the hardest examples** identified in the eval!
 

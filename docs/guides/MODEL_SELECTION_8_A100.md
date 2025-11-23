@@ -13,11 +13,11 @@
 **Best balance for 8 A100 training:**
 
 ### Why Qwen3-30B-A3B?
-- ✅ **Proven on 8 GPUs**: Used in Prime RL framework configs
-- ✅ **Fits comfortably**: 30B params manageable on 8 A100s
-- ✅ **Good performance**: Strong capabilities for Dakota grammar
-- ✅ **MoE architecture**: 3B active params per token (efficient)
-- ✅ **Fast training**: Reasonable iteration speed
+-  **Proven on 8 GPUs**: Used in Prime RL framework configs
+-  **Fits comfortably**: 30B params manageable on 8 A100s
+-  **Good performance**: Strong capabilities for Dakota grammar
+-  **MoE architecture**: 3B active params per token (efficient)
+-  **Fast training**: Reasonable iteration speed
 
 ### Configuration (from Prime RL examples):
 ```toml
@@ -99,10 +99,10 @@ prime env eval dakota1890 `
 
 | Model | Params | A100 Fit | Training Speed | Performance |
 |-------|--------|----------|----------------|--------------|
-| **Qwen3-30B-A3B** | 30B (3B active) | ✅ 8 A100s | Good | Strong |
-| Qwen3-72B | 72B | ⚠️ Tight | Slower | Better |
-| Qwen2.5-7B | 7B | ✅✅ Easy | Very Fast | Lower |
-| Qwen 235B | 235B (22B active) | ❌ No | N/A | Best (eval only) |
+| **Qwen3-30B-A3B** | 30B (3B active) |  8 A100s | Good | Strong |
+| Qwen3-72B | 72B |  Tight | Slower | Better |
+| Qwen2.5-7B | 7B |  Easy | Very Fast | Lower |
+| Qwen 235B | 235B (22B active) |  No | N/A | Best (eval only) |
 
 ## Key Insight
 
@@ -115,10 +115,10 @@ prime env eval dakota1890 `
 
 ## Next Steps
 
-1. ✅ **Switch eval to Qwen3-30B-A3B** (baseline)
-2. ✅ **Configure training for Qwen3-30B-A3B** (8 A100s)
-3. ✅ **Train with GRPO** (full dataset)
-4. ✅ **Re-eval Qwen3-30B-A3B** (measure improvement)
+1.  **Switch eval to Qwen3-30B-A3B** (baseline)
+2.  **Configure training for Qwen3-30B-A3B** (8 A100s)
+3.  **Train with GRPO** (full dataset)
+4.  **Re-eval Qwen3-30B-A3B** (measure improvement)
 
 This gives you a clean before/after comparison!
 

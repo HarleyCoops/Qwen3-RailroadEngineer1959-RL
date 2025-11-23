@@ -240,17 +240,17 @@ def main():
     # Check prerequisites
     ready, issues = check_prerequisites()
     if not ready:
-        print("\n⚠️  Prerequisites check failed:")
+        print("\n  Prerequisites check failed:")
         for issue in issues:
             print(f"   - {issue}")
         print("\nPlease install missing dependencies and try again.")
         return 1
     
     if args.check_only:
-        print("\n✓ All prerequisites met!")
+        print("\n All prerequisites met!")
         return 0
     
-    print("\n✓ All prerequisites met!")
+    print("\n All prerequisites met!")
     
     # Create config
     config_path = Path(args.config) if args.config else None

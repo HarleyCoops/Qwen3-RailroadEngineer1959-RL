@@ -1,4 +1,4 @@
-# ⚠️ Legacy Directory Notice
+#  Legacy Directory Notice
 
 This folder contains historical Blackfeet examples. Dakota-first workflows now live in the repository root and `dakota_rl_training/`. These files will transition into `examples/` in a future release; current behavior is unchanged.
 

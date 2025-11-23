@@ -186,11 +186,11 @@ pip install anthropic
 
 You're following @harleycoops' Stoney Nakoda approach:
 
-1. ✓ Get historical dictionary (440 JP2 pages)
+1.  Get historical dictionary (440 JP2 pages)
 
-2. ✓ Extract structured linguistic data (not just OCR)
+2.  Extract structured linguistic data (not just OCR)
 
-3. ✓ Build training datasets
+3.  Build training datasets
 
 4. → Train Dakota language model
 

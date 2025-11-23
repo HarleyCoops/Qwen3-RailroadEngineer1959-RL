@@ -24,9 +24,9 @@
 Upload these 3 files from `dakota_rl_training/configs/`:
 
 ```
-✓ orch_30b.toml       (orchestrator config)
-✓ train_30b.toml      (trainer config)
-✓ infer_30b.toml      (inference config)
+ orch_30b.toml       (orchestrator config)
+ train_30b.toml      (trainer config)
+ infer_30b.toml      (inference config)
 ```
 
 **Where to find them:**
@@ -53,9 +53,9 @@ C:\Users\chris\Dakota1890\dakota_rl_training\configs\infer_30b.toml
 
 ## What NOT to Do
 
-❌ **Don't try to run locally on Windows** - It won't work
-❌ **Don't use `launch_grpo_30b.ps1`** - That's for Linux instances
-❌ **Don't use `launch_primeintellect.py`** - API might not work, use web UI instead
+ **Don't try to run locally on Windows** - It won't work
+ **Don't use `launch_grpo_30b.ps1`** - That's for Linux instances
+ **Don't use `launch_primeintellect.py`** - API might not work, use web UI instead
 
 ---
 

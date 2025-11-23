@@ -85,7 +85,7 @@ outputs/grpo_30b/
 - **Logs**: `outputs/grpo_30b/logs/`
 - **Prime Intellect Dashboard**: https://app.primeintellect.ai
 
-## ️ Expected Timeline
+##  Expected Timeline
 
 - Provisioning: 10-30 min
 - Training: ~90 min

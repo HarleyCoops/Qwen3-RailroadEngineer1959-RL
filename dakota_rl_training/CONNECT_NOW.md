@@ -1,8 +1,8 @@
 # Connect to Prime Intellect Instance - Ready to Go!
 
-## Your Setup is Complete ✅
+## Your Setup is Complete 
 
-- **Key File:** `C:\Users\chris\.ssh\DakotaRL3` ✅
+- **Key File:** `C:\Users\chris\.ssh\DakotaRL3` 
 - **Instance IP:** 65.109.75.43
 - **Port:** 1234
 - **User:** root

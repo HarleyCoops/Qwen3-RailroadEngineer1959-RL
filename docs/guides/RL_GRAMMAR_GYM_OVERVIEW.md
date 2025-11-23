@@ -353,12 +353,12 @@ extracted_data = json.loads(response_text)
 
 ### What We Do NOT Use
 
-**❌ Google Cloud Vision API** - Not used anywhere in the codebase
-**❌ Tesseract OCR** - Not used
-**❌ pytesseract** - Not used
-**❌ Any OCR libraries** - Not used
-**❌ Text chunking** - Pages processed whole
-**❌ Preprocessing steps** - Raw images sent directly to Claude
+** Google Cloud Vision API** - Not used anywhere in the codebase
+** Tesseract OCR** - Not used
+** pytesseract** - Not used
+** Any OCR libraries** - Not used
+** Text chunking** - Pages processed whole
+** Preprocessing steps** - Raw images sent directly to Claude
 
 ### Why This Works Better Than Traditional OCR
 

@@ -1,12 +1,12 @@
 # Inference & Deployment Guide for Dakota Grammar RL Model
 
 ## Model Published
-✅ **Model**: [HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL](https://huggingface.co/HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL)
+ **Model**: [HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL](https://huggingface.co/HarleyCooper/Qwen3-0.6B-Dakota-Grammar-RL)
 
 ## Inference Options
 
 ### 1. **HuggingFace Spaces** (Recommended for Public Demo)
-**Status**: ✅ Ready to deploy
+**Status**:  Ready to deploy
 
 I've created a complete HuggingFace Space setup in `huggingface_space/`:
 - `app.py` - Gradio interface
@@ -28,7 +28,7 @@ I've created a complete HuggingFace Space setup in `huggingface_space/`:
 - Free GPU inference (T4) for public spaces
 
 ### 2. **Prime Intellect Infrastructure**
-**Status**: ⚠️ Check availability
+**Status**:  Check availability
 
 Prime Intellect may offer:
 - **Inference endpoints** - Check their dashboard/docs for API endpoints
@@ -41,7 +41,7 @@ Prime Intellect may offer:
 - The `infer_30b.toml` config suggests they have inference infrastructure
 
 ### 3. **Local/Remote Inference**
-**Status**: ✅ Working (needs parameter tuning)
+**Status**:  Working (needs parameter tuning)
 
 The model loads successfully but generation parameters need tuning:
 - Current issue: Repetitive outputs
@@ -65,7 +65,7 @@ outputs = model.generate(
 ```
 
 ### 4. **HuggingFace Inference API**
-**Status**: ✅ Available
+**Status**:  Available
 
 You can use HuggingFace's Inference API:
 ```python
@@ -91,9 +91,9 @@ You can deploy your own API server using:
 
 ## Current Inference Test Results
 
-✅ **Model loads successfully** from HuggingFace Hub
-✅ **Chat format works** with system prompts
-⚠️ **Generation needs tuning** - outputs are repetitive
+ **Model loads successfully** from HuggingFace Hub
+ **Chat format works** with system prompts
+ **Generation needs tuning** - outputs are repetitive
 
 **Next Steps for Better Inference:**
 1. Experiment with `repetition_penalty` parameter

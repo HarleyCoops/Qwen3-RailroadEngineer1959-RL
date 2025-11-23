@@ -13,7 +13,7 @@ Extract structured linguistic data from the **1890 Dakota-English Dictionary** b
 **Format**: 440 pages, JP2 (JPEG 2000) archival images
 **Structure**: Two-column dictionary with rich linguistic metadata
 
-## ️ Architecture
+##  Architecture
 
 ### What Makes This Different
 
@@ -258,7 +258,7 @@ See `blackfeet_extraction/schemas/dictionary_schema.py` for the complete schema.
 
 ```
 
-## ️ Advanced Configuration
+##  Advanced Configuration
 
 ### Increase Thinking Budget
 

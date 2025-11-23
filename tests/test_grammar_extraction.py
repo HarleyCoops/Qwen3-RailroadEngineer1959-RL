@@ -112,9 +112,9 @@ def test_grammar_extraction():
             # Validate rule
             is_valid, issues = validate_grammar_rule(rule)
             if not is_valid:
-                print(f"  ⚠ Validation Issues: {issues}")
+                print(f"   Validation Issues: {issues}")
             else:
-                print("  ✓ Valid")
+                print("   Valid")
 
             # Show first transformation
             if rule.transformations:
@@ -189,9 +189,9 @@ def test_grammar_extraction():
     print("\n" + "="*80)
     print("TEST COMPLETE")
     print("="*80)
-    print("\n✓ Grammar extraction successful!")
-    print(f"✓ Generated {len(all_tasks)} RL training tasks")
-    print(f"✓ Results saved to {output_dir}")
+    print("\n Grammar extraction successful!")
+    print(f" Generated {len(all_tasks)} RL training tasks")
+    print(f" Results saved to {output_dir}")
 
 
 if __name__ == "__main__":

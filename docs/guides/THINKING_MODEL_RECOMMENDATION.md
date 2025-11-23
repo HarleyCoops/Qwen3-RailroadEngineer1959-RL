@@ -20,19 +20,19 @@
 
 1. **Pattern Identification**: "Identify the grammatical pattern: [verb] šni"
    - **Answer**: Simple pattern recognition
-   - **Thinking needed?** ❌ No - straightforward
+   - **Thinking needed?**  No - straightforward
 
 2. **Translation**: "Translate this Dakota sentence: ..."
    - **Answer**: Direct translation
-   - **Thinking needed?** ❌ No - pattern matching
+   - **Thinking needed?**  No - pattern matching
 
 3. **Affix Application**: "Apply this rule: ..."
    - **Answer**: Morphological transformation
-   - **Thinking needed?** ❌ No - rule application
+   - **Thinking needed?**  No - rule application
 
 4. **Morphology**: "What affix creates X?"
    - **Answer**: Direct morphological knowledge
-   - **Thinking needed?** ❌ No - memory recall
+   - **Thinking needed?**  No - memory recall
 
 ### Your System Prompt:
 ```
@@ -45,22 +45,22 @@
 
 ### Why Standard Qwen3-30B-A3B is Better:
 
-✅ **Faster inference**
+ **Faster inference**
 - Direct answers = shorter responses
 - Less token generation = faster training
 - More efficient on 8 A100s
 
-✅ **Better for RL training**
+ **Better for RL training**
 - RL rewards direct, correct answers
 - Thinking traces add noise to reward signal
 - Model learns to be concise and accurate
 
-✅ **Matches task requirements**
+ **Matches task requirements**
 - Tasks want concise answers
 - Not complex reasoning problems
 - Pattern recognition and recall
 
-✅ **More cost-effective**
+ **More cost-effective**
 - Fewer tokens generated
 - Faster training iterations
 - Lower compute costs
@@ -68,23 +68,23 @@
 ### When Thinking Models WOULD Help:
 
 If your tasks were:
-- ❌ Complex multi-step reasoning
-- ❌ Need to show work
-- ❌ Problem-solving with intermediate steps
-- ❌ Mathematical/logical proofs
+-  Complex multi-step reasoning
+-  Need to show work
+-  Problem-solving with intermediate steps
+-  Mathematical/logical proofs
 
 But your tasks are:
-- ✅ Pattern recognition
-- ✅ Direct translation
-- ✅ Rule application
-- ✅ Morphological transformations
+-  Pattern recognition
+-  Direct translation
+-  Rule application
+-  Morphological transformations
 
 **These don't need thinking!**
 
 ## Available Models
 
 ### Standard (Recommended):
-- **Qwen3-30B-A3B** ✅ (what we recommended)
+- **Qwen3-30B-A3B**  (what we recommended)
 - **Qwen3-72B-A3B** (larger alternative)
 - **Qwen2.5-7B-Instruct** (smaller, faster)
 
@@ -108,11 +108,11 @@ But for training, stick with **standard Qwen3-30B-A3B**.
 **Use Qwen3-30B-A3B (standard, NOT thinking)**
 
 **Why:**
-- ✅ Tasks are straightforward (not complex reasoning)
-- ✅ Faster training and inference
-- ✅ Better for RL (direct reward signal)
-- ✅ Matches "concise" requirement
-- ✅ More cost-effective
+-  Tasks are straightforward (not complex reasoning)
+-  Faster training and inference
+-  Better for RL (direct reward signal)
+-  Matches "concise" requirement
+-  More cost-effective
 
 **Don't use thinking model** - it adds overhead without benefit for Dakota grammar tasks!
 

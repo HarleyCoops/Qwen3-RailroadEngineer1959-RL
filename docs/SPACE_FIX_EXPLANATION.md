@@ -82,10 +82,10 @@ formatted_prompt = tokenizer.apply_chat_template(
 ```
 
 **Why This Works**:
-1. ✅ Uses the same message structure as training
-2. ✅ Applies the model's built-in chat template (same one used during training)
-3. ✅ Adds the generation prompt token (`<|im_start|>assistant`)
-4. ✅ Model recognizes the format and generates properly
+1.  Uses the same message structure as training
+2.  Applies the model's built-in chat template (same one used during training)
+3.  Adds the generation prompt token (`<|im_start|>assistant`)
+4.  Model recognizes the format and generates properly
 
 ## How Chat Templates Work
 

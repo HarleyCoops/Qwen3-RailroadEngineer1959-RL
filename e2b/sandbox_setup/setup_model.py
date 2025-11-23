@@ -29,7 +29,7 @@ def setup_model():
         print("[1/5] Importing libraries...")
         from transformers import AutoModelForCausalLM, AutoTokenizer
         import torch
-        print("✓ Libraries imported successfully")
+        print(" Libraries imported successfully")
         
         # Set model configuration
         print("\n[2/5] Configuring model parameters...")
@@ -38,12 +38,12 @@ def setup_model():
         
         # Create cache directory
         Path(cache_dir).mkdir(parents=True, exist_ok=True)
-        print(f"✓ Cache directory: {cache_dir}")
+        print(f" Cache directory: {cache_dir}")
         
         # Check for API key (optional, for private models)
         hf_token = os.getenv('HF_TOKEN')
         if hf_token:
-            print("✓ Hugging Face token detected")
+            print(" Hugging Face token detected")
         else:
             print("ℹ No Hugging Face token (using public model)")
         
@@ -55,7 +55,7 @@ def setup_model():
             token=hf_token,
             trust_remote_code=True
         )
-        print(f"✓ Tokenizer loaded: {model_name}")
+        print(f" Tokenizer loaded: {model_name}")
         
         # Download and load model
         print("\n[4/5] Downloading model (this may take several minutes)...")
@@ -84,7 +84,7 @@ def setup_model():
             model_name,
             **model_kwargs
         )
-        print(f"✓ Model loaded: {model_name}")
+        print(f" Model loaded: {model_name}")
         
         # Verify model setup
         print("\n[5/5] Verifying model setup...")
@@ -97,7 +97,7 @@ def setup_model():
         with torch.no_grad():
             outputs = model(**inputs)
         
-        print("✓ Model verification successful")
+        print(" Model verification successful")
         
         # Save model info
         info_file = Path("/root/model_info.txt")
@@ -121,13 +121,13 @@ def setup_model():
         return 0
         
     except ImportError as e:
-        print(f"\n✗ Import Error: {e}")
+        print(f"\n Import Error: {e}")
         print("\nMake sure all required packages are installed:")
         print("  pip install -r /root/requirements.txt")
         return 1
         
     except Exception as e:
-        print(f"\n✗ Setup Error: {e}")
+        print(f"\n Setup Error: {e}")
         import traceback
         traceback.print_exc()
         return 1
@@ -142,7 +142,7 @@ def check_gpu():
         print("\nGPU Information:")
         print("-" * 70)
         if torch.cuda.is_available():
-            print(f"✓ CUDA available")
+            print(f" CUDA available")
             print(f"  Device count: {torch.cuda.device_count()}")
             print(f"  Current device: {torch.cuda.current_device()}")
             print(f"  Device name: {torch.cuda.get_device_name(0)}")

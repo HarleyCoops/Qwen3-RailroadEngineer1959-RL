@@ -105,14 +105,14 @@ python scripts/conversion/prepare_model_for_hf.py --model-dir "path/to/your/weig
 
 Expected output:
 ```
-✓ Config: ✓
-✓ Tokenizer: ✓
-✓ Weights: ✓
+ Config: 
+ Tokenizer: 
+ Weights: 
 
 Weight files found:
   - model.safetensors (1234.5 MB)
 
-✓ All required files found!
+ All required files found!
 ```
 
 ## Step 3: Convert Checkpoint (If Needed)

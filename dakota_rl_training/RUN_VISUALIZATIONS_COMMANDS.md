@@ -43,12 +43,12 @@ python scripts/analysis/create_wandb_report.py `
 ## Expected Outputs
 
 After running, you should have:
-- ✅ `wandb_visualizations/reward_progression.png`
-- ✅ `wandb_visualizations/training_metrics.png`
-- ✅ `wandb_visualizations/performance_metrics.png`
-- ✅ `wandb_visualizations/comprehensive_dashboard.png`
-- ✅ `wandb_analysis/reward_ledger.png` (if CSV exists)
-- ✅ `wandb_analysis/reward_ledger_head_tail.md` (if CSV exists)
+-  `wandb_visualizations/reward_progression.png`
+-  `wandb_visualizations/training_metrics.png`
+-  `wandb_visualizations/performance_metrics.png`
+-  `wandb_visualizations/comprehensive_dashboard.png`
+-  `wandb_analysis/reward_ledger.png` (if CSV exists)
+-  `wandb_analysis/reward_ledger_head_tail.md` (if CSV exists)
 
 ## Next Steps
 

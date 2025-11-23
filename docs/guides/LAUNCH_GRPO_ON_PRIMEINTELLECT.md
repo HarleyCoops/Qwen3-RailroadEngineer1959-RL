@@ -151,19 +151,19 @@ GPUs 4-7: Trainer (4 GPUs, FSDP2)
 ## Summary
 
 **What you need to do:**
-1. ✅ Configs are ready (already created)
-2. ✅ Go to https://app.primeintellect.ai
-3. ✅ Create new RL training job
-4. ✅ Select 8x A100 instance
-5. ✅ Upload 3 config files (orch_30b.toml, train_30b.toml, infer_30b.toml)
-6. ✅ Set model: qwen/qwen3-30b-a3b-instruct-2507
-7. ✅ Set environment: harleycooper/dakota1890
-8. ✅ Launch training
+1.  Configs are ready (already created)
+2.  Go to https://app.primeintellect.ai
+3.  Create new RL training job
+4.  Select 8x A100 instance
+5.  Upload 3 config files (orch_30b.toml, train_30b.toml, infer_30b.toml)
+6.  Set model: qwen/qwen3-30b-a3b-instruct-2507
+7.  Set environment: harleycooper/dakota1890
+8.  Launch training
 
 **You don't need to:**
-- ❌ Run commands locally (Windows can't run prime-rl)
-- ❌ Set up Linux VM
-- ❌ Install dependencies locally
+-  Run commands locally (Windows can't run prime-rl)
+-  Set up Linux VM
+-  Install dependencies locally
 
 Just upload the configs to Prime Intellect's platform!
 

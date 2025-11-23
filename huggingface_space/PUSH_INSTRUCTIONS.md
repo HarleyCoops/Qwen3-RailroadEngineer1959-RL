@@ -40,9 +40,9 @@ git push
 
 ## Files Ready to Push
 
-✅ `app.py` - Updated with error handling
-✅ `README.md` - Updated with new metadata
-✅ `requirements.txt` - Dependencies
+ `app.py` - Updated with error handling
+ `README.md` - Updated with new metadata
+ `requirements.txt` - Dependencies
 
 All files are in: `C:\Users\chris\Dakota1890\huggingface_space\`
 

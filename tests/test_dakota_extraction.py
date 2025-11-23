@@ -161,7 +161,7 @@ def test_dakota_extraction(image_path: Path, max_tokens: int = 16000):
         print(f"\n\n Full extraction saved to: {output_path}")
 
     except json.JSONDecodeError as e:
-        print("️  Warning: Could not parse as JSON")
+        print("  Warning: Could not parse as JSON")
         print(f"Error: {e}")
         print("\nRaw response:")
         print("-" * 80)

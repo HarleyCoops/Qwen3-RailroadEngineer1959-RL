@@ -144,11 +144,11 @@ Once setup is complete, use the same launch command as above.
 
 ## Advantages
 
-✅ **Simple**: Just SSH and run commands
-✅ **No platform complexity**: Direct Linux access
-✅ **Full control**: You control everything
-✅ **Easy debugging**: Standard Linux environment
-✅ **Works with Prime-RL**: No platform-specific issues
+ **Simple**: Just SSH and run commands
+ **No platform complexity**: Direct Linux access
+ **Full control**: You control everything
+ **Easy debugging**: Standard Linux environment
+ **Works with Prime-RL**: No platform-specific issues
 
 ---
 

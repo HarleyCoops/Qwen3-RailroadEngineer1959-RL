@@ -26,10 +26,10 @@ python scripts/push_space.py
 ```
 
 This will automatically:
-- ✅ Upload `app.py`
-- ✅ Upload `requirements.txt`
-- ✅ Upload `README.md`
-- ✅ Trigger Space rebuild
+-  Upload `app.py`
+-  Upload `requirements.txt`
+-  Upload `README.md`
+-  Trigger Space rebuild
 
 ### Custom Space Name
 

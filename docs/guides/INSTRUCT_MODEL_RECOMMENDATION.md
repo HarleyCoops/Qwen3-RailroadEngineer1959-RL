@@ -12,13 +12,13 @@ However, **Qwen3-30B-A3B may already be instruction-tuned** (Qwen3 series often 
 - Raw pre-trained models
 - Poor at following instructions
 - Don't understand chat format
-- ❌ **Not suitable for RL training**
+-  **Not suitable for RL training**
 
 ### Instruct Models (Instruction-Tuned)
 - Fine-tuned on instruction-following data
 - Understand prompts and chat format
 - Better baseline performance
-- ✅ **Essential for RL training**
+-  **Essential for RL training**
 
 ## For Qwen3-30B-A3B
 
@@ -39,7 +39,7 @@ However, **Qwen3-30B-A3B may already be instruction-tuned** (Qwen3 series often 
 
 ### Explicit Variants:
 - **Qwen2.5-7B**: Base model (not instruction-tuned)
-- **Qwen2.5-7B-Instruct**: Instruction-tuned ✅
+- **Qwen2.5-7B-Instruct**: Instruction-tuned 
 
 Your config uses `Qwen/Qwen2.5-7B-Instruct` - correct!
 
@@ -48,9 +48,9 @@ Your config uses `Qwen/Qwen2.5-7B-Instruct` - correct!
 ### Use: `qwen/qwen3-30b-a3b`
 
 **Why:**
-- ✅ Likely already instruction-tuned (Qwen3 series default)
-- ✅ Matches Prime RL framework config (proven to work)
-- ✅ No "-Instruct" variant available = probably already instruction-tuned
+-  Likely already instruction-tuned (Qwen3 series default)
+-  Matches Prime RL framework config (proven to work)
+-  No "-Instruct" variant available = probably already instruction-tuned
 
 **If you want to verify:**
 1. Check Qwen documentation
@@ -61,20 +61,20 @@ Your config uses `Qwen/Qwen2.5-7B-Instruct` - correct!
 
 ### For Your Dakota Grammar Tasks:
 
-✅ **System prompts**: "You are a Dakota language expert..."
+ **System prompts**: "You are a Dakota language expert..."
 - Instruct models understand this format
 - Base models may ignore it
 
-✅ **Chat format**: system + user messages
+ **Chat format**: system + user messages
 - Instruct models trained for this
 - Base models don't understand chat
 
-✅ **Better baseline**: 
+ **Better baseline**: 
 - Higher starting rewards
 - Faster RL convergence
 - More stable training
 
-✅ **Prompt following**:
+ **Prompt following**:
 - Tasks need model to follow instructions
 - Instruct models are better at this
 
@@ -84,7 +84,7 @@ Your config uses `Qwen/Qwen2.5-7B-Instruct` - correct!
 
 If you're unsure:
 1. Test with small eval (5 examples)
-2. If model follows prompts well → it's instruction-tuned ✅
+2. If model follows prompts well → it's instruction-tuned 
 3. If it ignores prompts → look for "-Instruct" variant
 
 **For RL training, always use instruction-tuned models!**

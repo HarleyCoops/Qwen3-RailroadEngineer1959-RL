@@ -23,9 +23,9 @@ This guide explains how to launch RL training using the Prime-RL framework.
 4. **Upload Config Files**
    Upload these 3 files from `dakota_rl_training/configs/`:
    ```
-   ✓ train_30b.toml      (trainer config)
-   ✓ orch_30b.toml       (orchestrator config)
-   ✓ infer_30b.toml      (inference config)
+    train_30b.toml      (trainer config)
+    orch_30b.toml       (orchestrator config)
+    infer_30b.toml      (inference config)
    ```
 
 5. **Set Environment Variables** (if needed)

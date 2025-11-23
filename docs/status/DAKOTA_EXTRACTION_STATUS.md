@@ -76,7 +76,7 @@ data/dakota_train.jsonl (SFT ready)
    python convert_extracted_to_chat.py
    ```
 
-## ️ Remaining Tasks
+##  Remaining Tasks
 
 - Update remaining "blackfeet" references in:
   - `dakota_extraction/core/page_processor.py`

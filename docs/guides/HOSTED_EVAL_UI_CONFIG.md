@@ -72,7 +72,7 @@ Available variants:
 
 **Step 2 Configuration:**
 - **Number of Examples:** `5` (or `10` for slightly more confidence)
-- **Use all examples:** ❌ Unchecked
+- **Use all examples:**  Unchecked
 - **Rollouts per example:** `1`
 - **Environment Arguments:** Click "+ Add Entry" and add:
   - Key: `dataset_path`

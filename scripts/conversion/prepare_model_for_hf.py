@@ -160,9 +160,9 @@ Note: If model files are on a remote instance, download them first:
     
     results = check_model_files(model_dir)
     
-    print(f"Config: {'✓' if results['has_config'] else '✗'}")
-    print(f"Tokenizer: {'✓' if results['has_tokenizer'] else '✗'}")
-    print(f"Weights: {'✓' if results['has_weights'] else '✗'}")
+    print(f"Config: {'' if results['has_config'] else ''}")
+    print(f"Tokenizer: {'' if results['has_tokenizer'] else ''}")
+    print(f"Weights: {'' if results['has_weights'] else ''}")
     
     if results["weight_files"]:
         print(f"\nWeight files found:")
@@ -171,7 +171,7 @@ Note: If model files are on a remote instance, download them first:
             print(f"  - {wf} ({size:.1f} MB)")
     
     if results["missing_files"]:
-        print(f"\n⚠ Missing files:")
+        print(f"\n Missing files:")
         for mf in results["missing_files"]:
             print(f"  - {mf}")
         print("\nYou may need to:")
@@ -179,7 +179,7 @@ Note: If model files are on a remote instance, download them first:
         print("  2. Or copy files from base model repository")
         return 1
     
-    print("\n✓ All required files found!")
+    print("\n All required files found!")
     print(f"\nReady to upload! Run:")
     print(f"  python scripts/conversion/upload_model_to_hf.py --model-dir \"{model_dir}\"")
     

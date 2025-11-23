@@ -17,7 +17,7 @@ uv pip install prime_evals
 # uv pip install prime_evals --index-url https://hub.primeintellect.ai/primeintellect/simple/
 
 # Verify orchestrator can import it
-uv run python -c "from prime_evals import AsyncEvalsClient; print('✓ prime_evals OK')"
+uv run python -c "from prime_evals import AsyncEvalsClient; print(' prime_evals OK')"
 
 # Now try orchestrator again
 uv run orchestrator @ ~/dakota_rl_training/configs/orch_test_400.toml

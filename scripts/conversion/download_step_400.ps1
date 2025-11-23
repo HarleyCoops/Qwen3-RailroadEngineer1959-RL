@@ -21,12 +21,12 @@ python scripts/conversion/download_model_from_instance.py `
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
-    Write-Host "✓ Download complete!" -ForegroundColor Green
+    Write-Host " Download complete!" -ForegroundColor Green
     Write-Host ""
     Write-Host "Next step: Upload to Hugging Face" -ForegroundColor Cyan
     Write-Host "  python scripts/conversion/upload_model_to_hf.py --model-dir `"${localPath}`"" -ForegroundColor White
 } else {
     Write-Host ""
-    Write-Host "✗ Download failed. Check the error above." -ForegroundColor Red
+    Write-Host " Download failed. Check the error above." -ForegroundColor Red
 }
 

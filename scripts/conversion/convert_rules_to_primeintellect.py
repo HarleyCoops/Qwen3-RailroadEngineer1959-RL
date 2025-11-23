@@ -144,14 +144,14 @@ def create_positive_negative_evidence_task(rule: Dict) -> Optional[Dict]:
     prompt = f"Study this Dakota grammar rule: {rule['rule_description']}\n\n"
     prompt += "Correct example (follows the rule):\n"
     if pos_ex.get('dakota'):
-        prompt += f"  ✓ {pos_ex['dakota']}"
+        prompt += f"   {pos_ex['dakota']}"
         if pos_ex.get('english'):
             prompt += f" - {pos_ex['english']}"
         prompt += "\n\n"
     
     prompt += "Incorrect example (violates the rule):\n"
     if neg_ex.get('dakota'):
-        prompt += f"  ✗ {neg_ex['dakota']}"
+        prompt += f"   {neg_ex['dakota']}"
         if neg_ex.get('english'):
             prompt += f" - {neg_ex['english']}"
         prompt += "\n\n"

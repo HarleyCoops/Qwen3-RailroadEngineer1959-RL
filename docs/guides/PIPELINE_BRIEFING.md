@@ -58,7 +58,7 @@ This document demonstrates the complete Dakota language extraction and RL traini
 │     • ~7,000 dictionary entries total                              │
 │     • Format: {headword, part_of_speech, definition, inflected_forms}│
 │                                                                     │
-│  ️  NOTE: This was a test run on pages 109-128. Full extraction   │
+│    NOTE: This was a test run on pages 109-128. Full extraction   │
 │     of pages 93-440 would yield ~100,000 entries.                  │
 └─────────────────────────────────────────────────────────────────────┘
                                     │

@@ -98,13 +98,13 @@ That's it! Everything else stays the same. The environment will evaluate Llama's
 ## What Gets Uploaded vs What Gets Trained
 
 **Uploaded to PrimeIntellect Hub:**
-- ✅ Environment code (dakota1890)
-- ✅ Reward functions
-- ✅ Task evaluation logic
-- ❌ NOT the model (models are separate)
+-  Environment code (dakota1890)
+-  Reward functions
+-  Task evaluation logic
+-  NOT the model (models are separate)
 
 **Trained Locally/On PrimeIntellect:**
-- ✅ Your chosen model (Qwen, Llama, etc.)
-- ✅ Model learns from environment rewards
-- ❌ Environment stays the same (it's the test!)
+-  Your chosen model (Qwen, Llama, etc.)
+-  Model learns from environment rewards
+-  Environment stays the same (it's the test!)
 

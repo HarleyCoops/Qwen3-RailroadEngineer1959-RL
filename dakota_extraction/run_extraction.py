@@ -119,7 +119,7 @@ def main():
             print(f"Found {len(jpg_files)} JPEG files (no conversion needed)")
             image_dir = Path(args.input)
         else:
-            print(f"❌ No image files found in {args.input}")
+            print(f" No image files found in {args.input}")
             print("\nPlease add dictionary page images to:")
             print(f"  {args.input}/")
             print("\nSupported formats: .jp2, .jpg, .jpeg, .png")
@@ -158,7 +158,7 @@ def main():
     # Check if we have extractions
     extraction_files = list(Path(args.extracted).glob("page_*.json"))
     if not extraction_files:
-        print(f"❌ No extraction files found in {args.extracted}")
+        print(f" No extraction files found in {args.extracted}")
         print("\nRun extraction first without --only-datasets flag")
         return
 
@@ -175,9 +175,9 @@ def main():
     print("\n" + "="*70)
     print(" PIPELINE COMPLETE!")
     print("="*70)
-    print(f"\n✓ Extracted data:     {args.extracted}/")
-    print(f"✓ Training datasets:  {args.datasets}/")
-    print("✓ Reasoning traces:   data/reasoning_traces/")
+    print(f"\n Extracted data:     {args.extracted}/")
+    print(f" Training datasets:  {args.datasets}/")
+    print(" Reasoning traces:   data/reasoning_traces/")
     print("\nNext steps:")
     print("  1. Review extracted data in", args.extracted)
     print("  2. Check reasoning traces for quality assurance")

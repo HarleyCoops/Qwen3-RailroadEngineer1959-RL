@@ -121,11 +121,11 @@ def test_connection():
     try:
         connector = E2BConnector()
         connector.start_sandbox()
-        print("✓ Connection successful!")
+        print(" Connection successful!")
         connector.close()
         return True
     except Exception as e:
-        print(f"✗ Connection failed: {e}")
+        print(f" Connection failed: {e}")
         return False
 
 

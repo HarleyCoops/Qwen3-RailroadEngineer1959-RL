@@ -73,8 +73,8 @@ tail -30 ~/dakota-rl-training/outputs/logs/rl.log
    - Check timestamp of last update
 
 **If WandB shows:**
-- ✅ Recent updates (last few minutes) → Training is running!
-- ❌ Last update was 30+ minutes ago → Training likely crashed
+-  Recent updates (last few minutes) → Training is running!
+-  Last update was 30+ minutes ago → Training likely crashed
 
 ## What to Look For
 

@@ -2,7 +2,7 @@
 
 ## Summary
 
-✅ **SUCCESS**: Vision-Language Model (Claude Sonnet 4.5) successfully extracts Dakota special characters without needing Tesseract OCR training.
+ **SUCCESS**: Vision-Language Model (Claude Sonnet 4.5) successfully extracts Dakota special characters without needing Tesseract OCR training.
 
 ## Test Details
 
@@ -31,7 +31,7 @@ The VLM correctly identified and preserved **8 distinct special character types*
 - **Entries Extracted**: 10 interlinear entries
 - **Vocabulary Items**: 28 words
 - **Average Confidence**: 92.1%
-- **Character Preservation**: 100% ✅
+- **Character Preservation**: 100% 
 
 ### Sample Extracted Entry
 
@@ -47,7 +47,7 @@ The VLM correctly identified and preserved **8 distinct special character types*
 
 ## Key Findings
 
-### 1. No Tesseract Training Required ✅
+### 1. No Tesseract Training Required 
 
 - All Dakota characters are **standard Unicode**
 - Modern VLMs have seen these characters during pre-training
@@ -84,7 +84,7 @@ The VLM demonstrated understanding of:
 
 ### For Dakota Grammar/Dictionary Extraction:
 
-**Use Vision-Language Model with Specialized Prompt** ✅
+**Use Vision-Language Model with Specialized Prompt** 
 
 1. **Tool**: Claude Sonnet 4.5 or Qwen3-VL-235B-Thinking
 2. **Method**: Dakota-specific extraction prompt (see `blackfeet_extraction/core/dakota_extraction_prompt.py`)
@@ -93,9 +93,9 @@ The VLM demonstrated understanding of:
 
 ### Implementation Files Created
 
-- ✅ `blackfeet_extraction/core/dakota_extraction_prompt.py` - Specialized prompt for Dakota
-- ✅ `test_dakota_claude.py` - Test script for character validation
-- ✅ `data/dakota_test/dakota_extraction_test.json` - Sample extraction results
+-  `blackfeet_extraction/core/dakota_extraction_prompt.py` - Specialized prompt for Dakota
+-  `test_dakota_claude.py` - Test script for character validation
+-  `data/dakota_test/dakota_extraction_test.json` - Sample extraction results
 
 ## Next Steps
 
@@ -133,7 +133,7 @@ Update `.env.template` to document Dakota characters:
 
 ## Conclusion
 
-✅ **Vision-Language Models successfully extract Dakota custom alphabets without OCR training**
+ **Vision-Language Models successfully extract Dakota custom alphabets without OCR training**
 
 The original question was: *"Do we need Tesseract for custom letters like ḣ with a dot over it?"*
 
@@ -148,5 +148,5 @@ The original question was: *"Do we need Tesseract for custom letters like ḣ wi
 
 **Test conducted**: 2025-10-05
 **Model**: Claude Sonnet 4.5
-**Result**: All special characters extracted correctly ✅
+**Result**: All special characters extracted correctly 
 **Files**: `data/dakota_test/dakota_extraction_test.json`

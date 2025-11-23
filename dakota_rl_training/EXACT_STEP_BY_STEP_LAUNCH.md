@@ -1,6 +1,6 @@
 # HOW TO LAUNCH RL TRAINING ON PRIME INTELLECT - STEP BY STEP
 
-## ️ IMPORTANT: Exact File Locations
+##  IMPORTANT: Exact File Locations
 
 Your config files are here:
 ```

@@ -347,7 +347,7 @@ dakota_rl_training/
 ** Recommended Action:**
 Go to https://app.primeintellect.ai and launch training with Option 1 (Cloud Platform)
 
-**️ Expected Timeline:**
+** Expected Timeline:**
 - Upload configs: 5 minutes
 - Job starts: 10-30 minutes
 - Training completes: 6-11 hours

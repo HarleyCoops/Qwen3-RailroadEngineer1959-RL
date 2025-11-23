@@ -38,19 +38,19 @@ Invoke-Expression $scpCmd
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""
-    Write-Host "✓ Download complete!" -ForegroundColor Green
+    Write-Host " Download complete!" -ForegroundColor Green
     Write-Host ""
     Write-Host "Extracting archive..." -ForegroundColor Yellow
     tar -xzf model_step_400.tar.gz
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✓ Extracted to: step_400/" -ForegroundColor Green
+        Write-Host " Extracted to: step_400/" -ForegroundColor Green
         Write-Host ""
         Write-Host "Next: Upload to Hugging Face" -ForegroundColor Cyan
         Write-Host "  python scripts/conversion/upload_model_to_hf.py --model-dir `"step_400`"" -ForegroundColor White
     }
 } else {
     Write-Host ""
-    Write-Host "✗ Download failed. Try:" -ForegroundColor Red
+    Write-Host " Download failed. Try:" -ForegroundColor Red
     Write-Host "  1. Check Prime Intellect dashboard for public IP" -ForegroundColor Yellow
     Write-Host "  2. Use web console file download if available" -ForegroundColor Yellow
     Write-Host "  3. Or use SSH port forwarding" -ForegroundColor Yellow

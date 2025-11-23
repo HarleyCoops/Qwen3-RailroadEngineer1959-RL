@@ -87,7 +87,7 @@ async def test_multiturn_env():
     is_complete = await env.is_completed(messages, state, **task)
     feedback_msgs, new_state = await env.env_response(messages, state, **task)
 
-    print("\n✓ Correct Answer Test:")
+    print("\n Correct Answer Test:")
     print(f"  Complete: {is_complete}")
     print(f"  Special chars correct: {new_state.get('special_chars_correct', False)}")
     print(f"  Affixes correct: {new_state.get('affixes_correct', False)}")
@@ -103,7 +103,7 @@ async def test_multiturn_env():
 
     feedback_wrong, new_state_wrong = await env.env_response(messages_wrong, state_wrong, **task)
 
-    print("\n✓ Wrong Answer Test:")
+    print("\n Wrong Answer Test:")
     print(f"  Feedback: {feedback_wrong[0]['content']}")
 
     return True
@@ -138,7 +138,7 @@ async def test_rubric():
         task['info']
     )
 
-    print(f"\n✓ Perfect Answer Reward: {reward:.2f}")
+    print(f"\n Perfect Answer Reward: {reward:.2f}")
 
     # Test with wrong answer
     wrong_reward = rubric.composite_reward(
@@ -147,7 +147,7 @@ async def test_rubric():
         task['info']
     )
 
-    print(f"✓ Wrong Answer Reward: {wrong_reward:.2f}")
+    print(f" Wrong Answer Reward: {wrong_reward:.2f}")
 
     return True
 
@@ -182,7 +182,7 @@ async def test_translation_task():
 
     feedback, new_state = await env.env_response(messages, state, **task)
 
-    print("\n✓ Translation Test:")
+    print("\n Translation Test:")
     print(f"  Semantic correct: {new_state.get('semantic_correct', False)}")
     print(f"  Feedback: {feedback[0]['content']}")
 
@@ -250,13 +250,13 @@ async def main():
             result = await test_func()
             if result:
                 passed += 1
-                print(f"\n✓ {name}: PASSED")
+                print(f"\n {name}: PASSED")
             else:
                 failed += 1
-                print(f"\n✗ {name}: FAILED")
+                print(f"\n {name}: FAILED")
         except Exception as e:
             failed += 1
-            print(f"\n✗ {name}: FAILED with error: {e}")
+            print(f"\n {name}: FAILED with error: {e}")
             import traceback
             traceback.print_exc()
 
@@ -268,13 +268,13 @@ async def main():
     print(f"Failed: {failed}")
 
     if failed == 0:
-        print("\n✓ All tests passed! Ready for training.")
+        print("\n All tests passed! Ready for training.")
         print("\nNext steps:")
         print("  1. Review config: cat dakota_rl_training/configs/training_config.yaml")
         print("  2. Run local training: cd dakota_rl_training && python train.py")
         print("  3. Run distributed: prime-rl train --config configs/training_config.yaml")
     else:
-        print("\n✗ Some tests failed. Fix issues before training.")
+        print("\n Some tests failed. Fix issues before training.")
 
     print()
 

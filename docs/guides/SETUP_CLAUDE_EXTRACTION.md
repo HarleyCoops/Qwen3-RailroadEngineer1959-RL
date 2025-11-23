@@ -4,13 +4,13 @@
 
 **Anthropic's API is more reliable than OpenRouter** for this task:
 
-- ✓ No rate limiting issues
+-  No rate limiting issues
 
-- ✓ Consistent performance
+-  Consistent performance
 
-- ✓ Same sophisticated reasoning
+-  Same sophisticated reasoning
 
-- ✓ You're already using Claude!
+-  You're already using Claude!
 
 ## Quick Setup (2 minutes)
 

@@ -20,7 +20,7 @@ cd /workspace/prime-rl
 
 # Check if wandb is logged in
 if ! uv run wandb whoami &>/dev/null; then
-    echo "⚠️  W&B not logged in. Logging in..."
+    echo "  W&B not logged in. Logging in..."
     uv run wandb login
 fi
 

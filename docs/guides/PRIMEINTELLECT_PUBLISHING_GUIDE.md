@@ -81,9 +81,9 @@ where = ["src"]
 Ensure your environment classes match the `verifiers` interface:
 
 **Current Implementation** (`dakota_rl_training/verifiers/grammar_env.py`):
-- ✅ Already implements `MultiTurnEnv` interface
-- ✅ Has `is_completed()` and `env_response()` methods
-- ✅ Uses async/await pattern (required)
+-  Already implements `MultiTurnEnv` interface
+-  Has `is_completed()` and `env_response()` methods
+-  Uses async/await pattern (required)
 
 **What Needs to Change**:
 1. Import from `verifiers` package instead of local base classes
@@ -140,13 +140,13 @@ prime env publish dakota-grammar-env/ \
 
 ### Current Dakota Status
 
-**✅ Already Built**:
+** Already Built**:
 - Environment classes: `DakotaGrammarEnv`, `DakotaMorphologyEnv`
 - Rubric classes: `DakotaGrammarRubric`
 - Rules data: `data/rl_training_rules/all_rl_rules.json` (1,085 rules)
 - Task datasets: `dakota_rl_training/datasets/*.jsonl` (5,657 tasks)
 
-**❌ Not Yet Published**:
+** Not Yet Published**:
 - Package structure with `pyproject.toml`
 - Integration with verifiers package
 - Upload to PrimeIntellect Hub
@@ -229,7 +229,7 @@ rubric = DakotaGrammarRubric()
 
 3. **Test with PrimeIntellect**:
 ```bash
-python -c "import dakota_grammar_env; print('✓ Environment ready')"
+python -c "import dakota_grammar_env; print(' Environment ready')"
 ```
 
 #### Phase 4: Publish to PrimeIntellect

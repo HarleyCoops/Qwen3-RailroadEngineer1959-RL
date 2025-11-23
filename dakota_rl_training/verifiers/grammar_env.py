@@ -237,7 +237,7 @@ class DakotaGrammarEnv(MultiTurnEnv):
         if (state["special_chars_correct"] and
             state["affixes_correct"] and
             state["semantic_correct"]):
-            return "✓ Correct! Well done."
+            return " Correct! Well done."
 
         # Build specific feedback
         feedback_parts = []

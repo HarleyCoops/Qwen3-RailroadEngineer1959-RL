@@ -167,7 +167,7 @@ uv run rl \
 
 ---
 
-## ️ If Upload Fails
+##  If Upload Fails
 
 **Alternative: Copy-paste config contents**
 

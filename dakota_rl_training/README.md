@@ -4,7 +4,7 @@ Complete Reinforcement Learning training environment for Dakota grammar and morp
 
 ## What We Built
 
-### ✅ Phase 1 Complete: Grammar Extraction & RL Task Generation
+###  Phase 1 Complete: Grammar Extraction & RL Task Generation
 
 From **page 61** alone, we extracted:
 - **13 grammar rules** (morphology, syntax, semantics)
@@ -14,7 +14,7 @@ From **page 61** alone, we extracted:
 
 **Special characters preserved**: ŋ, š, ć, ź, ž, ʼ (glottal stop)
 
-### ✅ Phase 2 Complete: PrimeIntellect Verifier Environment
+###  Phase 2 Complete: PrimeIntellect Verifier Environment
 
 **Files Created**:
 - `verifiers/grammar_env.py` - Multi-turn & single-turn environments
@@ -70,7 +70,7 @@ Expected: Dawid suŋkaku
 Correct answer:
   Complete: True
   State: {'special_chars_correct': True, 'affixes_correct': True, ...}
-  Feedback: ✓ Correct! Well done.
+  Feedback:  Correct! Well done.
 
 Wrong answer (missing ŋ):
   State: {'special_chars_correct': False, ...}
@@ -455,12 +455,12 @@ This setup enables novel research on:
 
 ### Immediate
 
-1. ✅ Test extraction on page 61 - **DONE** (13 rules, 44 tasks)
-2. ✅ Build verifier environment - **DONE**
-3. ✅ Create reward functions - **DONE**
-4. ⏳ Extract full grammar (pages 1-88) - **Ready to run**
-5. ⏳ Merge tasks into training dataset
-6. ⏳ Run local training test
+1.  Test extraction on page 61 - **DONE** (13 rules, 44 tasks)
+2.  Build verifier environment - **DONE**
+3.  Create reward functions - **DONE**
+4.  Extract full grammar (pages 1-88) - **Ready to run**
+5.  Merge tasks into training dataset
+6.  Run local training test
 
 ### Future
 

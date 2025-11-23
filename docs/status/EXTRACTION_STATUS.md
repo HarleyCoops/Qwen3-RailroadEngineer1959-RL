@@ -41,6 +41,6 @@ When ready to continue extraction:
 
 ## Files Ready
 
-- ✅ `generate_synthetic_dakota.py` - Updated to use Gemini 2.5 Flash
-- ✅ `ENHANCED_SYNTHETIC_QA_PLAN.md` - Plan for sophisticated Q&A generation
-- ⏳ Dictionary extraction paused at page 128
+-  `generate_synthetic_dakota.py` - Updated to use Gemini 2.5 Flash
+-  `ENHANCED_SYNTHETIC_QA_PLAN.md` - Plan for sophisticated Q&A generation
+-  Dictionary extraction paused at page 128

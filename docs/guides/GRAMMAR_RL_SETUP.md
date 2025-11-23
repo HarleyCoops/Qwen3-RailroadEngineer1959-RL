@@ -190,9 +190,9 @@ python test_grammar_extraction.py
 
 **Expected Output**:
 ```
-✓ Grammar extraction successful!
-✓ Generated 30+ RL training tasks
-✓ Results saved to data/grammar_test/
+ Grammar extraction successful!
+ Generated 30+ RL training tasks
+ Results saved to data/grammar_test/
 ```
 
 **Output Files**:
@@ -274,7 +274,7 @@ class DakotaGrammarEnv(vf.MultiTurnEnv):
 
         # Generate feedback
         if correct:
-            feedback = "✓ Correct! Rule applied properly."
+            feedback = " Correct! Rule applied properly."
         elif not chars_correct:
             missing = set(expected_chars) - set(last_response)
             feedback = f"Missing special characters: {missing}"
