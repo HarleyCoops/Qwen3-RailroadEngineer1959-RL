@@ -64,11 +64,11 @@ Where:
 
 *   **$R_{char}$ (Orthography)**: The Intersection-over-Union (or Recall) of required special unicode characters $\mathcal{C}_{spec}$ (e.g., `ŋ`, `š`, `ć`).
 
-    $$ R_{char} = \frac{|chars(y_i) \cap chars(x)|}{|chars(x) \cap \mathcal{C}_{spec}|} $$
+    $R_{char} = \frac{|chars(y_i) \cap chars(x)|}{|chars(x) \cap \mathcal{C}_{spec}|}$
 
 *   **$R_{morph}$ (Syntax)**: A binary or scalar check against specific grammar rules $g_k \in \mathcal{G}$ (e.g., affix presence regex).
 
-    $$ R_{morph} = \frac{1}{|A|}\sum_{a \in A} \mathbb{I}(a \subset y_i) \quad \text{where } A \text{ are required affixes} $$
+    $R_{morph} = \frac{1}{|A|}\sum_{a \in A} \mathbb{I}(a \subset y_i) \quad \text{where } A \text{ are required affixes}$
 
 *   **$R_{sem}$ (Semantics)**: Semantic similarity to ground truth (or Dictionary lookup).
 
