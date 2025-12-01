@@ -6,7 +6,16 @@
       "Bash(cat:*)",
       "Bash(find:*)",
       "Bash(python run_demo.py:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(tee:*)",
+      "Bash(prime --help:*)",
+      "Bash(prime whoami)",
+      "Bash(prime env push --help:*)",
+      "Bash(chcp 65001)",
+      "Bash(/dev/null)",
+      "Bash(prime env push:*)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []
