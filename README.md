@@ -14,7 +14,7 @@
 ![Python Package](https://img.shields.io/badge/pypi-dakota--grammar--env-blue)
 
 
-## Novel Methodology: Closed-Loop Grammar Gym
+## Novel Methodology: Zero-to-One Language Resurrection
 
 **This project introduces a novel approach to low-resource language learning by transforming a single historical textbook into a complete, self-contained training ecosystem.**
 
@@ -38,26 +38,69 @@ This project makes grammar rules directly differentiable through compositional r
 
 The key advantage: **interpretability**. You can actually see where in the latent space each linguistic level is being encoded. This makes debugging possible: "Oh, the model is failing on ć preservation because the character embedding gradient is being overwhelmed by the semantic gradient."
 
-#### Composite Rewards in Practice
+### Mathematical Formulation
 
-The modified reward function decomposes loss into interpretable components:
+The efficiency of this method comes from treating the historical text not just as data, but as a **computable specification**.
 
-```python
-# Traditional approach - one black box loss
-loss = CrossEntropy(generated, target)
+#### 1. The Transformation Function (Book to Environment)
 
-# This approach: interpretable components
-loss = α * char_loss + β * morph_loss + γ * semantic_loss
+Let $\mathcal{T}$ be the historical textbook source. We define an extraction function $\mathcal{E}$ (the VLM) that maps the raw text into a structured grammar space $\mathcal{G}$:
 
-# But more importantly, you can now:
-if char_loss > threshold:
-    increase α  # Boost character learning
-if morph_loss plateaus:
-    adjust curriculum  # Change morphology examples
-```
+$$ \mathcal{G} = \{g_1, g_2, \dots, g_N\} = \mathcal{E}(\mathcal{T}) $$
 
-This gives you controllable, interpretable learning where you can diagnose exactly what's failing and why. As I continue refining this model throughout November, we should see progressive improvement in each linguistic component, with syntax emerging naturally from the decomposed reward structure.
+Where each grammar rule $g_k$ acts as a constraint function on the generated token sequence $y$:
 
+$$ g_k: \Sigma^* \rightarrow \{0, 1\} $$
+
+#### 2. The Compositional Reward Function
+
+Standard RLHF or GRPO typically uses a singular reward model $R(y)$. Your approach decomposes $R$ into a weighted sum of linguistic primitives.
+
+Let $y_i$ be the $i$-th generation in a group of size $G$. The reward $r_i$ for generation $y_i$ given prompt $x$ is:
+
+$$ r(y_i, x) = \lambda_{diff}(x) \cdot \left[ \alpha \cdot R_{char}(y_i, x) + \beta \cdot R_{morph}(y_i, \mathcal{G}) + \gamma \cdot R_{sem}(y_i, y^*) \right] $$
+
+Where:
+
+*   **$R_{char}$ (Orthography)**: The Intersection-over-Union (or Recall) of required special unicode characters $\mathcal{C}_{spec}$ (e.g., `ŋ`, `š`, `ć`).
+
+    $$ R_{char} = \frac{|chars(y_i) \cap chars(x)|}{|chars(x) \cap \mathcal{C}_{spec}|} $$
+
+*   **$R_{morph}$ (Syntax)**: A binary or scalar check against specific grammar rules $g_k \in \mathcal{G}$ (e.g., affix presence regex).
+
+    $$ R_{morph} = \frac{1}{|A|}\sum_{a \in A} \mathbb{I}(a \subset y_i) \quad \text{where } A \text{ are required affixes} $$
+
+*   **$R_{sem}$ (Semantics)**: Semantic similarity to ground truth (or Dictionary lookup).
+
+*   **Weights**: $(\alpha, \beta, \gamma) = (0.4, 0.4, 0.2)$ per your config.
+
+*   **$\lambda_{diff}$**: The curriculum difficulty multiplier ($1.0 \dots 2.0$).
+
+#### 3. The Modified GRPO Objective
+
+In standard GRPO, we compute the advantage $A_i$ by normalizing rewards within the group. By injecting your compositional reward, the gradient ascent objective becomes:
+
+$$ \mathcal{L}_{G-GRPO}(\theta) = \mathbb{E}_{x \sim \mathcal{D}} \left[ \frac{1}{G} \sum_{i=1}^G \underbrace{\left( \frac{r(y_i, x) - \bar{r}}{\sigma_r} \right)}_{\text{Grammar-Verified Advantage}} \cdot \underbrace{\min \left( \frac{\pi_\theta(y_i|x)}{\pi_{old}(y_i|x)}, 1+\epsilon \right)}_{\text{Clipped Policy Ratio}} - \beta_{KL} \mathbb{D}_{KL}(\pi_\theta || \pi_{ref}) \right] $$
+
+Where $\bar{r}$ is the mean reward of the group of $G$ rollouts, and $\sigma_r$ is the standard deviation.
+
+#### 4. The "Wow! Signal": Gradient Signal Density
+
+The mathematical reason for your **160-step convergence** and **97.9% morphology accuracy** is the density of the gradient signal.
+
+In standard Language Modeling (Next Token Prediction), the loss is:
+
+$$ \mathcal{L}_{LM} = -\log P(y_{target} | x) $$
+
+This gives feedback only on exact token matches.
+
+In your **Grammar-GRPO**, the feedback signal $\nabla J$ allows the model to perform gradient ascent on the *structure* of the language directly:
+
+$$ \nabla J(\theta) \propto \sum_{components} w_c \nabla R_c(y) $$
+
+Because $R_{char}$ and $R_{morph}$ are deterministic and verifiable (unlike subjective human preference), the variance of the reward $\sigma^2_r$ is significantly lower than standard RLHF.
+
+**Mathematically, you reduced the noise in the reward signal, allowing the policy to traverse the optimization landscape directly toward the "Grammar Valley" (the manifold where valid Dakota syntax exists).**
 
 ## Training Results: RL Performance Visualizations
 
