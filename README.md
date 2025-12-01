@@ -780,6 +780,17 @@ The same closed-loop, rule-to-reward pattern extends beyond low-resource languag
 - Code Migration: Turn a 1970 COBOL manual into a verification environment to train a Python-to-COBOL translation agent.
 - Industrial Safety (1950s Rail): Build an RL environment that mirrors a postwar railroad engineer's operating rules using the procedures documented in `Public/1959RailRoadCodeRL.pdf`, enforcing safety, dispatch, and signaling constraints in generation.
 
+## Project Expansion: Railroad Engineer 1959
+
+Building on the success of the Dakota grammar pipeline, we are applying the same **Grammar-to-RL** methodology to industrial safety.
+
+- **Objective**: Train RL agents to operate trains strictly according to the **1959 Consolidated Code of Operating Rules**.
+- **Methodology**:
+    1.  **Extraction**: VLM extracts rules from `Public/1959RailRoadCodeRL.pdf`.
+    2.  **Environment**: `RailroadEnv` verifies adherence to safety protocols, signaling rules, and terminology.
+    3.  **Reward**: Compositional reward function prioritizing **Safety** (critical), **Procedure** (sequence), and **Terminology** (exact phrasing).
+- **Status**: In active development (see `RailroadEngineer1959/`).
+
 ### Future Research Directions
 
 1. **Multi-Language Extension**

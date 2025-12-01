@@ -1,0 +1,52 @@
+```json
+{
+  "rules": [
+    {
+      "rule_id": "224",
+      "text": "To relay a train order, the train dispatcher must transmit it to the relaying operator, who must then transmit it to destination. The employee receiving it at destination must, after obtaining the signatures of conductor and engineer when required, repeat it to the relaying operator. The relaying operator must, on the copy he retains, underscore each word and figure as it is repeated to him, and then repeat it to the train dispatcher. If correct, \"complete\" will be given by train dispatcher and relayed to destination.",
+      "category": "Forms of Train Orders",
+      "section": "",
+      "sub_rules": []
+    },
+    {
+      "rule_id": "S-A",
+      "text": "FIXING MEETING POINTS FOR OPPOSING TRAINS",
+      "category": "Forms of Train Orders",
+      "section": "Fixing Meeting Points for Opposing Trains",
+      "sub_rules": [
+        {
+          "rule_id": "S-A(1)",
+          "text": "No 1 meet No 2 at B\nNo 3 meet Second 4 at B\nNo 5 meet Extra 95 east at B\nPsgr Extra 652 east meet Extra 231 west and Extra 235 west at B"
+        },
+        {
+          "rule_id": "S-A(2)",
+          "text": "No 2 and Second 4 meet No 1 and No 3 at F and Extra 95 west at D (and so on)\nNo 1 meet No 2 at B Second 4 at C and Extra 95 east at D"
+        }
+      ]
+    },
+    {
+      "rule_id": "S-A-Examples",
+      "text": "Examples (1) and (2) may be modified by adding \"_____ take siding\" or \"_____ gets this order at _____\". Trains receiving these orders will run with respect to each other to the designated points and there meet in the manner prescribed by the rules.",
+      "category": "Forms of Train Orders",
+      "section": "Fixing Meeting Points for Opposing Trains",
+      "sub_rules": []
+    },
+    {
+      "rule_id": "S-B",
+      "text": "DIRECTING A TRAIN TO PASS OR RUN AHEAD OF ANOTHER TRAIN",
+      "category": "Forms of Train Orders",
+      "section": "Directing a Train to Pass or Run Ahead of Another Train",
+      "sub_rules": [
+        {
+          "rule_id": "S-B(1)",
+          "text": "No 1 pass No 3 at K\nBoth trains will run according to rule to the designated point and there arrange for the rear train to pass promptly."
+        },
+        {
+          "rule_id": "S-B(2)",
+          "text": "Extra 594 west pass No 3 at K\nWhen an inferior train receives an order to pass a superior train, right is conferred to run ahead of the train passed from the designated point."
+        }
+      ]
+    }
+  ]
+}
+```

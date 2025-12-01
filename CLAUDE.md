@@ -49,6 +49,17 @@ Dakota1890/
 ├── tests/                         # Test suite
 └── wandb_analysis/               # Weights & Biases analysis
 
+RailroadEngineer1959/             # Railroad safety rules extraction and RL
+├── railroad_extraction/          # PDF -> Rules -> Tasks
+│   ├── core/                     # Extraction logic
+│   ├── schemas/                  # Data schemas
+│   └── run_extraction.py         # Main extraction script
+├── railroad_rl_training/         # RL training pipeline
+│   ├── verifiers/                # Environment and reward functions
+│   ├── train.py                  # PrimeIntellect local training script
+│   └── tinker_train.py           # Tinker distributed training script
+└── requirements.txt              # Dependencies
+
 Core Files:
 ├── requirements.txt              # Python dependencies
 ├── pytest.ini                    # Test configuration
@@ -152,6 +163,16 @@ The `DakotaGrammarRubric` in `dakota_rl_training/verifiers/rubrics.py` implement
 - Intermediate: 1.2x
 - Advanced: 1.5x
 - Expert: 2.0x
+
+### 5. Railroad Engineer 1959 (New)
+
+A parallel project applying the same methodology to 1959 Railroad Operating Rules:
+
+- **Goal**: Train agents to strictly follow railroad safety procedures.
+- **Source**: 1959 Railroad Code of Operating Rules.
+- **Pipeline**: PDF -> VLM Extraction -> Rule Schemas -> RL Environment.
+- **Reward**: Compositional (Safety, Procedure, Terminology).
+
 
 ## Common Development Commands
 

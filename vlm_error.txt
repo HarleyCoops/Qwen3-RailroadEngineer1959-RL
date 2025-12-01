@@ -1,0 +1,7 @@
+Error extracting from C:\Users\chris\Dakota1890\RailroadEngineer1959\data\processed_images\page_041.png: 2 validation errors for RailroadRule
+sub_rules.0.category
+  Field required [type=missing, input_value={'rule_id': 'S-A(1)', 'te...nd Extra 235 west at B'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+sub_rules.1.category
+  Field required [type=missing, input_value={'rule_id': 'S-A(2)', 'te...and Extra 95 east at D'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
