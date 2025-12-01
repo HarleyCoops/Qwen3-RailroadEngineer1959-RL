@@ -54,7 +54,7 @@ $$ g_k: \Sigma^* \rightarrow \{0, 1\} $$
 
 #### 2. The Compositional Reward Function
 
-Standard RLHF or GRPO typically uses a singular reward model $R(y)$. Your approach decomposes $R$ into a weighted sum of linguistic primitives.
+Standard RLHF or GRPO typically uses a singular reward model $R(y)$. The Grammar-as-signal approach decomposes $R$ into a weighted sum of linguistic primitives.
 
 Let $y_i$ be the $i$-th generation in a group of size $G$. The reward $r_i$ for generation $y_i$ given prompt $x$ is:
 
@@ -72,13 +72,13 @@ Where:
 
 *   **$R_{sem}$ (Semantics)**: Semantic similarity to ground truth (or Dictionary lookup).
 
-*   **Weights**: $(\alpha, \beta, \gamma) = (0.4, 0.4, 0.2)$ per your config.
+*   **Weights**: $(\alpha, \beta, \gamma) = (0.4, 0.4, 0.2)$ per the config.
 
 *   **$\lambda_{diff}$**: The curriculum difficulty multiplier ($1.0 \dots 2.0$).
 
 #### 3. The Modified GRPO Objective
 
-In standard GRPO, we compute the advantage $A_i$ by normalizing rewards within the group. By injecting your compositional reward, the gradient ascent objective becomes:
+In standard GRPO, we compute the advantage $A_i$ by normalizing rewards within the group. By injecting the new compositional reward, the gradient ascent objective becomes:
 
 $$ \mathcal{L}_{G-GRPO}(\theta) = \mathbb{E}_{x \sim \mathcal{D}} \left[ \frac{1}{G} \sum_{i=1}^G \underbrace{\left( \frac{r(y_i, x) - \bar{r}}{\sigma_r} \right)}_{\text{Grammar-Verified Advantage}} \cdot \underbrace{\min \left( \frac{\pi_\theta(y_i|x)}{\pi_{old}(y_i|x)}, 1+\epsilon \right)}_{\text{Clipped Policy Ratio}} - \beta_{KL} \mathbb{D}_{KL}(\pi_\theta || \pi_{ref}) \right] $$
 
@@ -86,7 +86,7 @@ Where $\bar{r}$ is the mean reward of the group of $G$ rollouts, and $\sigma_r$ 
 
 #### 4. The "Wow! Signal": Gradient Signal Density
 
-The mathematical reason for your **160-step convergence** and **97.9% morphology accuracy** is the density of the gradient signal.
+The mathematical reason for the **160-step convergence** and **97.9% morphology accuracy** is the density of the gradient signal.
 
 In standard Language Modeling (Next Token Prediction), the loss is:
 
@@ -94,7 +94,7 @@ $$ \mathcal{L}_{LM} = -\log P(y_{target} | x) $$
 
 This gives feedback only on exact token matches.
 
-In your **Grammar-GRPO**, the feedback signal $\nabla J$ allows the model to perform gradient ascent on the *structure* of the language directly:
+In the **Grammar-GRPO**, the feedback signal $\nabla J$ allows the model to perform gradient ascent on the *structure* of the language directly:
 
 $$ \nabla J(\theta) \propto \sum_{components} w_c \nabla R_c(y) $$
 
