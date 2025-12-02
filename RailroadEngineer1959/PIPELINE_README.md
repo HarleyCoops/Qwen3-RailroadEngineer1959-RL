@@ -1,5 +1,30 @@
 # Railroad Engineer 1959: From Rules to Reinforcement Learning
 
+## Overview
+Qwen3-RailroadEngineer1959-RL is a state-of-the-art neuro-symbolic project that translates the visual and procedural logic of the 1959 Railroad Instruction Manual into reinforcement learning reward functions.
+
+## The Architecture: Gemini 3 Pro + SAM 3D
+This project will augment the rule building extraction of the Dakota1890 project but augment that with 3D visualizations in the learning process. Not sure how this is going to work to be honest, but the math makes sense.
+
+### 1. 3D Reconstruction: SAM 3D Objects
+We use Meta's SAM 3D to lift 2D images into 3D.
+
+*   **Model**: SAM 3D Objects
+*   **Role**: "The Visual Cortex"
+*   **Function**: Decomposes masked 2D signal diagrams into 3D point clouds and meshes, allowing the system to understand "depth" (e.g., a semaphore arm angle relative to the mast).
+
+### 2. Semantic Reasoning: Gemini 3 Pro
+We use Google's Gemini 3 Pro (gemini-3-pro-preview) as the exclusive cognitive engine.
+
+*   **Role**: "The Brain"
+*   **Function**:
+    *   Takes the raw rulebook pages and SAM 3D reconstructions.
+    *   Generates precise "Composite Signal Functions" (e.g., mapping a visual aspect to a procedural constraint).
+    *   Translates 1959 operational text into formal logic for RL.
+
+## Project Structure
+Mimicking the structure of Dakota1890, the project is organized as follows:
+
 This project demonstrates a complete pipeline for creating a specialized Reinforcement Learning (RL) environment and a synthetic dataset from a historical document: the *1959 Consolidated Code of Operating Rules*.
 
 ## 1. The Pipeline
