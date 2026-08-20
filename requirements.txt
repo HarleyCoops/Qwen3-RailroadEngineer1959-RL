@@ -17,7 +17,7 @@ Pillow>=12.3.0
 huggingface-hub>=1.27.0
 
 # Environment variable management
-python-dotenv>=1.2.2
+python-dotenv>=1.2.3
 
 # Progress bars and utilities
 tqdm>=4.70.0
