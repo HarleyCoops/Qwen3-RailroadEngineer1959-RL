@@ -1,0 +1,7 @@
+```json
+{
+  "rules": []
+}
+```
+
+This page is a Table of Contents and does not contain any operating rules. It lists the sections and their corresponding page numbers where rules can be found in the 1959 Consolidated Code of Operating Rules document. The sections include topics such as Forms of Train Orders, General Description of Signals, Block and Interlocking Signal Indications, General Signal Rules, and various other railroad operating topics, but no actual rule text is present on this page.

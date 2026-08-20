@@ -1,0 +1,12 @@
+# This file is used internally by FFMPEG.
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/2325599634_3591677118_223132457.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/1099790219_2631580503_224833337.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/1099790219_130237488_768779284.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/1099790219_3752137065_2788247075.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/1099790219_700514969_773103414.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/1099790219_454154263_4025593961.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/1099790219_789064381_3010889353.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/2419844263_1687483585_1132045478.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/2883309253_3491586600_3413322747.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/2952805092_1031570477_2951125869.mp4'
+file 'file:C:/Users/chris/Dakota1890/media/videos/kl_divergence_animation/480p15/partial_movie_files/KLDivergence3DTrajectory/2099449114_4150876196_1339120471.mp4'

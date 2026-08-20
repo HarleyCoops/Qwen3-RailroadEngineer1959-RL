@@ -1,0 +1,33 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    python_version: 3.12.6
+    cli_version: 0.22.3
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1762350481
+    t:
+      1:
+      - 49
+      - 95
+      - 105
+      3:
+      - 13
+      - 16
+      - 42
+      4: 3.12.6
+      5: 0.22.3
+      8:
+      - 3
+      13: windows-arm64
+base_model:
+  desc: null
+  value: gpt-3.5-turbo
+train_file:
+  desc: null
+  value: C:\Users\chris\Dakota1890\OpenAIFineTune\dakota_train.jsonl
+valid_file:
+  desc: null
+  value: C:\Users\chris\Dakota1890\OpenAIFineTune\dakota_valid.jsonl

@@ -1,0 +1,33 @@
+# Core dependencies for Dakota language extraction
+# This project uses Claude Sonnet 4.5 via Anthropic API - no local model inference needed
+
+# Anthropic API for Claude Sonnet 4.5 (primary VLM)
+anthropic>=0.122.0
+
+# Google Gemini API for Q&A generation
+google-generativeai>=0.8.6
+
+# HTTP requests for API calls
+requests>=2.34.2
+
+# Image processing for vision tasks
+Pillow>=12.3.0
+
+# Dataset publishing and model hub integration
+huggingface-hub>=1.27.0
+
+# Environment variable management
+python-dotenv>=1.2.2
+
+# Progress bars and utilities
+tqdm>=4.70.0
+
+# Weights & Biases for experiment tracking and logging
+# Weights & Biases for experiment tracking and logging
+wandb>=0.28.2
+weave>=0.53.6
+
+# Thinking Machines / Tinker integration
+tinker>=0.25.0
+chz>=0.4.0
+git+https://github.com/thinking-machines-lab/tinker-cookbook.git

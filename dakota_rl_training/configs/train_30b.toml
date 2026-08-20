@@ -1,0 +1,21 @@
+max_steps = 1000
+output_dir = "/workspace_1/dakota_rl_outputs"
+
+[model]
+name = "Qwen/Qwen3-30B-A3B-Instruct-2507"
+trust_remote_code = true
+
+[model.ac]
+freq = 1
+
+[optim]
+lr = 1e-6
+
+[ckpt]
+interval = 100
+keep = 3  # Only keep 3 most recent checkpoints
+
+[wandb]
+project = "thinking-machines-qwen3-30b"
+offline = false
+

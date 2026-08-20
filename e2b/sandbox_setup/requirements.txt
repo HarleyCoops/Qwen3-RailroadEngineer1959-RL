@@ -1,0 +1,25 @@
+# E2B Sandbox Requirements for Qwen3-VL Thinking Model
+# These dependencies will be installed inside the E2B sandbox environment
+
+# Core ML and Vision Libraries
+torch>=2.0.0
+transformers>=4.35.0
+accelerate>=0.24.0
+pillow>=10.0.0
+
+# Model-specific requirements
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+
+# For optimized inference
+einops>=0.7.0
+timm>=0.9.0
+
+# Utilities
+numpy>=1.24.0
+requests>=2.31.0
+
+# Optional: For better performance
+# bitsandbytes>=0.41.0
+# flash-attn>=2.3.0  # Requires CUDA-compatible environment
+

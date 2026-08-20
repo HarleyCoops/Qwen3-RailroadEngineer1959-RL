@@ -1,0 +1,42 @@
+[
+  {
+    "step": 0,
+    "generations": {
+      "progress/samples": "256.0",
+      "progress/total_samples": "256.0"
+    }
+  },
+  {
+    "step": 100,
+    "generations": {
+      "progress/samples": "256.0",
+      "progress/total_samples": "25856.0"
+    }
+  },
+  {
+    "step": 200,
+    "generations": {
+      "progress/samples": "256.0",
+      "progress/total_samples": "51456.0"
+    }
+  },
+  {
+    "step": 300,
+    "generations": {
+      "progress/samples": "256.0",
+      "progress/total_samples": "77056.0"
+    }
+  },
+  {
+    "step": 399,
+    "generations": {
+      "progress/samples": "256.0",
+      "progress/total_samples": "102400.0"
+    }
+  },
+  {
+    "source": "file",
+    "filename": "output.log",
+    "url": "https://api.wandb.ai/files/christian-cooper-us/dakota-rl-grammar/1y33h9zr/output.log"
+  }
+]

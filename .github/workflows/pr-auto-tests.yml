@@ -1,0 +1,37 @@
+name: PR Auto Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  summary:
+    name: Summarize Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for dependent workflows
+        uses: fountainhead/action-wait-for-check@v1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Wait for core CI and docs lint to finish
+          checkName: |
+            Core CI
+            Documentation Checks
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Post summary comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          header: pr-ci-summary
+          message: |
+            ## Automated Checks Status
+            | Workflow | Conclusion |
+            | --- | --- |
+            | Core CI | ${{ steps.wait.outputs.conclusions0 }} |
+            | Documentation Checks | ${{ steps.wait.outputs.conclusions1 }} |
+
