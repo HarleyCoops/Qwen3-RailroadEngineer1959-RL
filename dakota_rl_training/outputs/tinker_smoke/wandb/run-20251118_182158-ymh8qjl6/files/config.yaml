@@ -1,0 +1,115 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            nurcj0aojygoiyw13xi47pqdo3dekpx1:
+                args:
+                    - --log-path
+                    - dakota_rl_training/outputs/tinker_smoke
+                cpu_count: 12
+                cpu_count_logical: 12
+                disk:
+                    /:
+                        total: "1004769636352"
+                        used: "985152450560"
+                email: christian.cooper.us@gmail.com
+                executable: C:\Python312\python.exe
+                git:
+                    commit: 88851a7a49c8bdbb35fb0cdfed5d51352f5211b9
+                    remote: https://github.com/HarleyCoops/Dakota1890.git
+                host: PC
+                memory:
+                    total: "16749838336"
+                os: Windows-11-10.0.26100-SP0
+                program: -m dakota_rl_training.tinker_train
+                python: CPython 3.12.6
+                root: dakota_rl_training\outputs\tinker_smoke
+                startedAt: "2025-11-19T01:21:58.312785Z"
+                writerId: nurcj0aojygoiyw13xi47pqdo3dekpx1
+        m: []
+        python_version: 3.12.6
+        t:
+            "1":
+                - 1
+                - 49
+                - 51
+                - 95
+                - 105
+            "2":
+                - 1
+                - 49
+                - 51
+                - 95
+                - 105
+            "3":
+                - 16
+            "4": 3.12.6
+            "5": 0.23.0
+            "8":
+                - 3
+            "12": 0.23.0
+            "13": windows-arm64
+async_config:
+    value: null
+base_url:
+    value: null
+compute_post_kl:
+    value: false
+dataset_builder:
+    value:
+        batch_size: 32
+        dataset_path: null
+        difficulty_filter: null
+        eval_examples: -1
+        eval_fraction: 0.1
+        eval_group_size: 1
+        eval_path: null
+        group_size: 16
+        include_hints: true
+        max_examples: -1
+        model_name: Qwen/Qwen3-0.6B
+        renderer_name: null
+        seed: 42
+        shuffle: true
+        system_prompt: null
+        task_filter: null
+enable_trace:
+    value: false
+eval_every:
+    value: 20
+evaluator_builders:
+    value: []
+kl_discount_factor:
+    value: 0
+kl_penalty_coef:
+    value: 0
+learning_rate:
+    value: 4e-05
+load_checkpoint_path:
+    value: null
+log_path:
+    value: dakota_rl_training/outputs/tinker_smoke
+lora_rank:
+    value: 32
+loss_fn:
+    value: importance_sampling
+max_tokens:
+    value: 256
+model_name:
+    value: Qwen/Qwen3-0.6B
+num_groups_to_log:
+    value: 4
+num_substeps:
+    value: 1
+remove_constant_reward_groups:
+    value: true
+save_every:
+    value: 20
+stream_minibatch_config:
+    value: null
+temperature:
+    value: 0.9
+wandb_name:
+    value: null
+wandb_project:
+    value: dakota-rl-grammar

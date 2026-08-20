@@ -1,0 +1,136 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            fkodbfdh05vc6912asm3zugza6iqusgi:
+                args:
+                    - --model-name
+                    - Qwen/Qwen3-30B-A3B-Instruct-2507
+                    - --log-path
+                    - dakota_rl_training/outputs/tinker_qwen30b
+                    - --batch-size
+                    - "48"
+                    - --group-size
+                    - "16"
+                    - --max-tokens
+                    - "384"
+                    - --wandb-project
+                    - dakota-rl-grammar
+                    - --wandb-name
+                    - qwen3-30b-dakota
+                    - --ledger-csv
+                    - wandb_analysis/reward_ledger_tinker.csv
+                cpu_count: 12
+                cpu_count_logical: 12
+                disk:
+                    /:
+                        total: "1004769636352"
+                        used: "983580495872"
+                email: christian.cooper.us@gmail.com
+                executable: C:\Python312\python.exe
+                git:
+                    commit: c848a1f4495abc7e0132dc9217c41f18be59b8c3
+                    remote: https://github.com/HarleyCoops/Dakota1890.git
+                host: PC
+                memory:
+                    total: "16749838336"
+                os: Windows-11-10.0.26100-SP0
+                program: -m dakota_rl_training.tinker_train
+                python: CPython 3.12.6
+                root: dakota_rl_training\outputs\tinker_qwen30b
+                startedAt: "2025-11-19T17:44:22.224726Z"
+                writerId: fkodbfdh05vc6912asm3zugza6iqusgi
+        m: []
+        python_version: 3.12.6
+        t:
+            "1":
+                - 1
+                - 49
+                - 51
+                - 95
+                - 105
+            "2":
+                - 1
+                - 5
+                - 11
+                - 49
+                - 51
+                - 53
+                - 71
+                - 95
+                - 105
+            "3":
+                - 2
+                - 13
+                - 16
+                - 61
+            "4": 3.12.6
+            "5": 0.23.0
+            "8":
+                - 3
+            "12": 0.23.0
+            "13": windows-arm64
+async_config:
+    value: null
+base_url:
+    value: null
+compute_post_kl:
+    value: false
+dataset_builder:
+    value:
+        batch_size: 48
+        dataset_path: null
+        difficulty_filter: null
+        eval_examples: -1
+        eval_fraction: 0.1
+        eval_group_size: 1
+        eval_path: null
+        group_size: 16
+        include_hints: true
+        max_examples: -1
+        model_name: Qwen/Qwen3-30B-A3B-Instruct-2507
+        renderer_name: null
+        seed: 42
+        shuffle: true
+        system_prompt: null
+        task_filter: null
+enable_trace:
+    value: false
+eval_every:
+    value: 20
+evaluator_builders:
+    value: []
+kl_discount_factor:
+    value: 0
+kl_penalty_coef:
+    value: 0
+learning_rate:
+    value: 4e-05
+load_checkpoint_path:
+    value: null
+log_path:
+    value: dakota_rl_training/outputs/tinker_qwen30b
+lora_rank:
+    value: 32
+loss_fn:
+    value: importance_sampling
+max_tokens:
+    value: 384
+model_name:
+    value: Qwen/Qwen3-30B-A3B-Instruct-2507
+num_groups_to_log:
+    value: 4
+num_substeps:
+    value: 1
+remove_constant_reward_groups:
+    value: true
+save_every:
+    value: 20
+stream_minibatch_config:
+    value: null
+temperature:
+    value: 0.9
+wandb_name:
+    value: qwen3-30b-dakota
+wandb_project:
+    value: dakota-rl-grammar
