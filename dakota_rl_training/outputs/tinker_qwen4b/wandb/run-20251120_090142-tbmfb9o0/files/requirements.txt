@@ -156,7 +156,7 @@ gcloud==0.18.3
 geomet==1.1.0
 geopandas==1.1.2
 gitdb==4.0.11
-GitPython==3.1.62
+GitPython==3.2.0
 git-filter-repo==2.47.0
 glcontext==3.0.0
 google==3.0.0
@@ -388,7 +388,7 @@ pinecone==7.3.0
 pinecone-client==6.0.0
 pinecone-plugin-assistant==1.8.0
 pinecone-plugin-interface==0.0.7
-pip==26.2
+pip==26.2.1
 pip-api==0.0.34
 pip_audit==2.9.0
 pip-requirements-parser==32.0.1
@@ -578,7 +578,7 @@ torch==2.13.0
 torchaudio==2.5.1
 torchmetrics==0.10.3
 torchvision==0.20.1
-tornado==6.5.9
+tornado==6.5.10
 tqdm==4.67.0
 traitlets==5.14.3
 transformers==5.10.1
@@ -608,7 +608,7 @@ uv==0.11.17
 uvicorn==0.34.0
 verifiers==0.1.8
 vertexai==1.71.1
-virtualenv==21.7.13
+virtualenv==21.14.3
 wandb==0.23.0
 watchdog==6.0.0
 watchfiles==1.1.0
