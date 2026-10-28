@@ -348,7 +348,7 @@ pinecone==7.3.0
 pinecone-client==6.0.0
 pinecone-plugin-assistant==1.8.0
 pinecone-plugin-interface==0.0.7
-pip==26.2.2
+pip==26.2
 pip-api==0.0.34
 pip_audit==2.9.0
 pip-requirements-parser==32.0.1
@@ -578,4 +578,4 @@ zipp==3.21.0
 zope.interface==7.2
 zstandard==0.23.0
 oneshot-grpo==0.1.0
-pip==24.2
+pip==26.2
